@@ -67,6 +67,19 @@ function setup() {
         console.log(data.description);
         $('#messages').append($('<li>').text(data.description));
      });
+
+     socket.on('check-challenge-response', function(name, challenged) {
+        var username = getStorage('username');
+        if (username === challenged) {
+            //show challenge modal
+            console.log('I, ' + challenged + ' have been challenged by ' + name);
+            document.getElementById('welcomeModal').classList.remove('hidden');
+            document.getElementById('modalLargeHeader').innerHTML = 'Challenge Extended.';
+            document.getElementById('modalSmallHeader').innerHTML = 'make a selection';
+            document.getElementById('challengeHeader').innerHTML = 'You have been challenged to a game by ' + name;
+            document.getElementById('challengeForm').classList.remove('hidden');
+        }
+     });
 }
 
 
@@ -146,19 +159,6 @@ function hideModalOverlays() {
     }
 }
 
-function sendChallenge(data) {
-    //this function will get the names / id's of the challenger and the challenged player
-
-    //will console.log that a challenge has been extended between the two
-
-    //and will trigger the challengeModal for the person being challenged to respond
-}
-
-function respondToChallenge(data) {
-    var responseData = [data, socket.id, name];
-    //this needs finished
-    socket.emit('challengeResponse', responseData);
-}
 
 function setFocusToNameBox() {
     document.getElementById('playerName').focus();

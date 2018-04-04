@@ -87,9 +87,9 @@ io.sockets.on('connection', function (socket) {
     });
   
     socket.on('extend-challenge', function(name, challenged) {
-      console.log(name + " has challenged " + challenged + "to a game. Begin game protocols.");
+      console.log(name + " has challenged " + challenged + " to a game. Begin game protocols.");
       //send challenge to the player who has been challenged
-      
+      io.emit('check-challenge-response', name, challenged);
     });
   
   });
