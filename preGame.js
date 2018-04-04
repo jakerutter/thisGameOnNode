@@ -82,7 +82,7 @@ function setup() {
         if (username === challenged) {
             //show challenge modal
             console.log('I, ' + challenged + ' have been challenged by ' + name);
-            document.getElementById('welcomeModal').classList.remove('hidden');
+            document.getElementById('chatWelcomeModal').classList.remove('hidden');
             document.getElementById('modalLargeHeader').innerHTML = 'Challenge Extended.';
             document.getElementById('modalSmallHeader').innerHTML = 'make a selection';
             document.getElementById('challengeHeader').innerHTML = 'You have been challenged to a game by ' + name;
@@ -91,7 +91,7 @@ function setup() {
      });
 
      socket.on('challenger-join-private', function(challenger) {
-        
+      
         var name = getStorage('username');
         if (name === challenger) {
             socket.emit('join-private', name);
@@ -104,8 +104,16 @@ function setup() {
         window.scrollTo(0, document.body.scrollHeight);
      });
 
+     socket.on('update-users-challenge-accepted', function(name, challenger) {
+        let msg = ' Challenge sent and accepted! ' + challenger + ' versus '+ name +'!';
+        $('#messages').append($('<li>').text(msg));
+        window.scrollTo(0, document.body.scrollHeight);
+     });
 
-
+    socket.on('new-game-html', function(msg) {
+        document.getElementById('chatroom').classList.add('hidden');
+        document.getElementById('welcomeModal').classList.remove('hidden');
+    });
      //end of setup
 }
 
@@ -141,10 +149,12 @@ function savePlayerName() {
         $.modal.close();
         hideModalOverlays();
         //revealing elements and hiding others
+        document.getElementById('nameFail').innerHTML = '';
         document.getElementById('chatFeature').classList.remove('hidden');
         document.getElementById('banner').classList.remove('hidden');
         document.getElementById('currentUsers').classList.remove('hidden');
         document.getElementById('welcomeForm').classList.add('hidden');
+        document.getElementById('chatWelcomeModal').classList.add('hidden');
         document.getElementById('confirmSettings').classList.add('hidden');
     }
 }
@@ -194,8 +204,8 @@ function hideModalOverlays() {
         document.getElementById('simplemodal-overlay').classList.add('behind');
         document.getElementById('simplemodal-overlay').classList.add('hidden');
      }
-     if (!document.getElementById('welcomeModal').classList.contains('hidden')){
-        document.getElementById('welcomeModal').classList.add('hidden');
+     if (!document.getElementById('chatWelcomeModal').classList.contains('hidden')){
+        document.getElementById('chatWelcomeModal').classList.add('hidden');
     }
 }
 
@@ -217,15 +227,15 @@ function respondToChallenge(response) {
     var name = getStorage('username');
     //accepted challenge
     if (response === 'accept') {
-        let msg = 'Challenge sent and accepted! '+ challenger + ' versus '+name+"!";
-        $('#messages').append($('<li>').text(msg));
-        window.scrollTo(0, document.body.scrollHeight);
+        // let msg = 'Challenge sent and accepted! '+ challenger + ' versus '+name+"!";
+        // $('#messages').append($('<li>').text(msg));
+        // window.scrollTo(0, document.body.scrollHeight);
         socket.emit('challenge-accepted', name, challenger);
         socket.emit('join-private', name);
-        document.getElementById('welcomeModal').classList.add('hidden');
+        document.getElementById('chatWelcomeModal').classList.add('hidden');
     } else {
         //refused challenge
         socket.emit('challenge-refused', name, challenger);
-        document.getElementById('welcomeModal').classList.add('hidden');
+        document.getElementById('chatWelcomeModal').classList.add('hidden');
     }
 }

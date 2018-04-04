@@ -3,6 +3,11 @@ const fs = require('fs');
 var express = require('express');
 // Create the app
 var app = express();
+var path = require('path');
+
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
 
 // Set up the server
 var server = app.listen( 8080, listen);
@@ -12,9 +17,6 @@ function listen() {
 
   var port = server.address().port;
   // console.log('This Game listening at http://' + 'localhost' + ':' + port);
-  // var data = fs.readFileSync('Json/names.json', 'utf8');
-  // var names = JSON.parse(data);
-  // console.log('first we check to see how many players are saved in our json db: '+ names.length);
 }
 
 app.use(express.static('public'));
@@ -48,6 +50,11 @@ io.sockets.on('connection', function (socket) {
       socket.join('private');
       console.log(data + ' joined private');
       io.emit('all-users', users);
+      //send both players that joined private to the game html page - or change the html rendered
+      var newHtml = app.get('/', function(req, res) {
+        res.sendFile(path.join(__dirname, '../public/', 'game1.html'));
+        });
+        io.in('private').emit('new-game-html', "woo");
     });
   
     socket.on('private-chat', function(data) {
@@ -97,6 +104,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('challenge-accepted', function(name, challenger) {
       console.log(name + ' ACCEPTED challenge from ' + challenger);
       io.emit('challenger-join-private', challenger);
+      io.emit('update-users-challenge-accepted', name, challenger);
     });
 
     socket.on('challenge-refused', function(name, challenger) {
