@@ -19,7 +19,7 @@ function setup() {
   
 
   socket.on('all-users', function(users){
-     
+    var username = getStorage("username");
       var userBanner = document.getElementById("currentUsers");
       userBanner.innerHTML = "";
 
@@ -32,19 +32,20 @@ function setup() {
             // 2. Append buttons where I want them
             userBanner.appendChild(button);
 
-            // 3. Add event handler
+            // 3. Add event handler for all buttons that do not have your name on them
+            if (button.innerHTML !== username) {
             button.addEventListener("click", function() {
                 var challenged = button.innerHTML;
-                var name = getStorage("username");
-                let msg = "this person " + name + " clicked on " + challenged;
+                
+                let msg = "this person " + username + " clicked on " + challenged;
                 $('#messages').append($('<li>').text(msg));
                 if (confirm("Are you sure you want to challenge " + challenged + "?")) {
-                    socket.emit('extend-challenge', name, challenged);
+                    socket.emit('extend-challenge', username, challenged);
                 } else {
-                    $('#messages').append($('<li>').text(name + " decided not to challenge at this time."));
+                    $('#messages').append($('<li>').text(username + " decided not to challenge at this time."));
                 }
                 });
-            }
+            }}
         } else {
            return;
         }
