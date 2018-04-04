@@ -30,6 +30,7 @@ io.sockets.on('connection', function (socket) {
   clientCount +=1;
   console.log(clientCount + " number of clients connected. That is more than we had before.");
   io.sockets.emit('broadcast',{ description: clientCount + ' clients connected!'});
+  io.sockets.emit('usernames-taken', users);
 
   socket.on('disconnect', function() {
     clientCount -=1;

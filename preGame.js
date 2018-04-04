@@ -16,7 +16,13 @@ function setup() {
     socket.emit('get-users');
     });
 
-  
+  socket.on('usernames-taken', function(users) {
+    var userList = [];
+    for(var n=0; n<users.length; n++){
+        userList.push(users[n].nickname);
+    }
+    setStorage('usernamesTaken', userList);
+  });
 
   socket.on('all-users', function(users){
     var username = getStorage("username");
@@ -107,11 +113,23 @@ function setup() {
 
 function savePlayerName() {
     var name = document.getElementById('playerName').value;
+    var namesTaken = getStorage('usernamesTaken');
+    //check name against namesTaken
+    var isNameTaken;
+    for (var i=0; i<namesTaken.length; i++) {
+        if (name === namesTaken[i]) {
+            isNameTaken = true; } 
+        else {
+            isNameTaken = false;
+            }
+        }
     //set id value for this user to emit to the server
     id = Math.floor(Date.now() * Math.random());
     
     if (name === "") {
         document.getElementById('nameFail').innerHTML = 'That is not an acceptable name. Please enter a name.';
+    } else if (isNameTaken === true) {
+        document.getElementById('nameFail').innerHTML = 'That is taken by another user. Please enter a different name.';
     } else {
         setStorage('username', name);
         console.log('saving new username: ' + name);
