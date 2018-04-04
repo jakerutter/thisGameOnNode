@@ -27,12 +27,12 @@ var clientCount = 0;
 io.sockets.on('connection', function (socket) {
   // We are given a websocket object in our function
   var userID;
-  clientCount ++;
+  clientCount +=1;
   console.log(clientCount + " number of clients connected. That is more than we had before.");
   io.sockets.emit('broadcast',{ description: clientCount + ' clients connected!'});
 
   socket.on('disconnect', function() {
-    clientCount --;
+    clientCount -=1;
     console.log(clientCount + " number of clients connected. Less than we had before.");
     io.emit('broadcast',{ description: clientCount + ' clients connected!'});
     users = users.filter(function(item) {
@@ -75,8 +75,8 @@ io.sockets.on('connection', function (socket) {
     // Send a message
     socket.on('send-message', function(data) {
       console.log("did you try to send a message? "+ data);
-      // socket.broadcast.emit('message-received', data);
-      io.emit('message-received', data);
+      socket.broadcast.emit('message-received', data);
+      // io.emit('message-received', data);
     });
   
     // Send a 'like' to the user of your choice
@@ -94,10 +94,14 @@ io.sockets.on('connection', function (socket) {
     });
   
     socket.on('challenge-accepted', function(name, challenger) {
-      console.log(name + 'ACCEPTED challenge from ' + challenger);
+      console.log(name + ' ACCEPTED challenge from ' + challenger);
       io.emit('challenger-join-private', challenger);
     });
 
+    socket.on('challenge-refused', function(name, challenger) {
+      console.log(name + ' REFUSED challenge from ' + challenger);
+      io.emit('update-users-challenge-refused', name, challenger);
+    })
 
   });
   

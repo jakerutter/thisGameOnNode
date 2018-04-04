@@ -19,7 +19,7 @@ function setup() {
   
 
   socket.on('all-users', function(users){
-      console.log("this is users[0].nickname value inside of join on client side " + users[0].nickname);
+     
       var userBanner = document.getElementById("currentUsers");
       userBanner.innerHTML = "";
 
@@ -46,7 +46,7 @@ function setup() {
                 });
             }
         } else {
-            alert("fell into the nebulous void of all-users client side");
+           return;
         }
     });
 
@@ -62,10 +62,11 @@ function setup() {
         document.getElementById('modalSmallHeader').innerHTML = "You can accept or deny the challenge.";
         document.getElementById('challengeForm').classList.remove('hidden');
     });
+
         //  This added a message to the chat interface showing the curent number of users.
     socket.on('broadcast',function(data) {
         console.log(data.description);
-        $('#messages').append($('<li>').text(data.description));
+        // $('#messages').append($('<li>').text(data.description));
      });
 
      socket.on('check-challenge-response', function(name, challenged) {
@@ -89,6 +90,16 @@ function setup() {
             socket.emit('join-private', name);
         }
      });
+
+     socket.on('update-users-challenge-refused', function(name, challenger) {
+        let msg = name + ' was challenged by ' + challenger + ' but refused the opportunity.';
+        $('#messages').append($('<li>').text(msg));
+        window.scrollTo(0, document.body.scrollHeight);
+     });
+
+
+
+     //end of setup
 }
 
 
@@ -146,7 +157,8 @@ function sendChatMessage() {
        
         document.getElementById('noMessage').innerHTML = "";
         console.log(username +' is sending message: ' + chatmessage);
-        socket.emit('send-message', username+" said: "+chatmessage);
+        var data = username+" said: "+ chatmessage;
+        socket.emit('send-message', data);
         $('#m').val('');
     }
 
@@ -188,9 +200,13 @@ function respondToChallenge(response) {
     if (response === 'accept') {
         let msg = 'Challenge sent and accepted! '+ challenger + ' versus '+name+"!";
         $('#messages').append($('<li>').text(msg));
+        window.scrollTo(0, document.body.scrollHeight);
         socket.emit('challenge-accepted', name, challenger);
         socket.emit('join-private', name);
+        document.getElementById('welcomeModal').classList.add('hidden');
     } else {
         //refused challenge
+        socket.emit('challenge-refused', name, challenger);
+        document.getElementById('welcomeModal').classList.add('hidden');
     }
 }
