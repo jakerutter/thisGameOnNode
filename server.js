@@ -29,15 +29,15 @@ io.sockets.on('connection', function (socket) {
   var userID;
   clientCount ++;
   console.log(clientCount + " number of clients connected. That is more than we had before.");
-  io.emit('broadcast',{ description: clientCount + ' clients connected!'});
+  io.sockets.emit('broadcast',{ description: clientCount + ' clients connected!'});
 
   socket.on('disconnect', function() {
     clientCount --;
     console.log(clientCount + " number of clients connected. Less than we had before.");
     io.emit('broadcast',{ description: clientCount + ' clients connected!'});
-    // users = users.filter(function(item) {
-    //   return item.nickname !== socket.nickname;
-    // });
+    users = users.filter(function(item) {
+      return item.nickname !== socket.nickname;
+    });
     io.emit('all-users', users);
   });
 
@@ -88,6 +88,8 @@ io.sockets.on('connection', function (socket) {
   
     socket.on('extend-challenge', function(name, challenged) {
       console.log(name + " has challenged " + challenged + "to a game. Begin game protocols.");
+      //send challenge to the player who has been challenged
+      
     });
   
   });

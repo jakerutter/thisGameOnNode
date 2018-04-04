@@ -62,11 +62,11 @@ function setup() {
         document.getElementById('modalSmallHeader').innerHTML = "You can accept or deny the challenge.";
         document.getElementById('challengeForm').classList.remove('hidden');
     });
-    //      This added a message to the chat interface showing the curent number of users.
-    // socket.on('broadcast',function(data) {
-    //     console.log(data.description);
-    //     $('#messages').append($('<li>').text(data.description));
-    //  });
+        //  This added a message to the chat interface showing the curent number of users.
+    socket.on('broadcast',function(data) {
+        console.log(data.description);
+        $('#messages').append($('<li>').text(data.description));
+     });
 }
 
 
