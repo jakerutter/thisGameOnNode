@@ -36,7 +36,7 @@ function setup() {
             button.addEventListener("click", function() {
                 var challenged = button.innerHTML;
                 var name = getStorage("username");
-                let msg = "this person " + name + " clicked on " + challenged
+                let msg = "this person " + name + " clicked on " + challenged;
                 $('#messages').append($('<li>').text(msg));
                 if (confirm("Are you sure you want to challenge " + challenged + "?")) {
                     socket.emit('extend-challenge', name, challenged);
@@ -70,6 +70,7 @@ function setup() {
 
      socket.on('check-challenge-response', function(name, challenged) {
         var username = getStorage('username');
+        setStorage('challenger', name);
         if (username === challenged) {
             //show challenge modal
             console.log('I, ' + challenged + ' have been challenged by ' + name);
@@ -78,6 +79,14 @@ function setup() {
             document.getElementById('modalSmallHeader').innerHTML = 'make a selection';
             document.getElementById('challengeHeader').innerHTML = 'You have been challenged to a game by ' + name;
             document.getElementById('challengeForm').classList.remove('hidden');
+        }
+     });
+
+     socket.on('challenger-join-private', function(challenger) {
+        
+        var name = getStorage('username');
+        if (name === challenger) {
+            socket.emit('join-private', name);
         }
      });
 }
@@ -159,7 +168,6 @@ function hideModalOverlays() {
     }
 }
 
-
 function setFocusToNameBox() {
     document.getElementById('playerName').focus();
 }
@@ -171,4 +179,18 @@ function setStorage(key,info) {
 function getStorage(key) {
     var item = localStorage.getItem(key);
     return JSON.parse(item);
+}
+
+function respondToChallenge(response) {
+    var challenger = getStorage('challenger');
+    var name = getStorage('username');
+    //accepted challenge
+    if (response === 'accept') {
+        let msg = 'Challenge sent and accepted! '+ challenger + ' versus '+name+"!";
+        $('#messages').append($('<li>').text(msg));
+        socket.emit('challenge-accepted', name, challenger);
+        socket.emit('join-private', name);
+    } else {
+        //refused challenge
+    }
 }

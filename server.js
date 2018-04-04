@@ -45,7 +45,8 @@ io.sockets.on('connection', function (socket) {
     // Join private room
     socket.on('join-private', function(data) {
       socket.join('private');
-      console.log(data.nickname + ' joined private');
+      console.log(data + ' joined private');
+      io.emit('all-users', users);
     });
   
     socket.on('private-chat', function(data) {
@@ -92,5 +93,11 @@ io.sockets.on('connection', function (socket) {
       io.emit('check-challenge-response', name, challenged);
     });
   
+    socket.on('challenge-accepted', function(name, challenger) {
+      console.log(name + 'ACCEPTED challenge from ' + challenger);
+      io.emit('challenger-join-private', challenger);
+    });
+
+
   });
   
