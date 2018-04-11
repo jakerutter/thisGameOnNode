@@ -105,12 +105,24 @@ io.sockets.on('connection', function (socket) {
       console.log(name + ' ACCEPTED challenge from ' + challenger);
       io.emit('challenger-join-private', challenger);
       io.emit('update-users-challenge-accepted', name, challenger);
+      //remove both players from users list as i dont want them visible in the main chat room. may need to rethink this later.
+      users = users.filter(function(item) {
+        return item.nickname !== name;
+        });
+      users = users.filter(function(item) {
+        return item.nickname !== challenger;
+        });
     });
 
     socket.on('challenge-refused', function(name, challenger) {
       console.log(name + ' REFUSED challenge from ' + challenger);
       io.emit('update-users-challenge-refused', name, challenger);
-    })
+    });
+
+    socket.on('color-selected', function(name, chosenColor) {
+      console.log(name + " has chosen "+ chosenColor +" as their color.");
+      io.emit('color-has-been-selected', name, chosenColor);
+    });
 
   });
   

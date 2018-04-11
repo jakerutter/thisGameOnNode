@@ -25,42 +25,14 @@ function setup() {
   });
 
   socket.on('all-users', function(users){
-    var username = getStorage("username");
-      var userBanner = document.getElementById("currentUsers");
-      userBanner.innerHTML = "";
-
-      if (users != "") {
-        for(var n=0; n<users.length; n++){
-            console.log(users[n].nickname);
-            let button = document.createElement("button");
-            button.innerHTML = users[n].nickname;
-
-            // 2. Append buttons where I want them
-            userBanner.appendChild(button);
-
-            // 3. Add event handler for all buttons that do not have your name on them
-            if (button.innerHTML !== username) {
-            button.addEventListener("click", function() {
-                var challenged = button.innerHTML;
-                
-                let msg = "this person " + username + " clicked on " + challenged;
-                $('#messages').append($('<li>').text(msg));
-                if (confirm("Are you sure you want to challenge " + challenged + "?")) {
-                    socket.emit('extend-challenge', username, challenged);
-                } else {
-                    $('#messages').append($('<li>').text(username + " decided not to challenge at this time."));
-                }
-                });
-            }}
-        } else {
-           return;
-        }
+      createPlayerButtons(users);
     });
 
   //send and display chat messages
   socket.on('message-received', function(msg){
         $('#messages').append($('<li>').text(msg));
-        window.scrollTo(0, document.body.scrollHeight);
+        // window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 0);
     });
 
     //challenge a player to a game
@@ -108,12 +80,23 @@ function setup() {
         let msg = ' Challenge sent and accepted! ' + challenger + ' versus '+ name +'!';
         $('#messages').append($('<li>').text(msg));
         window.scrollTo(0, document.body.scrollHeight);
+        removePlayerButtons(name, challenger);
      });
 
     socket.on('new-game-html', function(msg) {
         document.getElementById('chatroom').classList.add('hidden');
         document.getElementById('welcomeModal').classList.remove('hidden');
+        document.getElementById('defaultCanvas0').classList.add('hidden');
     });
+
+    socket.on('color-has-been-selected', function(name, chosenColor) {
+        document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
+        document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
+        $("#playerColorSelect option[value="+chosenColor+"]").remove();
+    });
+
+
+
      //end of setup
 }
 
@@ -238,4 +221,55 @@ function respondToChallenge(response) {
         socket.emit('challenge-refused', name, challenger);
         document.getElementById('chatWelcomeModal').classList.add('hidden');
     }
+}
+
+function claimSelectedColor(chosenColor) {
+    var name = getStorage('username');
+    socket.emit('color-selected', name, chosenColor);
+}
+
+window.onbeforeunload = function () {
+    window.scrollTo(0, 0);
+}
+
+function createPlayerButtons(users) {
+
+    var userArray = [];
+    var username = getStorage("username");
+    var userBanner = document.getElementById("currentUsers");
+    userBanner.innerHTML = "";
+
+    if (users != "") {
+        for(var n=0; n<users.length; n++){
+            console.log(users[n].nickname);
+            userArray.push(users[n].nickname);
+            let button = document.createElement("button");
+            button.innerHTML = users[n].nickname;
+
+            // 2. Append buttons where I want them
+            userBanner.appendChild(button);
+
+            // 3. Add event handler for all buttons that do not have your name on them
+            if (button.innerHTML !== username) {
+            button.addEventListener("click", function() {
+                var challenged = button.innerHTML;
+                
+                let msg = "this person " + username + " clicked on " + challenged;
+                $('#messages').append($('<li>').text(msg));
+                if (confirm("Are you sure you want to challenge " + challenged + "?")) {
+                    socket.emit('extend-challenge', username, challenged);
+                } else {
+                    $('#messages').append($('<li>').text(username + " decided not to challenge at this time."));
+                }
+                });
+            }}
+            //saving this in local storage. will use this array to update buttons visible
+            setStorage('users', userArray);
+        } else {
+           return;
+        }
+}
+
+function removePlayerButtons(name, challenger) {
+    var playerButtons = getElementById('currentUsers')
 }
