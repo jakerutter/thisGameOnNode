@@ -119,10 +119,16 @@ io.sockets.on('connection', function (socket) {
       io.emit('update-users-challenge-refused', name, challenger);
     });
 
-    socket.on('color-selected', function(name, chosenColor) {
+    socket.on('first-color-selected', function(name, chosenColor) {
       console.log(name + " has chosen "+ chosenColor +" as their color.");
-      io.emit('color-has-been-selected', name, chosenColor);
+      io.emit('first-color-has-been-selected', name, chosenColor);
     });
+
+    socket.on('second-color-selected', function(name, chosenColor) {
+      console.log(name + " has chosen "+ chosenColor +" as their color.");
+      io.emit('second-color-has-been-selected', name, chosenColor);
+    });
+  
 
   });
   

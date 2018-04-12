@@ -49,6 +49,7 @@ function drawing() {
     
 }
 
+//MIGHT BE ABLE TO RIP THIS OUT. NUMBER OF PLAYERS WILL ALWAYS = 2
 function numberOfPlayersModal() {
     clearStorage();
     document.getElementById('startButton').classList.add('hidden');
@@ -60,26 +61,26 @@ function numberOfPlayersModal() {
     setStorage("numberOfPlayers", playerCount);
 
 }
-
+//MIGHT BE ABLE TO RIP THIS OUT. NUMBER OF PLAYERS WILL ALWAYS = 2
 function numberOfPlayersPlaying(el){
     var playerCount = el.options[el.selectedIndex].value;
     document.getElementById('numberOfPlayers').innerHTML = playerCount;
     setStorage("numberOfPlayers", playerCount);
-    welcomeModal(true);
+    welcomeModal();
 }
 
-function welcomeModal(bool) {
+function welcomeModal() {
     setStorage('numberOfPlayers', 2);
-    var bool = bool;
+    
     var playerCount = 2;
   
-    //close out numberOfPlayerModal first
+    //close out numberOfPlayersModal first
     $.modal.close();
     hideModalOverlays();
     var playerName2 = getStorage("playerName2");
-    if (playerName2 == null) {
-        setDefaultStorage();
-    }
+    //removed an if check from the following setDefaultStorage call. It checked to see if playerName2 in local storage == null 
+    setDefaultStorage();
+    
 
     // document.getElementById('welcomeModal').classList.remove('hidden');
     // $("#welcomeModal").modal();
@@ -88,6 +89,11 @@ function welcomeModal(bool) {
     var nameField = document.getElementById('playerName');
     nameField.value = document.getElementById('playerNameSelection1').innerHTML;   
    
+}
+
+function showWelcomeModal() {
+     document.getElementById('welcomeModal').classList.remove('hidden');
+    $("#welcomeModal").modal();
 }
 
 function hideWelcomeModal() {
@@ -109,16 +115,16 @@ function hideWelcomeModal() {
     document.getElementById("option4").style.backgroundColor = chosenColor;
     if ((document.getElementById('playerColorSelection1').innerHTML == "") || (document.getElementById('playerNameSelection1').innerHTML == "")){
         document.getElementById('welcomeAlert').innerHTML = "You must submit player info to continue.";
-        welcomeModal(false);
+        welcomeModal();
     } else {
-    var continueOn = compareNamesAndColors();
+    var continueOn = setStorageNamesAndColorsForPlayerDisplay();
     if (continueOn == true) {
         startGame();
     }
         else {
             document.getElementById('welcomeAlert').classList.add('redText');
             document.getElementById('welcomeAlert').innerHTML = continueOn;
-            welcomeModal(false);
+            welcomeModal();
         }
     }
 }
@@ -134,7 +140,7 @@ function settingsModal(){
 function hideSettingsModal() {
     $.modal.close();
     hideModalOverlays();
-    welcomeModal(false);
+    showWelcomeModal();
 }
 
 function hideModalOverlays() {
@@ -184,10 +190,6 @@ function startGame() {
     maxColumn = Number(userChoice);
     setStorage("maxRow", maxRow);
     createDivs(maxRow);
-    
-    // prepMaze(nodeArray);
-    // runMazePhase1(nodeArray);
-    // runMazePhase2(nodeArray);
 }
 
 //Creates the divs based on maxRow and maxColumn
@@ -235,15 +237,10 @@ function functionSwitch(switchData, id) {
     
     var id = id;
     if (switchData == "selectBase") {
-        if (numberOfPlayers == 1) {
-            placePlayerBase(id);
+        placePlayerBase(id);
+        var baseLocationAccepted = compareBaseLocations(1);
+        if (baseLocationAccepted == true) {
             document.getElementById('openTroopModalButton').classList.remove('hidden');
-        } else {
-            placePlayerBase(id);
-            var baseLocationAccepted = compareBaseLocations(1);
-            if (baseLocationAccepted == true) {
-                document.getElementById('openTroopModalButton').classList.remove('hidden');
-            }
         }
     }
     else if (switchData == "baseConfirmed") { 

@@ -73,14 +73,15 @@ function setup() {
      socket.on('update-users-challenge-refused', function(name, challenger) {
         let msg = name + ' was challenged by ' + challenger + ' but refused the opportunity.';
         $('#messages').append($('<li>').text(msg));
-        window.scrollTo(0, document.body.scrollHeight);
+        // window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 0);
      });
 
      socket.on('update-users-challenge-accepted', function(name, challenger) {
         let msg = ' Challenge sent and accepted! ' + challenger + ' versus '+ name +'!';
         $('#messages').append($('<li>').text(msg));
-        window.scrollTo(0, document.body.scrollHeight);
-        removePlayerButtons(name, challenger);
+        // window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 0);
      });
 
     socket.on('new-game-html', function(msg) {
@@ -89,10 +90,16 @@ function setup() {
         document.getElementById('defaultCanvas0').classList.add('hidden');
     });
 
-    socket.on('color-has-been-selected', function(name, chosenColor) {
+    socket.on('first-color-has-been-selected', function(name, chosenColor) {
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
         document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
         $("#playerColorSelect option[value="+chosenColor+"]").remove();
+        // remove($("#playerColorSelect option[value="+chosenColor+"]"));
+        setChosenColorInLocalStorage(name, chosenColor);
+    });
+
+    socket.on('second-color-has-been-selected', function(name, chosenColor) {
+        setChosenColorInLocalStorage(name, chosenColor);    
     });
 
 
@@ -225,9 +232,16 @@ function respondToChallenge(response) {
 
 function claimSelectedColor(chosenColor) {
     var name = getStorage('username');
-    socket.emit('color-selected', name, chosenColor);
+    var otherPlayerColor = getStorage('playerColor2');
+    if ((otherPlayerColor != "") && (otherPlayerColor != null)) {
+        socket.emit('second-color-selected', name, chosenColor);
+    } else {
+        socket.emit('first-color-selected', name, chosenColor);
+    }
+   
 }
 
+//This forces scroll to top on refresh
 window.onbeforeunload = function () {
     window.scrollTo(0, 0);
 }
@@ -254,11 +268,14 @@ function createPlayerButtons(users) {
             button.addEventListener("click", function() {
                 var challenged = button.innerHTML;
                 
-                let msg = "this person " + username + " clicked on " + challenged;
+                let msg = username + " clicked on " + challenged + ". They must be considering a challenge.";
+                socket.emit('send-message', msg);
                 $('#messages').append($('<li>').text(msg));
                 if (confirm("Are you sure you want to challenge " + challenged + "?")) {
                     socket.emit('extend-challenge', username, challenged);
                 } else {
+                    let noChallengeMsg = username + " decided not to challenge " + challenged +" at this time.";
+                    socket.emit('send-message', noChallengeMsg);
                     $('#messages').append($('<li>').text(username + " decided not to challenge at this time."));
                 }
                 });
@@ -270,6 +287,12 @@ function createPlayerButtons(users) {
         }
 }
 
-function removePlayerButtons(name, challenger) {
-    var playerButtons = getElementById('currentUsers')
-}
+//This creates remove function if it does not exist (this is here because edge was not removing color choice from select menu)
+// Create Element.remove() function if not exist
+// if (!('remove' in Element.prototype)) {
+//     Element.prototype.remove = function() {
+//         if (this.parentNode) {
+//             this.parentNode.removeChild(this);
+//         }
+//     };
+// }
