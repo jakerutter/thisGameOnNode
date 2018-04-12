@@ -53,7 +53,7 @@ function  setChosenColorInLocalStorage(name, chosenColor) {
 //Changing this from compareNamesAndColors to setStorageNamesAndColorsForPlayerDisplay because name and color validation happens earlier than it did in pre-node version
 function setStorageNamesAndColorsForPlayerDisplay() {
     var name1 = getStorage("username");
-    var name2 = getStorage("challenger");
+    var name2 = getStorage("playerName2");
     var color1 = getStorage("playerColor1");
     var color2 = getStorage("playerColor2");
     //Don't need compareNames any longer since it is handled earlier in the program -- leaving it for now

@@ -103,7 +103,7 @@ io.sockets.on('connection', function (socket) {
   
     socket.on('challenge-accepted', function(name, challenger) {
       console.log(name + ' ACCEPTED challenge from ' + challenger);
-      io.emit('challenger-join-private', challenger);
+      io.emit('challenger-join-private', challenger, name);
       io.emit('update-users-challenge-accepted', name, challenger);
       //remove both players from users list as i dont want them visible in the main chat room. may need to rethink this later.
       users = users.filter(function(item) {

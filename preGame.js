@@ -62,25 +62,25 @@ function setup() {
         }
      });
 
-     socket.on('challenger-join-private', function(challenger) {
-      
-        var name = getStorage('username');
-        if (name === challenger) {
-            socket.emit('join-private', name);
+     socket.on('challenger-join-private', function(challenger, name) {
+        var username = getStorage('username');
+        if (username === challenger) {
+            setStorage("opponent", name);
+            socket.emit('join-private', username);
         }
      });
 
      socket.on('update-users-challenge-refused', function(name, challenger) {
         let msg = name + ' was challenged by ' + challenger + ' but refused the opportunity.';
         $('#messages').append($('<li>').text(msg));
-        // window.scrollTo(0, document.body.scrollHeight);
+        
         window.scrollTo(0, 0);
      });
 
      socket.on('update-users-challenge-accepted', function(name, challenger) {
         let msg = ' Challenge sent and accepted! ' + challenger + ' versus '+ name +'!';
         $('#messages').append($('<li>').text(msg));
-        // window.scrollTo(0, document.body.scrollHeight);
+        
         window.scrollTo(0, 0);
      });
 
@@ -94,7 +94,7 @@ function setup() {
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
         document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
         $("#playerColorSelect option[value="+chosenColor+"]").remove();
-        // remove($("#playerColorSelect option[value="+chosenColor+"]"));
+       
         setChosenColorInLocalStorage(name, chosenColor);
     });
 
@@ -287,12 +287,3 @@ function createPlayerButtons(users) {
         }
 }
 
-//This creates remove function if it does not exist (this is here because edge was not removing color choice from select menu)
-// Create Element.remove() function if not exist
-// if (!('remove' in Element.prototype)) {
-//     Element.prototype.remove = function() {
-//         if (this.parentNode) {
-//             this.parentNode.removeChild(this);
-//         }
-//     };
-// }
