@@ -49,46 +49,17 @@ function drawing() {
     
 }
 
-//MIGHT BE ABLE TO RIP THIS OUT. NUMBER OF PLAYERS WILL ALWAYS = 2
-function numberOfPlayersModal() {
-    clearStorage();
-    document.getElementById('startButton').classList.add('hidden');
-    document.getElementById('leftSideBar').classList.remove('hidden');
-    document.getElementById('numberOfPlayersModal').classList.remove('hidden');
-    $("#numberOfPlayersModal").modal();
-    var playerCount = document.getElementById('playerCount');
-    document.getElementById('numberOfPlayers').innerHTML = playerCount;
-    setStorage("numberOfPlayers", playerCount);
-
-}
-//MIGHT BE ABLE TO RIP THIS OUT. NUMBER OF PLAYERS WILL ALWAYS = 2
-function numberOfPlayersPlaying(el){
-    var playerCount = el.options[el.selectedIndex].value;
-    document.getElementById('numberOfPlayers').innerHTML = playerCount;
-    setStorage("numberOfPlayers", playerCount);
-    welcomeModal();
-}
-
 function welcomeModal() {
     setStorage('numberOfPlayers', 2);
-    
-    var playerCount = 2;
-  
-    //close out numberOfPlayersModal first
-    $.modal.close();
-    hideModalOverlays();
-    var playerName2 = getStorage("playerName2");
+    document.getElementById('welcomeModal').classList.remove('hidden');
     //removed an if check from the following setDefaultStorage call. It checked to see if playerName2 in local storage == null 
     setDefaultStorage();
-    
-
     // document.getElementById('welcomeModal').classList.remove('hidden');
     // $("#welcomeModal").modal();
     var chosenColor = document.getElementById('playerColorSelect');
     chosenColor.value = document.getElementById('playerColorSelection1').innerHTML;
     var nameField = document.getElementById('playerName');
     nameField.value = document.getElementById('playerNameSelection1').innerHTML;   
-   
 }
 
 function showWelcomeModal() {
@@ -236,6 +207,7 @@ function functionSwitch(switchData, id) {
     }
     
     var id = id;
+    performFunctionSwitch(switchData, id);
     if (switchData == "selectBase") {
         placePlayerBase(id);
         var baseLocationAccepted = compareBaseLocations(1);

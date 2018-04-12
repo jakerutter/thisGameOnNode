@@ -86,8 +86,9 @@ function setup() {
 
     socket.on('new-game-html', function(msg) {
         document.getElementById('chatroom').classList.add('hidden');
-        document.getElementById('welcomeModal').classList.remove('hidden');
+        // document.getElementById('welcomeModal').classList.remove('hidden');
         document.getElementById('defaultCanvas0').classList.add('hidden');
+        welcomeModal();
     });
 
     socket.on('first-color-has-been-selected', function(name, chosenColor) {
@@ -285,5 +286,9 @@ function createPlayerButtons(users) {
         } else {
            return;
         }
+}
+
+function  performFunctionSwitch(switchData, id) {
+      
 }
 
