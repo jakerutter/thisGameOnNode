@@ -6,7 +6,7 @@ function generateBackground() {
     //error here
     drawing();
     var command = "playIntro";
-    playSound(command);
+    // playSound(command);
 }
 
 function drawing() {
@@ -193,27 +193,24 @@ function createDivs(maxRow) {
       }
     }
     document.getElementById('gameAlertsSmall1').innerHTML = "Click where you would like to place your home base.";
-    
+    // document.getElementById('compareBaseLocationsButton').classList.remove('hidden');
 }
 
 function functionSwitch(switchData, id) {
     //will be called anytime a mazehole is clicked. Switchdata will determine what the state of the game is when called
     //via currentState.innerhtml and will then call the required function. This will allow the click event to persist
     //throughout gameplay yet perform as many different events as required throughout the game.
+    var username = getStorage('username');
     var state = document.getElementById('currentState').innerHTML;
-    var numberOfPlayers = getStorage("numberOfPlayers");
     if (state != 0){
         var switchData = state;
     }
     
     var id = id;
-    performFunctionSwitch(switchData, id);
+
     if (switchData == "selectBase") {
         placePlayerBase(id);
-        var baseLocationAccepted = compareBaseLocations(1);
-        if (baseLocationAccepted == true) {
-            document.getElementById('openTroopModalButton').classList.remove('hidden');
-        }
+        claimSelectedBase(id, username);
     }
     else if (switchData == "baseConfirmed") { 
         checkPlayerUnitLocation(1,id);
@@ -244,7 +241,6 @@ function placePlayerBase(id) {
         }
     updateVisibility(1);
     document.getElementById('gameAlertsSmall1').innerHTML = "";
-    document.getElementById('gameAlertsLarge1').innerHTML = "When you are happy with where your base is located, select your troops."
 }
 
 //this is where they will select the units that they have to start the game with
@@ -286,6 +282,7 @@ function checkTroopSelection() {
 }
 
 function hideTroopModal(bool) {
+        var name = getStorage('username');
         document.getElementById('openTroopModalButton').classList.add('hidden');
         $.modal.close();
         document.getElementById('troopModal').classList.remove('table');
@@ -293,6 +290,9 @@ function hideTroopModal(bool) {
         if (bool == true){
             gameAlertsSmall1.innerHTML = "";
             gameAlertsLarge1.innerHTML = "";
+            let playerTroopSelection1 = document.getElementById('playerTroopSelection1').innerHTML;
+            let troopsChosen = getTroopObjects(playerTroopSelection1);
+            addPlayerTroopsToGameObject(name, troopsChosen);
             var playerObj1 = createRequirementsForPlayerObject();
             placeTroopDisplayData(1);
             placePlayerUnits(playerObj1);
@@ -306,33 +306,33 @@ function hideTroopDetailModal() {
     troopModal();
 }
 
-function playSound(command) {
-    if (command == "playIntro") {
-        document.getElementById('spaceIntro').play();
-    }
-    else if (command == "validation") {
-        document.getElementById("wrongBuzz").play();
-    }
-    else if (command == "attack") {
-        document.getElementById("spaceShot").play();
-    }
-    else if (command == "move") {
-        document.getElementById("moveSound").play();
-    }
-    else if (command == "scan") {
-        document.getElementById("scanSound").play();
-    }
-    else if (command == "swarm") {
-        document.getElementById("swarmSound").play();
-    }
-    else if (command == "depthCharge") {
-        document.getElementById("depthChargeSound").play();
-    }
-    else if (command == "bomb") {
-        document.getElementById("bombSound").play();
-    }
+// function playSound(command) {
+//     if (command == "playIntro") {
+//         document.getElementById('spaceIntro').play();
+//     }
+//     else if (command == "validation") {
+//         document.getElementById("wrongBuzz").play();
+//     }
+//     else if (command == "attack") {
+//         document.getElementById("spaceShot").play();
+//     }
+//     else if (command == "move") {
+//         document.getElementById("moveSound").play();
+//     }
+//     else if (command == "scan") {
+//         document.getElementById("scanSound").play();
+//     }
+//     else if (command == "swarm") {
+//         document.getElementById("swarmSound").play();
+//     }
+//     else if (command == "depthCharge") {
+//         document.getElementById("depthChargeSound").play();
+//     }
+//     else if (command == "bomb") {
+//         document.getElementById("bombSound").play();
+//     }
     
-}
+// }
 
 //the constructor for what the main game object will look like.
 function playerObject(player,troops,base) {
@@ -365,7 +365,7 @@ function createRequirementsForPlayerObject(){
 }
 
 function placePlayerUnits(playerObj1) {
-    var id = playerObj1.base.Location;
+    var id = getStorage('playerBaseLocation1');
     var distance = 1;
     var player = 1;
     showAvailableTilesForAction(id, distance, player);  
@@ -421,31 +421,31 @@ function checkPlayerUnitLocation(player, id) {
     }
 }
 
-function clearBaseData() {
-    clearBaseDisplayData();
-    hideModalOverlays();
-    var locationObj = getStorage("locationObj");
-    document.getElementById(locationObj.base1).style.backgroundColor = "";
-    resetVisibiilityToNone();
-    document.getElementById('gameAlertsSmall1').classList.add('redText');
-    document.getElementById('gameAlertsSmall1').innerHTML = "Your bases were too close. Please reselect your base location.";
-    setStorage("playerBaseLocation1", "");
-    document.getElementById("currentState").innerHTML = "selectBase";
-    document.getElementById("openTroopModalButton").classList.add("hidden");
-    // clear playerTroopSelection1
-    // document.getElementById(playerTroopSelection1).innerHTML = "";
-    document.getElementById("troopDisplay").innerHTML = "";
-    document.getElementById('gameAlertsLarge1').innerHTML = "When you are happy with where your base is located, select your troops."
-    var state = document.getElementById("currentState").innerHTML;
-    if (state != "selectBase") {
-        state = "selectBase";
-    }
-}
+// function clearBaseData() {
+//     clearBaseDisplayData();
+//     hideModalOverlays();
+//     var locationObj = getStorage("locationObj");
+//     document.getElementById(locationObj.base1).style.backgroundColor = "";
+//     resetVisibiilityToNone();
+//     document.getElementById('gameAlertsSmall1').classList.add('redText');
+//     document.getElementById('gameAlertsSmall1').innerHTML = "Your bases were too close. Please reselect your base location.";
+//     setStorage("playerBaseLocation1", "");
+//     document.getElementById("currentState").innerHTML = "selectBase";
+//     document.getElementById("openTroopModalButton").classList.add("hidden");
+//     // clear playerTroopSelection1
+//     // document.getElementById(playerTroopSelection1).innerHTML = "";
+//     document.getElementById("troopDisplay").innerHTML = "";
+//     document.getElementById('gameAlertsLarge1').innerHTML = "When you are happy with where your base is located, select your troops."
+//     var state = document.getElementById("currentState").innerHTML;
+//     if (state != "selectBase") {
+//         state = "selectBase";
+//     }
+// }
 
-function clearBasesSendNotification() {
-    clearBaseData();
-    window2.clearBaseData();
-}
+// function clearBasesSendNotification() {
+//     clearBaseData();
+//     window2.clearBaseData();
+// }
  
 function triggerAlertModalForPlayerOne() {
     showAlertModal();
@@ -464,12 +464,6 @@ function triggerHideAlertModal(player) {
         hideAlertModal();
     }
     switchActivePlayer(player);
-}
-
-function hideAlertModal() {
-    $.modal.close();
-    document.getElementById("alertModal").classList.add("hidden");
-    //unhide or make available the next action
 }
 
 function updateTurnIndicator() {
@@ -500,8 +494,6 @@ function hideinGameTroopDetailModal() {
 }
 
 function makeVisibleOtherPlayersUnits(player) {
-    var numberOfPlayers = getStorage("numberOfPlayers");
-    if (numberOfPlayers == 2) {
     if (player == 1) {
     var playerObj = getStorage("playerObj"+player);
     var visibleTileArray = getStorage("visibleTiles"+player);
@@ -542,12 +534,11 @@ function makeVisibleOtherPlayersUnits(player) {
             }
         }    
     else {
-        var item = window2.makeVisibleOtherPlayersUnits(player);
-        return item;
+        document.getElementById('gameAlertsSmall1').innerHTML = "This function needs reworked [or removed]: makeVisibleOtherPlayersUnits.";
+        // var item = window2.makeVisibleOtherPlayersUnits(player);
+        // return item;
         }
-    } else {
-        //only one player is playing. for now do nothing
-        }
+
 }
 
 function updatePlayerOneTroopDisplayData(player) {
@@ -577,9 +568,9 @@ function updatePlayerOneTroopDisplayData(player) {
     }
 }
 
-function triggerPlayerTwoTroopDisplayData() {
-    window2.updatePlayerTwoTroopDisplayData(2);
-}
+// function triggerPlayerTwoTroopDisplayData() {
+//     window2.updatePlayerTwoTroopDisplayData(2);
+// }
 
 function updatePlayerOneBaseHealth(player, healthAfterAttack) {
     document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+healthAfterAttack +" / 200";

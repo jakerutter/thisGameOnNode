@@ -73,14 +73,12 @@ function setup() {
      socket.on('update-users-challenge-refused', function(name, challenger) {
         let msg = name + ' was challenged by ' + challenger + ' but refused the opportunity.';
         $('#messages').append($('<li>').text(msg));
-        
         window.scrollTo(0, 0);
      });
 
      socket.on('update-users-challenge-accepted', function(name, challenger) {
         let msg = ' Challenge sent and accepted! ' + challenger + ' versus '+ name +'!';
         $('#messages').append($('<li>').text(msg));
-        
         window.scrollTo(0, 0);
      });
 
@@ -92,18 +90,52 @@ function setup() {
     });
 
     socket.on('first-color-has-been-selected', function(name, chosenColor) {
+        var username = getStorage('username');
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
         document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
         $("#playerColorSelect option[value="+chosenColor+"]").remove();
-       
+        
         setChosenColorInLocalStorage(name, chosenColor);
+        if (username === name) {
+            var message = "You have chosen "+ chosenColor+". Please wait for your opponent to select their color.";
+            showAlertModal(message);
+        }
     });
 
     socket.on('second-color-has-been-selected', function(name, chosenColor) {
-        setChosenColorInLocalStorage(name, chosenColor);    
+        setChosenColorInLocalStorage(name, chosenColor);
+        hideAlertModal();    
     });
 
+    socket.on('first-base-has-been-selected', function(name) {
+        var username = getStorage('username');
+        if (name === username) {
+            var message = "You placed your base. Please wait for your opponent to place their base."
+            showAlertModal(message);
+            // document.getElementById('gameAlertsLarge1').innerHTML = "Base location submitted. Please wait for other player.";
+        } else {
+            setStorage('playerBaseLocation2', 'true');
+        }
+    });
 
+    socket.on('second-base-has-been-selected-fail', function() {
+        //clear selected base, remove alert modal, and inform them that they need to try again
+        hideAlertModal();
+        document.getElementById('gameAlertsLarge1').innerHTML = "Your bases were too close. Choose again.";
+        //reset all mazeholes to default background color of ghostwhite
+        for (var i=0; i<400; i++) {
+            document.getElementById(i).style.backgroundColor = "ghostwhite";
+        }
+    });
+
+    socket.on('second-base-has-been-selected-pass', function(){
+        console.log("2 bases chosen and locations PASS validation.");
+        hideAlertModal();
+        document.getElementById('gameAlertsLarge1').innerHTML = "";
+        document.getElementById('compareBaseLocationsButton').classList.add('hidden');
+        document.getElementById('openTroopModalButton').classList.remove('hidden');
+        
+    });
 
      //end of setup
 }
@@ -200,10 +232,6 @@ function hideModalOverlays() {
     }
 }
 
-function setFocusToNameBox() {
-    document.getElementById('playerName').focus();
-}
-
 function setStorage(key,info) {
     localStorage.setItem(key, JSON.stringify(info));
 }
@@ -238,6 +266,24 @@ function claimSelectedColor(chosenColor) {
         socket.emit('second-color-selected', name, chosenColor);
     } else {
         socket.emit('first-color-selected', name, chosenColor);
+    }
+   
+}
+
+function claimSelectedBase(location, username) {
+    console.log(username + " has selected this location for their base "+ location);
+    console.log("NOT COMPARED / VERIFIED");
+
+    var baseDataCoords = document.getElementById(location).dataset.coords;
+    var baseCoords = baseDataCoords.split(",");
+    var bx = Number(baseCoords[0]);
+    var by = Number(baseCoords[1]);
+
+    var otherPlayerBase = getStorage('playerBaseLocation2');
+    if ((otherPlayerBase == "") || (otherPlayerBase == null)) {
+        socket.emit('first-base-selected', location, username, bx,by);
+    } else {
+        socket.emit('second-base-selected', location, username, bx,by);
     }
    
 }
@@ -288,7 +334,9 @@ function createPlayerButtons(users) {
         }
 }
 
-function  performFunctionSwitch(switchData, id) {
-      
+function addPlayerTroopsToGameObject(name, troopArray) {
+    console.log('adding troops to game obj... ');
+    console.log(troopArray);
+    socket.emit('add-troops-to-gameObj', name, troopArray);
 }
 

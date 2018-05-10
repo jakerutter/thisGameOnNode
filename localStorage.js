@@ -53,7 +53,7 @@ function  setChosenColorInLocalStorage(name, chosenColor) {
 //Changing this from compareNamesAndColors to setStorageNamesAndColorsForPlayerDisplay because name and color validation happens earlier than it did in pre-node version
 function setStorageNamesAndColorsForPlayerDisplay() {
     var name1 = getStorage("username");
-    var name2 = getStorage("playerName2");
+    var name2 = getStorage("opponent");
     var color1 = getStorage("playerColor1");
     var color2 = getStorage("playerColor2");
     //Don't need compareNames any longer since it is handled earlier in the program -- leaving it for now
@@ -104,127 +104,6 @@ function compareColors(color1,color2) {
         }
     }
     else return true;
-}
-
-function compareBaseLocations(player) {
-    //Need to update this function to verify base1 and base2 are spaced apart adequately.
-        var base1 = getStorage("playerBaseLocation1");
-        var base2 = getStorage("playerBaseLocation2");
-    if ((base1 != "") && (base2 != "")){
-        var maxRow = 20;
-        var buffer = maxRow/5;
-        var locationObj = {
-            base1 : base1,
-            base2 : base2,
-            maxRow : maxRow,
-            buffer : buffer,
-            node1 : Number(base1),
-            node2 : Number(base2),
-            message : ""
-        };
-        setStorage("locationObj", locationObj);
-
-        var base1 = Number(base1);
-        var base2 = Number(base2);
-        var buffer = Number(locationObj.buffer);
-        var maxRow = Number(locationObj.maxRow);
-        //These variables are the "x,y" coordinates of the bases. Each mazehole div has these coords assigned
-        var firstBaseDataCoords = document.getElementById(base1).dataset.coords;
-        var secondBaseDataCoords = document.getElementById(base2).dataset.coords;
-        var base1Coords = firstBaseDataCoords.split(",");
-        var b1x = Number(base1Coords[0]);
-        var b1y = Number(base1Coords[1]);
-        var base2Coords = secondBaseDataCoords.split(",");
-        var b2x = Number(base2Coords[0]);
-        var b2y = Number(base2Coords[1]);
-            var top = isOnTopOfGrid(base1);
-            var left = isOnLeftOfGrid(base1);
-            var right = isOnRightOfGrid(base1);
-            var bottom = isOnBottomOfGrid(base1);
-            var cornerCheck = checkForCorner(top,left,right,bottom);
-        var xdiff = getXDifference(b1x,b2x);
-        var ydiff = getYDifference(b1y,b2y);
-            if ((xdiff > buffer) || (ydiff > buffer)) {
-                return true;
-            } else {
-                clearBasesSendNotification();
-            }
-        } else {
-            return true;
-        }
-}
-
-function verifyLocationForPlacement(player, id) {
-    //this function needs tested thoroughly
-    if (player != 1) {
-        var playerLoc = getStorage("playerObj2");
-    } else {
-        var playerLoc = getStorage("playerObj1");
-    }
-    var item = Number(playerLoc.base.Location);
-    var top = isOnTopOfGrid(item);
-    var left = isOnLeftOfGrid(item);
-    var right = isOnRightOfGrid(item);
-    var bottom = isOnBottomOfGrid(item);
-
-    var cornerCheck = checkForCorner(top,left,right,bottom);
-
-    if (cornerCheck == "topleft") {
-       if ((id == 1) || (id == maxRow) || (id == maxRow+1)) {
-           return true;
-       } else {
-           return false;
-       }
-    } else if (cornerCheck == "topright") {
-        if ((id == item-1) || (id == item+maxRow) || (id == item+maxRow-1)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (cornerCheck == "bottomright") {
-        if ((id == item-1) || (id == item-maxRow) || (id == item-maxRow-1)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (cornerCheck == "bottomleft") {
-        if ((id == item+1) || (id == item-maxRow) || (id == item-maxRow+1)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (cornerCheck == "top") {
-        if ((id == item+1) || (id == item-1) || (id == item+maxRow)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (cornerCheck == "left") {
-        if ((id == item+1) || (id == item-maxRow) || (id == item+maxRow)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (cornerCheck == "bottom") {
-        if ((id == item-1) || (id == item+1) || (item == item-maxRow)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (cornerCheck == "right") {
-        if ((id == item-1) || (id == item-maxRow) || (id == item+maxRow)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        if ((id == (item+1)) || (id == (item-1)) || (id == (item+maxRow)) || (id == (item-maxRow)) || 
-            (id == (item+maxRow-1)) || (id == (item+maxRow+1)) || (id == (item-maxRow-1)) || (id == (item-maxRow+1))) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }
 
 function isOnTopOfGrid(item) {
@@ -278,60 +157,28 @@ function checkForCorner(top,left,right,bottom) {
     }
 }
 
-function getXDifference(b1x,b2x) {
-    var larger = Math.max(b1x,b2x);
-    var smaller = Math.min(b1x,b2x);
-    var difference = Number(larger - smaller);
-    return difference;
-}
-
-function getYDifference(b1y,b2y) {
-    var larger = Math.max(b1y,b2y);
-    var smaller = Math.min(b1y,b2y);
-    var difference = Number(larger - smaller);
-    return difference;
-}
-  
 function placeNameDisplayData(player) {
     var color = getStorage("playerColor"+player);
-    if (player == 1) {
-        document.getElementById('playerNameDisplay').classList.add(color+"Text");
-        document.getElementById('playerNameDisplay').innerHTML = "Player: "+getStorage("playerName1");
-    } else {
-        document.getElementById('playerNameDisplay').classList.add(color+"Text");
-        document.getElementById('playerNameDisplay').innerHTML = "Player: "+getStorage("playerName2");
-    }
+    document.getElementById('playerNameDisplay').classList.add(color+"Text");
+    document.getElementById('playerNameDisplay').innerHTML = "Player: "+getStorage("playerName1");
+    //add highlight to the name label background if a dark color was chosen
     if ((color == "green") || (color == "blue") || (color == "indigo")) {
         document.getElementById('playerNameDisplay').classList.add('highlight');
     }
 }
 
-function placeTurnIndicatorData(player) {
-    var numberOfPlayers = getStorage("numberOfPlayers");
-    if (numberOfPlayers == 2) {
+function placeTurnIndicatorData() {
+    var name = getStorage("username");
     var playerTurn = getStorage("turnIndicator");
     if (playerTurn == ("Game Setup...")) {
         document.getElementById("turnIndicator").innerHTML = playerTurn;
         return;
     }
-    if (player == 1) {
-        if (playerTurn == "player1") {
+    else if (playerTurn == name) {
             document.getElementById("turnIndicator").innerHTML = "Your Turn";
         } else {
             document.getElementById("turnIndicator").innerHTML = "Their Turn";
         }
-    } else {
-        if (player == 2) {
-            if (playerTurn == "player2") {
-            document.getElementById("turnIndicator").innerHTML = "Your Turn";
-        } else {
-            document.getElementById("turnIndicator").innerHTML = "Their Turn";
-            }
-        }
-    }
-    } else {
-        //this is for single player games. no actions known atm.
-    }
 }
 
 function placeBaseDisplayData(player, playerObj) {
@@ -396,15 +243,16 @@ function updateTroopDisplayData(player) {
             "Location: "+ coords;
         }
     }
-    if (player == 1) {
-        triggerPlayerTwoTroopDisplayData();
-    } else {
-        triggerPlayerOneTroopDisplayData();
-    }
+    // if (player == 1) {
+    //     triggerPlayerTwoTroopDisplayData();
+    // } else {
+    //     triggerPlayerOneTroopDisplayData();
+    // }
 }
 
 function updateVisibility(player) {
-    var otherPlayer = (player == 1 ? 2 : 1);
+    let name = getStorage('username');
+    var otherPlayer = (player == name ? 2 : 1);
     // resetVisibiilityToNone();
     resetVisibilityForBase(player);
     resetVisibilityForTroops(player);
