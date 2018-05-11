@@ -29,6 +29,7 @@ var clientCount = 0;
 // Register a callback function to run when we have an individual connection
 // This is run for each individual user that connects
 io.sockets.on('connection', function (socket) {
+
   // We are given a websocket object in our function
   var userID;
   clientCount +=1;
@@ -79,6 +80,7 @@ io.sockets.on('connection', function (socket) {
       }
       users.push(userObj);
       console.log(users);
+      io.emit('usernames-taken', users);
       io.emit('all-users', users);
     });
   
@@ -157,6 +159,7 @@ io.sockets.on('connection', function (socket) {
       } else {
         //failed validation
         console.log("2 bases chosen. FAIL. RESET.");
+        //clear the values for base placement
         addBaseLocationToUserObj(privateUsers[0], "","", "", gameObj);
         addBaseLocationToUserObj(privateUsers[1], "","", "", gameObj);
         gameObj['stage'] = "TwoColorsSelected";
@@ -167,6 +170,15 @@ io.sockets.on('connection', function (socket) {
     socket.on('add-troops-to-gameObj', function(name, troopArray){
       addTroopsToGameObject(name, troopArray, gameObj);
     });
+
+    socket.on('update-troop-location', function(username, name, node){ 
+      //name is name of the troop
+      serverUpdateTroopLocation(username, name, node, gameObj);
+    });
+
+
+
+
     //end of socket.on section
   });
   
@@ -233,6 +245,7 @@ function createDefaultGameObject(name, challenger, gameObj) {
 function createDefaultUserObject(user) {
     user = {"name": user};
     user.color = "";
+    user.visibleTiles = [];
     user.base = {"health": 200, "loc":"", "xCoord":"", "yCoord":"", "xyCoord":""};
     user.troops = {};
     //Uncomment this to see the default user object generated when a challenge is accepted
@@ -299,8 +312,21 @@ function deleteFromGameObj(key, id, gameObj) {
   return gameObj;
 }
 
-function addTroopsToGameObject(name, troopArray, gameObj) {
-  gameObj[name].troops = troopArray;
-  console.log('troops added to gameObj for '+name);
+function addTroopsToGameObject(username, troopArray, gameObj) {
+  //converting troopArray to an object of troop Objects
+  for (var i=0; i<troopArray.length; i++){
+    let troopName = troopArray[i].Name;
+    gameObj[username].troops[troopName] = troopArray[i];
+  }
+  
+  console.log('troops added to gameObj for '+username);
   console.log(JSON.stringify(gameObj, null, 4));
+  return gameObj;
+}
+
+function serverUpdateTroopLocation(username, name, node, gameObj) {
+  //name is the name of the troop being updated
+    gameObj[username].troops[name].Location = node;
+    console.log(JSON.stringify(gameObj, null, 4));
+    console.log(username + " moved their "+ name + " to "+ node);
 }

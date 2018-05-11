@@ -205,25 +205,25 @@ function functionSwitch(switchData, id) {
     if (state != 0){
         var switchData = state;
     }
-    
     var id = id;
 
-    if (switchData == "selectBase") {
-        placePlayerBase(id);
-        claimSelectedBase(id, username);
-    }
-    else if (switchData == "baseConfirmed") { 
-        checkPlayerUnitLocation(1,id);
-    }
-    else if (switchData == "troopsPlaced") {
-        progressToFirstMoveOrPause(1);
-    }
-    else if (switchData == "gameTime") {
-        performGameAction(1,id);
+        if (switchData == "selectBase") {
+            placePlayerBase(id);
+            claimSelectedBase(id, username);
+        }
+        else if (switchData == "baseConfirmed") { 
+            checkPlayerUnitLocation(1,id);
+        }
+        else if (switchData == "troopsPlaced") {
+            progressToFirstMoveOrPause(1);
+        }
+        else if (switchData == "gameTime") {
+            performGameAction(1,id);
     }
 }
 
 function placePlayerBase(id) {
+    var name = getStorage('username');
     var playerColor = document.getElementById('playerColorSelection1').innerHTML;
     var homeBase = document.getElementById(id);
     var playerBaseCheck = document.getElementById('playerBaseLocation1').innerHTML;
@@ -239,7 +239,7 @@ function placePlayerBase(id) {
         homeBase.style.backgroundColor = playerColor;
         setStorage("playerBaseLocation1", id);
         }
-    updateVisibility(1);
+    updateVisibility(name);
     document.getElementById('gameAlertsSmall1').innerHTML = "";
 }
 
@@ -395,10 +395,12 @@ function checkPlayerUnitLocation(player, id) {
         document.getElementById(node).innerHTML = "<img id=player1"+""+name+""+" src=Assets/"+name+color+".png></img>";
         document.getElementById(pictureID).style.height = '100%';
         document.getElementById(pictureID).style.width = '100%';
+        //send troop location to server
+        updateTroopLocation(name, node);
         setStorage("playerObj1", playerObj);
         resetVisibilityForTroops(1);
         makeVisibleOtherPlayersUnits(1);
-        makeVisibleOtherPlayersUnits(2);
+        // makeVisibleOtherPlayersUnits(2);
         //Testing tthis: placing troop data again once unitLocation is updated:
         updateTroopDisplayData(player); 
         var troopsToPlace = getStorage("troopsToPlace1");
@@ -420,6 +422,7 @@ function checkPlayerUnitLocation(player, id) {
         document.getElementById('gameAlertsSmall1').innerHTML = "You must place your units in tiles adjacent to your base.";
     }
 }
+
 
 // function clearBaseData() {
 //     clearBaseDisplayData();
@@ -447,24 +450,24 @@ function checkPlayerUnitLocation(player, id) {
 //     window2.clearBaseData();
 // }
  
-function triggerAlertModalForPlayerOne() {
-    showAlertModal();
-    window2.hideAlertModal();
-}
+// function triggerAlertModalForPlayerOne() {
+//     showAlertModal();
+//     window2.hideAlertModal();
+// }
 
-function triggerAlertModalForPlayerTwo() {
-   window2.showAlertModal();
-   hideAlertModal();
-}
+// function triggerAlertModalForPlayerTwo() {
+//    window2.showAlertModal();
+//    hideAlertModal();
+// }
 
-function triggerHideAlertModal(player) {
-    if (player == 1) {
-        window2.hideAlertModal();
-    } else {
-        hideAlertModal();
-    }
-    switchActivePlayer(player);
-}
+// function triggerHideAlertModal(player) {
+//     if (player == 1) {
+//         window2.hideAlertModal();
+//     } else {
+//         hideAlertModal();
+//     }
+//     switchActivePlayer(player);
+// }
 
 function updateTurnIndicator() {
     document.getElementById("currentState").innerHTML = "gameTime";
@@ -494,6 +497,7 @@ function hideinGameTroopDetailModal() {
 }
 
 function makeVisibleOtherPlayersUnits(player) {
+    var player = convertPlayerToNumber(player);
     if (player == 1) {
     var playerObj = getStorage("playerObj"+player);
     var visibleTileArray = getStorage("visibleTiles"+player);
@@ -593,6 +597,7 @@ function informPlayerAllUnitsOnCooldownCausedTurnToPass(player, activeInfo) {
 }
 
 function signalGameLoss(player) {
+    var player = convertPlayerToNumber(player);
     var otherPlayer = (player == 1 ? 2 : 1);
     hideModalOverlays();
     if (!document.getElementById('alertModal').classList.contains('hidden')){
@@ -610,3 +615,8 @@ function signalGameLoss(player) {
     document.getElementById("defeatVideo").classList.remove("hidden");
 }
 
+function convertPlayerToNumber(player) {
+    let name = getStorage('username');
+    var playerValue = (player === name ? 1 : 2);
+    return playerValue;
+}

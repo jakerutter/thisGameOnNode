@@ -50,7 +50,10 @@ function setup() {
 
      socket.on('check-challenge-response', function(name, challenged) {
         var username = getStorage('username');
-        setStorage('challenger', name);
+        //save challenger to local storage for the challenger and challenged parties
+        if ((username === challenged) || (username === name)) {
+            setStorage('challenger', name);
+        }
         if (username === challenged) {
             //show challenge modal
             console.log('I, ' + challenged + ' have been challenged by ' + name);
@@ -71,6 +74,11 @@ function setup() {
      });
 
      socket.on('update-users-challenge-refused', function(name, challenger) {
+        //clear challenger from localstorage since the challenge was deined
+        var challengerStored = getStorage('challenger');
+        if (challengerStored != "") {
+            setStorage('challenger', '');
+        }
         let msg = name + ' was challenged by ' + challenger + ' but refused the opportunity.';
         $('#messages').append($('<li>').text(msg));
         window.scrollTo(0, 0);
@@ -114,13 +122,19 @@ function setup() {
             showAlertModal(message);
             // document.getElementById('gameAlertsLarge1').innerHTML = "Base location submitted. Please wait for other player.";
         } else {
+            let playerName = checkPlayersInChat();
+            if (playerName == false) {
             setStorage('playerBaseLocation2', 'true');
+            }
         }
     });
 
     socket.on('second-base-has-been-selected-fail', function() {
+        var name = getStorage('username');
+        var users = getStorage('users');
         //clear selected base, remove alert modal, and inform them that they need to try again
         hideAlertModal();
+        if (username )
         document.getElementById('gameAlertsLarge1').innerHTML = "Your bases were too close. Choose again.";
         //reset all mazeholes to default background color of ghostwhite
         for (var i=0; i<400; i++) {
@@ -133,7 +147,7 @@ function setup() {
         hideAlertModal();
         document.getElementById('gameAlertsLarge1').innerHTML = "";
         document.getElementById('compareBaseLocationsButton').classList.add('hidden');
-        document.getElementById('openTroopModalButton').classList.remove('hidden');
+        revealOpenTroopModalButton();
         
     });
 
@@ -267,7 +281,6 @@ function claimSelectedColor(chosenColor) {
     } else {
         socket.emit('first-color-selected', name, chosenColor);
     }
-   
 }
 
 function claimSelectedBase(location, username) {
@@ -340,3 +353,16 @@ function addPlayerTroopsToGameObject(name, troopArray) {
     socket.emit('add-troops-to-gameObj', name, troopArray);
 }
 
+function revealOpenTroopModalButton() {
+    //Only want to show this button to players in the active game. their name should not be found in users array (they are extracted when join private)
+    var name = getStorage('username');
+    let playerNames = getStorage('users');
+    if (playerNames.includes(name) == false) {
+        document.getElementById('openTroopModalButton').classList.remove('hidden');
+    }
+}
+
+function updateTroopLocation(name, node) {
+    var username = getStorage('username');
+    socket.emit('update-troop-location', username, name, node);
+}

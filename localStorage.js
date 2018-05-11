@@ -46,7 +46,10 @@ function  setChosenColorInLocalStorage(name, chosenColor) {
     if (username == name) {
         setStorage("playerColor1", chosenColor);
     } else {
-        setStorage("playerColor2", chosenColor)
+        let playerName = checkPlayersInChat();
+        if (playerName == false) {
+        setStorage("playerColor2", chosenColor);
+        }
     }
 }
 
@@ -251,13 +254,12 @@ function updateTroopDisplayData(player) {
 }
 
 function updateVisibility(player) {
-    let name = getStorage('username');
-    var otherPlayer = (player == name ? 2 : 1);
+    var player = convertPlayerToNumber(player);
     // resetVisibiilityToNone();
     resetVisibilityForBase(player);
     resetVisibilityForTroops(player);
     makeVisibleOtherPlayersUnits(player);
-    makeVisibleOtherPlayersUnits(otherPlayer);
+    // makeVisibleOtherPlayersUnits(otherPlayer);
 }
 
 function resetVisibiilityToNone(){
@@ -270,10 +272,12 @@ function resetVisibiilityToNone(){
 }
 
 function resetVisibilityForBase(player) {
+    if (player === 2) { return; }
     resetVisibiilityToNone();
     var base = getStorage("playerBaseLocation"+player);
     //ensure base isn't empty
     if (base != "") {
+    let tiles = [];
     var coords = document.getElementById(base).dataset.coords;
     var baseCoords = coords.split(",");
     var b1x = Number(baseCoords[0]);
@@ -282,10 +286,12 @@ function resetVisibilityForBase(player) {
      for (var i=Math.max((b1x-2),0); i<Math.min((b1x+3),maxRow); i++) {
         for (var j=Math.max((b1y-2),0); j<Math.min((b1y+3),maxRow); j++) {
             var id = convertCoordsToId(i,j);
+            tiles.push(id);
             document.getElementById(id).classList.remove("not-visible");
             document.getElementById(id).classList.add("visible");
             }
         }
+        setStorage('visibleTiles1', tiles);
     }
 }
 
@@ -449,6 +455,79 @@ function clearAvailableTilesForAction(player) {
     }
     //clear this array to free up local storage between each move
     setStorage("tilesForMove"+player, "");
+}
+
+function verifyLocationForPlacement(player, id) {
+    //this function needs tested thoroughly
+    if (player != 1) {
+        var playerLoc = getStorage("playerObj2");
+    } else {
+        var playerLoc = getStorage("playerObj1");
+    }
+    var item = Number(playerLoc.base.Location);
+    var top = isOnTopOfGrid(item);
+    var left = isOnLeftOfGrid(item);
+    var right = isOnRightOfGrid(item);
+    var bottom = isOnBottomOfGrid(item);
+
+    var cornerCheck = checkForCorner(top,left,right,bottom);
+
+    if (cornerCheck == "topleft") {
+       if ((id == 1) || (id == maxRow) || (id == maxRow+1)) {
+           return true;
+       } else {
+           return false;
+       }
+    } else if (cornerCheck == "topright") {
+        if ((id == item-1) || (id == item+maxRow) || (id == item+maxRow-1)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (cornerCheck == "bottomright") {
+        if ((id == item-1) || (id == item-maxRow) || (id == item-maxRow-1)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (cornerCheck == "bottomleft") {
+        if ((id == item+1) || (id == item-maxRow) || (id == item-maxRow+1)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (cornerCheck == "top") {
+        if ((id == item+1) || (id == item-1) || (id == item+maxRow)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (cornerCheck == "left") {
+        if ((id == item+1) || (id == item-maxRow) || (id == item+maxRow)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (cornerCheck == "bottom") {
+        if ((id == item-1) || (id == item+1) || (item == item-maxRow)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (cornerCheck == "right") {
+        if ((id == item-1) || (id == item-maxRow) || (id == item+maxRow)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        if ((id == (item+1)) || (id == (item-1)) || (id == (item+maxRow)) || (id == (item-maxRow)) || 
+            (id == (item+maxRow-1)) || (id == (item+maxRow+1)) || (id == (item-maxRow-1)) || (id == (item-maxRow+1))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 function progressToFirstMoveOrPause(player) {
@@ -635,6 +714,7 @@ function performGameAction(player, id) {
 }
 
 function sendTurnActionInfo(moveType, player) {
+    var player = convertPlayerToNumber(player);
     var activeUnit = getStorage("activeTroop");
     var name = activeUnit.Name;
     var otherPlayer = (player == 1 ? 2 : 1);
@@ -724,6 +804,7 @@ function handlePlayerMove(player, id) {
 }
 
 function processTurn(player) {
+    var player = convertPlayerToNumber(player);
     var playerObj = getStorage("playerObj"+player);
     document.getElementById("gameAlertsSmall"+player).classList.remove("redText");
     document.getElementById("gameAlertsSmall"+player).innerHTML = "";
@@ -758,6 +839,7 @@ function getOtherPlayerTroopImages(player, loc) {
 }
 
 function handlePlayerAttack(player, id) {
+    var player = convertPlayerToNumber(player);
     //get variables needed
     var otherPlayer = (player == 1 ? 2 : 1);
     var playerObj = getStorage("playerObj" + player);
@@ -864,6 +946,7 @@ function applyDamageForAttack(damage, targetedEnemy, otherPlayer) {
 }
 
 function determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player) {
+    var player = convertPlayerToNumber(player);
     var otherPlayer = (player == 1 ? 2 : 1);
     if (targetedEnemy.Name == "Base") {
         //this will trigger a win for attacking player
@@ -996,6 +1079,17 @@ function signalGameOver(player) {
         window2.signalGameLoss(player);
     } else if (player == 2) {
         window1.signalGameLoss(player);
+    } 
+}
+
+function checkPlayersInChat() {
+    let playerNames = getStorage('users');
+    let username = getStorage('username');
+    if (playerNames.includes(username) == false) {
+        //players are not in chat - must be in game
+        return false;
+    } else {
+        //true, players are in chat -- so not in game
+        return true;
     }
-    
 }

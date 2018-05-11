@@ -1109,6 +1109,7 @@ function SwarmUniqueMove(player, id) {
 }
 
 function applySwarmDamage(player, damagedArray) {
+    var player = convertPlayerToNumber(player);
     var otherPlayer = (player == 1 ? 2 : 1);
     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
 
@@ -1177,6 +1178,7 @@ function DepthChargeUniqueMove(player, id) {
 }
 
 function applyDepthChargeStun(player, stunnedArray) {
+    var player = convertPlayerToNumber(player);
     var otherPlayer = (player == 1 ? 2 : 1);
     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
 
@@ -1228,6 +1230,7 @@ function BombardierUniqueMove(player, id) {
 }
 
 function applyBombardierDamage(player, damagedArray) {
+    var player = convertPlayerToNumber(player);
     var otherPlayer = (player == 1 ? 2 : 1);
     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
 

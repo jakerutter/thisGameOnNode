@@ -16,8 +16,6 @@ function hideAlertModal() {
 }
 
 function switchActivePlayer(player) {
-    var numberOfPlayers = getStorage("numberOfPlayers");
-    if (numberOfPlayers == 2) {
     // var activePlayer = getStorage("turnIndicator");
     // var activePlayer = player;
     setStorage("alertMessage", "Please wait for your turn.");
@@ -31,13 +29,10 @@ function switchActivePlayer(player) {
         alert("Warning function alertModalForNotActivePlayer does not have valid activePlayer");
     }
     updateTurnIndicator();
-    } else {
-        //for single player modes
-        //Computer could process it's turn right here.
-    }
 }
 
 function addActionInfoToAlertModal(actionInfo, player) {
+    var player = convertPlayerToNumber(player);
     var otherPlayer = (player == 1 ? 2 : 1);
     var turnDidNotSwitch = getStorage("allCoolDowns");
    if (turnDidNotSwitch == "false") {
