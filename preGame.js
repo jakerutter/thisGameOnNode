@@ -97,57 +97,58 @@ function setup() {
         welcomeModal();
     });
 
-    socket.on('first-color-has-been-selected', function(name, chosenColor) {
+    socket.on('first-color-has-been-selected', function(name, chosenColor, privateUsers) {
         var username = getStorage('username');
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
         document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
         $("#playerColorSelect option[value="+chosenColor+"]").remove();
         
-        setChosenColorInLocalStorage(name, chosenColor);
+        setChosenColorInLocalStorage(name, chosenColor, privateUsers);
         if (username === name) {
             var message = "You have chosen "+ chosenColor+". Please wait for your opponent to select their color.";
             showAlertModal(message);
         }
     });
 
-    socket.on('second-color-has-been-selected', function(name, chosenColor) {
-        setChosenColorInLocalStorage(name, chosenColor);
+    socket.on('second-color-has-been-selected', function(name, chosenColor, privateUsers) {
+        setChosenColorInLocalStorage(name, chosenColor, privateUsers);
         hideAlertModal();    
     });
 
-    socket.on('first-base-has-been-selected', function(name) {
+    socket.on('first-base-has-been-selected', function(name, privateUsers) {
         var username = getStorage('username');
         if (name === username) {
             var message = "You placed your base. Please wait for your opponent to place their base."
             showAlertModal(message);
             // document.getElementById('gameAlertsLarge1').innerHTML = "Base location submitted. Please wait for other player.";
         } else {
-            let playerName = checkPlayersInChat();
-            if (playerName == false) {
+            let playerName = checkPrivateUsers(privateUsers);
+            if (playerName === true) {
             setStorage('playerBaseLocation2', 'true');
             }
         }
     });
 
-    socket.on('second-base-has-been-selected-fail', function() {
+    socket.on('second-base-has-been-selected-fail', function(privateUsers) {
         var name = getStorage('username');
         var users = getStorage('users');
         //clear selected base, remove alert modal, and inform them that they need to try again
         hideAlertModal();
-        if (username )
+        let playerName = checkPrivateUsers(privateUsers);
+        if (playerName === true) {
         document.getElementById('gameAlertsLarge1').innerHTML = "Your bases were too close. Choose again.";
         //reset all mazeholes to default background color of ghostwhite
         for (var i=0; i<400; i++) {
             document.getElementById(i).style.backgroundColor = "ghostwhite";
+            }
         }
     });
 
-    socket.on('second-base-has-been-selected-pass', function(){
+    socket.on('second-base-has-been-selected-pass', function(privateUsers){
         console.log("2 bases chosen and locations PASS validation.");
         hideAlertModal();
         document.getElementById('gameAlertsLarge1').innerHTML = "";
-        document.getElementById('compareBaseLocationsButton').classList.add('hidden');
-        revealOpenTroopModalButton();
+        revealOpenTroopModalButton(privateUsers);
         
     });
 
@@ -205,7 +206,7 @@ function checkforEnterKeyPress(identifier,e) {
             return false;
         } else if (identifier == "chat") {
             sendChatMessage();
-            // return false;
+            return false;
         }
         //the key pressed was not enter, exit
         } else {
@@ -225,9 +226,8 @@ function sendChatMessage() {
         console.log(username +' is sending message: ' + chatmessage);
         var data = username+" said: "+ chatmessage;
         socket.emit('send-message', data);
-        $('#m').val('');
     }
-
+    $('#m').val('');
 }
 
 function hideModalOverlays() {
@@ -315,7 +315,7 @@ function createPlayerButtons(users) {
 
     if (users != "") {
         for(var n=0; n<users.length; n++){
-            console.log(users[n].nickname);
+            // console.log(users[n].nickname);
             userArray.push(users[n].nickname);
             let button = document.createElement("button");
             button.innerHTML = users[n].nickname;
@@ -354,15 +354,21 @@ function addPlayerTroopsToGameObject(name, troopArray) {
 }
 
 function revealOpenTroopModalButton() {
-    //Only want to show this button to players in the active game. their name should not be found in users array (they are extracted when join private)
+    //check somewhere to determine if the players are in the game
     var name = getStorage('username');
     let playerNames = getStorage('users');
-    if (playerNames.includes(name) == false) {
+    if (playerNames.includes(name) == true) {
         document.getElementById('openTroopModalButton').classList.remove('hidden');
+        document.getElementById('currentState').innerHTML = "noCLick";
     }
 }
 
 function updateTroopLocation(name, node) {
     var username = getStorage('username');
     socket.emit('update-troop-location', username, name, node);
+}
+
+function saveVisibletilesToServer(username, visibleTileArray) {
+    console.log('updating server with most recent visible tiles');
+    socket.emit('update-visible-tiles', username, visibleTileArray);
 }

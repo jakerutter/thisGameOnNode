@@ -87,8 +87,8 @@ io.sockets.on('connection', function (socket) {
     // Send a message
     socket.on('send-message', function(data) {
       console.log(data);
-      socket.broadcast.emit('message-received', data);
-      // io.emit('message-received', data);
+      // socket.broadcast.emit('message-received', data);
+      io.emit('message-received', data);
     });
   
     // Send a 'like' to the user of your choice
@@ -129,13 +129,13 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('first-color-selected', function(name, chosenColor) {
       console.log(name + " has chosen "+ chosenColor +" as their color.");
-      io.emit('first-color-has-been-selected', name, chosenColor);
+      io.emit('first-color-has-been-selected', name, chosenColor, privateUsers);
       addColorToUserObj(name, chosenColor, gameObj);
     });
 
     socket.on('second-color-selected', function(name, chosenColor) {
       console.log(name + " has chosen "+ chosenColor +" as their color.");
-      io.emit('second-color-has-been-selected', name, chosenColor);
+      io.emit('second-color-has-been-selected', name, chosenColor, privateUsers);
       addColorToUserObj(name, chosenColor, gameObj);
     });
   
@@ -143,7 +143,7 @@ io.sockets.on('connection', function (socket) {
       console.log(name + " has selected this location for their base "+ location);
       console.log("1st NOT COMPARED / VERIFIED");
       addBaseLocationToUserObj(name, location, bx, by, gameObj);
-      io.emit('first-base-has-been-selected', name);
+      io.emit('first-base-has-been-selected', name, privateUsers);
     });
 
     socket.on('second-base-selected', function(location, name, bx, by) {
@@ -155,7 +155,9 @@ io.sockets.on('connection', function (socket) {
       if (basesAccepted) {
         //passed validation
         console.log("2 bases chosen. PASS");
-        io.emit('second-base-has-been-selected-pass');
+        console.log(privateUsers + " <----------- private users");
+    
+        io.emit('second-base-has-been-selected-pass', privateUsers);
       } else {
         //failed validation
         console.log("2 bases chosen. FAIL. RESET.");
@@ -163,7 +165,7 @@ io.sockets.on('connection', function (socket) {
         addBaseLocationToUserObj(privateUsers[0], "","", "", gameObj);
         addBaseLocationToUserObj(privateUsers[1], "","", "", gameObj);
         gameObj['stage'] = "TwoColorsSelected";
-        io.emit('second-base-has-been-selected-fail');
+        io.emit('second-base-has-been-selected-fail', privateUsers);
       }
     });
 
@@ -176,7 +178,10 @@ io.sockets.on('connection', function (socket) {
       serverUpdateTroopLocation(username, name, node, gameObj);
     });
 
-
+    socket.on('update-visible-tiles', function(username, visibleTileArray){
+      //call function to update gameObj with most recent visible tiles for player
+      serverUpdateVisibleTiles(username, visibleTileArray, gameObj);
+    });
 
 
     //end of socket.on section
@@ -318,7 +323,6 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
     let troopName = troopArray[i].Name;
     gameObj[username].troops[troopName] = troopArray[i];
   }
-  
   console.log('troops added to gameObj for '+username);
   console.log(JSON.stringify(gameObj, null, 4));
   return gameObj;
@@ -327,6 +331,44 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
 function serverUpdateTroopLocation(username, name, node, gameObj) {
   //name is the name of the troop being updated
     gameObj[username].troops[name].Location = node;
-    console.log(JSON.stringify(gameObj, null, 4));
+    // console.log(JSON.stringify(gameObj, null, 4));
     console.log(username + " moved their "+ name + " to "+ node);
+    return gameObj;
+}
+
+function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
+  //server update the visible tiles for a specific player
+  gameObj[username].visibleTiles = visibleTileArray;
+  makeVisibleOtherPlayersUnits(username, visibleTileArray);
+  // console.log(JSON.stringify(gameObj, null, 4));
+  console.log(visibleTileArray);
+  return gameObj;
+}
+
+function makeVisibleOtherPlayersUnits(username, visibleTileArray) {
+
+  //this will add to the map the other player's units & base
+  // if ((otherPlayerObj != "") && (visibleTileArray != "")) {
+  //     for (var k=0; k<visibleTileArray.length; k++) {
+  //         for (var i=0; i<otherPlayerObj.troops.length; i++) {
+  //             if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
+  //                 makeKnown.push(otherPlayerObj.troops[i].Location);
+  //             }
+  //             setStorage("makeKnown"+player, makeKnown);
+  //         }
+  //         //if visible this will show the other players base
+  //         if (otherPlayerObj.base.Location == visibleTileArray[k]) {
+  //             document.getElementById(otherPlayerObj.base.Location).style.backgroundColor = otherPlayerObj.player.Color;
+  //             } 
+  //         }
+  //     }
+  //     //this part will fetch the innerHTML of divs that have units and return it to active dom
+  //     if (makeKnown.length > 0) {
+  //         for (var g=0; g<makeKnown.length; g++){
+  //             let loc = makeKnown[g];
+  //             getOtherPlayerTroopImages(player, loc);
+  //             }
+  //         }
+
+
 }
