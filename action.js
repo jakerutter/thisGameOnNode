@@ -219,7 +219,10 @@ function functionSwitch(switchData, id) {
         }
         else if (switchData == "gameTime") {
             performGameAction(1,id);
-    }
+        }
+        else if (switchData == "noClick") {
+            return;
+        }
 }
 
 function placePlayerBase(id) {
@@ -245,8 +248,8 @@ function placePlayerBase(id) {
 
 //this is where they will select the units that they have to start the game with
 function troopModal() {
-    document.getElementById('currentState').innerHTML = "baseConfirmed";
-    setStorage("state", "baseConfirmed");
+    // document.getElementById('currentState').innerHTML = "baseConfirmed";
+    // setStorage("state", "baseConfirmed");
     document.getElementById('troopModal').classList.add('table');
     document.getElementById('troopModal').classList.remove('hidden');
     $("#troopModal").modal();
@@ -269,6 +272,9 @@ function checkTroopSelection() {
     if (troops.length == 3) {
         playerTroopSelection1.innerHTML = troops;
         hideTroopModal(true);
+        //set current state to "baseConfirmed" back from "noClick" so users can place their units
+        document.getElementById('currentState').innerHTML = "baseConfirmed";
+        setStorage("state", "baseConfirmed");
     }
      if (troops.length == 0) {
         troopModalAlert.innerHTML = "You must make a selection before proceeding.";      
@@ -365,6 +371,7 @@ function createRequirementsForPlayerObject(){
 }
 
 function placePlayerUnits(playerObj1) {
+    //this function handles the initial placement of units at game
     var id = getStorage('playerBaseLocation1');
     var distance = 1;
     var player = 1;
@@ -399,9 +406,10 @@ function checkPlayerUnitLocation(player, id) {
         updateTroopLocation(name, node);
         setStorage("playerObj1", playerObj);
         resetVisibilityForTroops(1);
-        makeVisibleOtherPlayersUnits(1);
+        //Following two lines need defined in node version --
+        // makeVisibleOtherPlayersUnits(1);
         // makeVisibleOtherPlayersUnits(2);
-        //Testing tthis: placing troop data again once unitLocation is updated:
+        //Testing this: placing troop data again once unitLocation is updated:
         updateTroopDisplayData(player); 
         var troopsToPlace = getStorage("troopsToPlace1");
         troopsToPlace += 1;
@@ -479,71 +487,60 @@ function updateTurnIndicator() {
     window2.document.getElementById("gameAlertsLarge2").innerHTML = "Click on the picture [right menu] of the unit you'd like to activate.";
 }
 
-function getTroopPlacementAndImages(player, loc) {
-    if (player == 1) {
-        return window2.getTroopPlacementAndImages(player, loc);
-    } else if (player == 2){
-        var troopLocAndPic = document.getElementById(loc).innerHTML;
-        return troopLocAndPic;
-    } else {
-        alert("invalid Player value in Action.js getTroopPlacementAndImages. Expected 1 or 2.");
-    }
-}
-
 function hideinGameTroopDetailModal() {
     $.modal.close();
     document.getElementById('troopDetailModal').classList.remove('table');
     hideModalOverlays();
 }
 
-function makeVisibleOtherPlayersUnits(player) {
-    var player = convertPlayerToNumber(player);
-    if (player == 1) {
-    var playerObj = getStorage("playerObj"+player);
-    var visibleTileArray = getStorage("visibleTiles"+player);
-    var otherPlayer = (player == 1 ? 2 : 1);
-    var otherPlayerObj = getStorage("playerObj"+otherPlayer);
-    var makeKnown = getStorage("makeKnown"+player);
-    //because this function will cause duplicates I must clear everything
-    //found within makeKnown from the previous turn
-    if (makeKnown != null) {
-    for (var z=0; z<makeKnown.length; z++) {
-        document.getElementById(makeKnown[z]).innerHTML = "";     
-        }
-        makeKnown = [];
-    } else {
-        makeKnown = [];
-    }
-    //this will add to the map the other player's units & base
-    if ((otherPlayerObj != "") && (visibleTileArray != "")) {
-        for (var k=0; k<visibleTileArray.length; k++) {
-            for (var i=0; i<otherPlayerObj.troops.length; i++) {
-                if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
-                    makeKnown.push(otherPlayerObj.troops[i].Location);
-                }
-                setStorage("makeKnown"+player, makeKnown);
-            }
-            //if visible this will show the other players base
-            if (otherPlayerObj.base.Location == visibleTileArray[k]) {
-                document.getElementById(otherPlayerObj.base.Location).style.backgroundColor = otherPlayerObj.player.Color;
-                } 
-            }
-        }
-        //this part will fetch the innerHTML of divs that have units and return it to active dom
-        if (makeKnown.length > 0) {
-            for (var g=0; g<makeKnown.length; g++){
-                let loc = makeKnown[g];
-                getOtherPlayerTroopImages(player, loc);
-                }
-            }
-        }    
-    else {
-        document.getElementById('gameAlertsSmall1').innerHTML = "This function needs reworked [or removed]: makeVisibleOtherPlayersUnits.";
-        // var item = window2.makeVisibleOtherPlayersUnits(player);
-        // return item;
-        }
+// function makeVisibleOtherPlayersUnits(player) {
+//     var player = convertPlayerToNumber(player);
+//     if (player == 1) {
+//     var playerObj = getStorage("playerObj"+player);
+//     var visibleTileArray = getStorage("visibleTiles"+player);
+//     var otherPlayer = (player == 1 ? 2 : 1);
+//     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
+//     var makeKnown = getStorage("makeKnown"+player);
+//     //because this function will cause duplicates I must clear everything
+//     //found within makeKnown from the previous turn
+//     if (makeKnown != null) {
+//     for (var z=0; z<makeKnown.length; z++) {
+//         document.getElementById(makeKnown[z]).innerHTML = "";     
+//         }
+//         makeKnown = [];
+//     } else {
+//         makeKnown = [];
+//     }
+//     //this will add to the map the other player's units & base
+//     if ((otherPlayerObj != "") && (visibleTileArray != "")) {
+//         for (var k=0; k<visibleTileArray.length; k++) {
+//             for (var i=0; i<otherPlayerObj.troops.length; i++) {
+//                 if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
+//                     makeKnown.push(otherPlayerObj.troops[i].Location);
+//                 }
+//                 setStorage("makeKnown"+player, makeKnown);
+//             }
+//             //if visible this will show the other players base
+//             if (otherPlayerObj.base.Location == visibleTileArray[k]) {
+//                 document.getElementById(otherPlayerObj.base.Location).style.backgroundColor = otherPlayerObj.player.Color;
+//                 } 
+//             }
+//         }
+//         //this part will fetch the innerHTML of divs that have units and return it to active dom
+//         if (makeKnown.length > 0) {
+//             for (var g=0; g<makeKnown.length; g++){
+//                 let loc = makeKnown[g];
+//                 getOtherPlayerTroopImages(player, loc);
+//                 }
+//             }
+//         }    
+//     else {
+//         document.getElementById('gameAlertsSmall1').innerHTML = "This function needs reworked [or removed]: makeVisibleOtherPlayersUnits.";
+//         // var item = window2.makeVisibleOtherPlayersUnits(player);
+//         // return item;
+//         }
 
-}
+// }
 
 function updatePlayerOneTroopDisplayData(player) {
     var playerObj = getStorage("playerObj"+player);

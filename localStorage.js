@@ -41,13 +41,13 @@ function setDefaultStorage() {
     setStorage("alertMessage", "");
 }
 
-function  setChosenColorInLocalStorage(name, chosenColor) {
+function  setChosenColorInLocalStorage(name, chosenColor, privateUsers) {
     var username = getStorage("username");
     if (username == name) {
         setStorage("playerColor1", chosenColor);
     } else {
-        let playerName = checkPlayersInChat();
-        if (playerName == false) {
+        let playerName = checkPrivateUsers(privateUsers);
+        if (playerName == true) {
         setStorage("playerColor2", chosenColor);
         }
     }
@@ -258,7 +258,7 @@ function updateVisibility(player) {
     // resetVisibiilityToNone();
     resetVisibilityForBase(player);
     resetVisibilityForTroops(player);
-    makeVisibleOtherPlayersUnits(player);
+    // makeVisibleOtherPlayersUnits(player);
     // makeVisibleOtherPlayersUnits(otherPlayer);
 }
 
@@ -296,6 +296,7 @@ function resetVisibilityForBase(player) {
 }
 
 function resetVisibilityForTroops(player) {
+    var username = getStorage('username');
     var visibleArray = getStorage("visibleTiles"+player);
     if (visibleArray == "") {
         var visibleTileArray = [];
@@ -331,6 +332,7 @@ function resetVisibilityForTroops(player) {
             }
         }
         setStorage("visibleTiles"+player, visibleTileArray);
+        saveVisibletilesToServer(username, visibleTileArray);
     }
 }
 
@@ -833,9 +835,8 @@ function processTurn(player) {
     }
 }
 
-function getOtherPlayerTroopImages(player, loc) {
-    var innerHtmlInfo = getTroopPlacementAndImages(player, loc);
-    document.getElementById(loc).innerHTML = innerHtmlInfo;
+function getOtherPlayerTroopImages(username, makeKnown) {
+    
 }
 
 function handlePlayerAttack(player, id) {
@@ -1082,14 +1083,13 @@ function signalGameOver(player) {
     } 
 }
 
-function checkPlayersInChat() {
-    let playerNames = getStorage('users');
+function checkPrivateUsers(privateUsers) {
     let username = getStorage('username');
-    if (playerNames.includes(username) == false) {
-        //players are not in chat - must be in game
+    if (privateUsers.includes(username) == false) {
+        //players are not in privateUsers - are not in game
         return false;
     } else {
-        //true, players are in chat -- so not in game
+        //true, players are in privateUsers - are in game
         return true;
     }
 }

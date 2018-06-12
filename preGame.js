@@ -152,6 +152,13 @@ function setup() {
         
     });
 
+    socket.on('render-enemy-units', function(username, makeKnown) {
+        //render out enemy units and base as present in makeKnown
+
+    });
+
+
+
      //end of setup
 }
 

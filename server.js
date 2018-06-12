@@ -254,7 +254,7 @@ function createDefaultUserObject(user) {
     user.base = {"health": 200, "loc":"", "xCoord":"", "yCoord":"", "xyCoord":""};
     user.troops = {};
     //Uncomment this to see the default user object generated when a challenge is accepted
-    // console.log(JSON.stringify(user, null, 4));
+    // console.log(JSON.stringify(user, null, 4));         --uncomment to see gameObj
     return user;
 }
 
@@ -331,7 +331,7 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
 function serverUpdateTroopLocation(username, name, node, gameObj) {
   //name is the name of the troop being updated
     gameObj[username].troops[name].Location = node;
-    // console.log(JSON.stringify(gameObj, null, 4));
+    // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
     console.log(username + " moved their "+ name + " to "+ node);
     return gameObj;
 }
@@ -339,36 +339,47 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
 function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
   //server update the visible tiles for a specific player
   gameObj[username].visibleTiles = visibleTileArray;
-  makeVisibleOtherPlayersUnits(username, visibleTileArray);
-  // console.log(JSON.stringify(gameObj, null, 4));
-  console.log(visibleTileArray);
+  makeVisibleOtherPlayersUnits(username, gameObj);
+  // console.log(JSON.stringify(gameObj, null, 4));    --uncomment to see gameObj
+  // console.log(visibleTileArray);                    --uncomment to see visibleTiles
   return gameObj;
 }
 
-function makeVisibleOtherPlayersUnits(username, visibleTileArray) {
+function makeVisibleOtherPlayersUnits(username, gameObj) {
 
-  //this will add to the map the other player's units & base
-  // if ((otherPlayerObj != "") && (visibleTileArray != "")) {
-  //     for (var k=0; k<visibleTileArray.length; k++) {
-  //         for (var i=0; i<otherPlayerObj.troops.length; i++) {
-  //             if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
-  //                 makeKnown.push(otherPlayerObj.troops[i].Location);
-  //             }
-  //             setStorage("makeKnown"+player, makeKnown);
-  //         }
-  //         //if visible this will show the other players base
-  //         if (otherPlayerObj.base.Location == visibleTileArray[k]) {
-  //             document.getElementById(otherPlayerObj.base.Location).style.backgroundColor = otherPlayerObj.player.Color;
-  //             } 
-  //         }
-  //     }
-  //     //this part will fetch the innerHTML of divs that have units and return it to active dom
-  //     if (makeKnown.length > 0) {
-  //         for (var g=0; g<makeKnown.length; g++){
-  //             let loc = makeKnown[g];
-  //             getOtherPlayerTroopImages(player, loc);
-  //             }
-  //         }
-
+  // this will add to the map the other player's units & base
+  let visibleTileArray = gameObj[username].visibleTiles;
+  var makeKnown = [];
+  
+      for (var k=0; k<visibleTileArray.length; k++) {
+          for (var i=0; i<otherPlayerObj.troops.length; i++) {
+              if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
+                  
+              //add the desired details into a visibleItem which will be placed in makeKnown array
+              //then returned and rendered on client side
+              let visibleItem = {};
+              visibleItem.location = gameObj[otherPlayer].troops[i].Location;
+              visibleItem.name = gameObj[otherPlayer].troops[i].troopName;
+              visibleItem.color = gameObj[otherPlayer].color;
+              visibleItem.health = gameObj[otherPlayer].health;
+              makeKnown.push(visibleItem);
+              }
+             
+          }
+          //if visible this will show the other players base
+          if (otherPlayerObj.base.Location == visibleTileArray[k]) {
+            let visibleItem = {};
+            visibleItem.location = gameObj[otherPlayer].troops[i].Location;
+            visibleItem.name = 'enemy base';
+            visibleItem.color = gameObj[otherPlayer].color;
+            visibleItem.health = gameObj[otherPlayer].base.health;
+            makeKnown.push(visibleItem);
+              } 
+          }
+      
+      //send the data to the client to render
+      if (makeKnown.length > 0) {
+          io.emit('rende-enemy-units', username, makeKnown);
+          }
 
 }
