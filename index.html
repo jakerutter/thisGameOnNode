@@ -112,8 +112,8 @@
          
       <div id="mainContent" class="col-4-10 whiteText">
               <div class="maze-wrapper" id="mazeWrapper"></div>
-              <div><h3 id="gameAlertsSmall1" class="gameAlerts"></h3></div>
-              <div><h2 id="gameAlertsLarge1" class="gameAlerts"></h2>
+              <div><h3 id="gameAlertsSmall" class="gameAlerts"></h3></div>
+              <div><h2 id="gameAlertsLarge" class="gameAlerts"></h2>
                 <button id="openTroopModalButton" class="hidden" onclick="troopModal()">Select Troops</button>
             </div>
       </div>
@@ -127,7 +127,7 @@
 
 
 
-        <!-- RIP THIS DIV OUT WHEN YOU CAN. IT IS NOT NEEDED IN THIS VERSION -->
+         <!-- RIP THIS DIV OUT WHEN YOU CAN. IT IS NOT NEEDED IN THIS VERSION -->
       <div id="numberOfPlayersModal" class="modal center hidden"><h1>Welcome to This Game</h1><br><br>
           <div><h3 class="blueText">How many players?</h3></div>
           <form id="playersForm">
@@ -171,7 +171,9 @@
   <div id="settingsModal" class="modal center hidden"><h1>About this Game</h1>
       <div><h3>Find the opposing base and destroy it.</h3></div>
           <div><h4>Cooldowns are triggered for units with unique moves, when that unique move is used.</h4></div>
-          <div><h5>..for more info read the details outlined for each unit.</h5></div>
+          <div><h5>Each unit has a "perceived value" (PV) assigned to them. When both players choose their units, the player with the lowest
+              PV gets to go first.
+          </h5></div>
           <span class="simplemodal-close">A Rutter Production. 2018.</span>
           <button onclick="hideSettingsModal()">Continue</button>
    
@@ -183,39 +185,39 @@
       <div><h3>Choose 3 troops to begin with</h3></div>
       <form id="troopCheckboxes" action="" class="troopCheckBox">
               <input id="scout" type="checkbox" name="troops" value="scout" class="checkboxes" >
-                  <span title="quick travelling unit that searches planet by planet.">
+                  <span title="quick travelling unit great for initial scouting. 2PV">
                       <button class="link" onclick="populateTroopDetailModal(scout, 1)">Scout</button></span><br>
 
               <input id="depthCharge" type="checkbox" name="troops" value="depthCharge" class="checkboxes" >
-                  <span title="powerful explosive that disables a 3x3 area for 1 turn and returns info on any oponent units within. slight cooldown.">
+                  <span title="powerful explosive that disables a 3x3 area for 1 turn and returns info on any opponent units within. slight cooldown. 2PV">
                           <button class="link" onclick="populateTroopDetailModal(depthCharge, 1)">Depth Charge</button></span><br>
 
               <input id="destroyer" type="checkbox" name="troops" value="destroyer" class="checkboxes" >
-                  <span title="slow and powerful unit that attacks one planet at a time.">
+                  <span title="slow and powerful unit that attacks one unit at a time. 5PV">
                       <button class="link" onclick="populateTroopDetailModal(destroyer, 1)">Destroyer</button></span><br>
 
               <input id="swarm" type="checkbox" name="troops" value="swarm" class="checkboxes" >
-                  <span title="a search unit that divides itself in half and searches planets in a binary method. has limited search range.">
+                  <span title="a unique unit searches and attacks in a binary method. 5PV">
                       <button class="link" onclick="populateTroopDetailModal(swarm, 1)">Swarm</button></span><br>
 
               <input id="scan" type="checkbox" name="troops" value="scan" class="checkboxes" >
-                  <span title="scans the target area revealing a 5x5 area. has a cooldown.">
+                  <span title="scans the target area revealing a 5x5 area. 3PV">
                           <button class="link" onclick="populateTroopDetailModal(scan, 1)">Scan</button></span><br>
 
               <input id="ruskie" type="checkbox" name="troops" value="ruskie" class="checkboxes" >
-                  <span title="sly, subtle unit. can move about without fear of being seen.">
+                  <span title="a decent all around unit. 3PV">
                           <button class="link" onclick="populateTroopDetailModal(ruskie, 1)">Ruskie</button></span><br>
 
               <input id="gremlin" type="checkbox" name="troops" value="gremlin" class="checkboxes" >
-                  <span title="medium unit all around.">
+                  <span title="medium unit all around. 4PV">
                       <button class="link" onclick="populateTroopDetailModal(gremlin, 1)">Gremlin</button></span><br>
 
               <input id="pirate" type="checkbox" name="troops" value="pirate" class="checkboxes" >
-                  <span title="this unit searches the places it passes and sends the loot back to your base.">
+                  <span title="this unit searches the places it passes and sends the loot back to your base. 2PV">
                           <button class="link" onclick="populateTroopDetailModal(pirate, 1)">Pirate</button></span><br>
 
               <input id="bombardier" type="checkbox" name="troops" value="bombardier" class="checkboxes" >
-                  <span title="medium unit that has a bomb attack with enhanced range and area of attack.">
+                  <span title="medium unit that has a bomb attack with enhanced range and area of attack. 4PV">
                       <button class="link" onclick="populateTroopDetailModal(bombardier, 1)">Bombardier</button></span><br>
 
           </form>
@@ -263,21 +265,21 @@
 
 <div id="currentState" class="hidden">0</div>
 <div id="numberOfPlayers" class="hidden"></div>
-<div id="playerColorSelection1" class="hidden"></div>
-<div id="playerNameSelection1" class="hidden"></div>
-<div id="playerBaseLocation1" class="hidden"></div>
-<div id="playerTroopSelection1" class="hidden"></div>
-<div id="playerObj1" class="hidden"></div>
+<div id="playerColorSelection" class="hidden"></div>
+<div id="playerNameSelection" class="hidden"></div>
+<div id="playerBaseLocation" class="hidden"></div>
+<div id="playerTroopSelection" class="hidden"></div>
+<div id="playerObj" class="hidden"></div>
 
 <!-- <audio type="audio" id='spaceIntro' src="/Sounds/spaceIntro.mp3"></audio> -->
-<audio type="audio" id="wrongBuzz" src="/Sounds/wrongBuzz.wav"></audio>
+<!-- <audio type="audio" id="wrongBuzz" src="/Sounds/wrongBuzz.wav"></audio>
 <audio type="audio" id="spaceShot" src="/Sounds/spaceShot.wav"></audio>
 <audio type="audio" id="moveSound" src="/Sounds/move.wav"></audio>
 <audio type="audio" id="scanSound" src="/Sounds/scan.wav"></audio>
 <audio type="audio" id="swarmSound" src="/Sounds/swarm.wav"></audio>
 <audio type="audio" id="depthChargeSound" src="/Sounds/depthCharge.wav"></audio>
 <audio type="audio" id="bombSound" src="/Sounds/bombSound.wav"></audio>
-
+ -->
 
 
 

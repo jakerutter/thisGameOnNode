@@ -191,7 +191,7 @@ io.sockets.on('connection', function (socket) {
 
   //Server-Side Functions
   function compareBaseLocations(gameObj) {
-    //get user names from PrivateUsers array
+    //get user names from privateUsers array
     var p1 = privateUsers[0];
     var p2 = privateUsers[1];
     //get base coordinates from gameObj 
@@ -249,6 +249,8 @@ function createDefaultGameObject(name, challenger, gameObj) {
 
 function createDefaultUserObject(user) {
     user = {"name": user};
+    user.troopsPlaced = 0;
+    user.PV = 0;
     user.color = "";
     user.visibleTiles = [];
     user.base = {"health": 200, "loc":"", "xCoord":"", "yCoord":"", "xyCoord":""};
@@ -325,6 +327,7 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
   }
   console.log('troops added to gameObj for '+username);
   console.log(JSON.stringify(gameObj, null, 4));
+
   return gameObj;
 }
 
@@ -333,28 +336,45 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
     gameObj[username].troops[name].Location = node;
     // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
     console.log(username + " moved their "+ name + " to "+ node);
+    //check the current game state (stage) and update accordingly when all units for a player are placed
+    let stage = gameObj['stage'];
+    let numberOfTroopsPlaced = gameObj[username].troopsPlaced + 1;
+    gameObj[username].troopsPlaced = numberOfTroopsPlaced;
+    console.log(username +' troopsPlaced = '+ numberOfTroopsPlaced);
+    if (numberOfTroopsPlaced == 3) {
+      if (stage == 'TwoLocationsSelected') {
+        gameObj['stage'] = 'UnitsPlacedForOnePlayer';
+        console.log('game state updated to '+ gameObj['stage']);
+      }
+      else if (stage == 'UnitsPlacedForOnePlayer') {
+        gameObj['stage'] = 'UnitsPlacedForTwoPlayers';
+        console.log('game state updated to '+ gameObj['stage']);
+        serverTriggerGameStart(gameObj);
+    } else alert('there is an error in serverUpdateTroopLocation. please troubleshoot');
+  }
     return gameObj;
 }
 
 function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
   //server update the visible tiles for a specific player
   gameObj[username].visibleTiles = visibleTileArray;
-  makeVisibleOtherPlayersUnits(username, gameObj);
+  makeVisibleOtherPlayersUnits(username, gameObj, privateUsers);
   // console.log(JSON.stringify(gameObj, null, 4));    --uncomment to see gameObj
   // console.log(visibleTileArray);                    --uncomment to see visibleTiles
   return gameObj;
 }
 
-function makeVisibleOtherPlayersUnits(username, gameObj) {
+function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
 
   // this will add to the map the other player's units & base
+  var otherPlayer = privateUsers.filter(function(x) { return x !== username});
   let visibleTileArray = gameObj[username].visibleTiles;
   var makeKnown = [];
   
       for (var k=0; k<visibleTileArray.length; k++) {
-          for (var i=0; i<otherPlayerObj.troops.length; i++) {
-              if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
-                  
+          for (var i=0; i<gameObj[otherPlayer].troops.length; i++) {
+              if (gameObj[otherPlayer].troops[i].Location == visibleTileArray[k]) {
+                console.log('EUREKA we have a match! -- inside makeVisibleOtherPlayersUnits');  
               //add the desired details into a visibleItem which will be placed in makeKnown array
               //then returned and rendered on client side
               let visibleItem = {};
@@ -362,12 +382,13 @@ function makeVisibleOtherPlayersUnits(username, gameObj) {
               visibleItem.name = gameObj[otherPlayer].troops[i].troopName;
               visibleItem.color = gameObj[otherPlayer].color;
               visibleItem.health = gameObj[otherPlayer].health;
+              console.log(JSON.stringify(visibleItem, null, 4));
               makeKnown.push(visibleItem);
               }
              
           }
           //if visible this will show the other players base
-          if (otherPlayerObj.base.Location == visibleTileArray[k]) {
+          if (gameObj[otherPlayer].base.Location == visibleTileArray[k]) {
             let visibleItem = {};
             visibleItem.location = gameObj[otherPlayer].troops[i].Location;
             visibleItem.name = 'enemy base';
@@ -379,7 +400,64 @@ function makeVisibleOtherPlayersUnits(username, gameObj) {
       
       //send the data to the client to render
       if (makeKnown.length > 0) {
-          io.emit('rende-enemy-units', username, makeKnown);
+          io.emit('render-enemy-units', username, makeKnown);
           }
 
+}
+
+function serverTriggerGameStart(gameObj) {
+  //first determine which player will go first
+  calculateStartingPlayer(gameObj, privateUsers);
+
+  return gameObj;
+}
+
+function calculateStartingPlayer(gameObj, privateUsers) {
+  for (var i=0; i<privateUsers.length; i++) {
+    var username = privateUsers[i];
+  //get the PV sum for each player. Player with least PV will go first.
+  //in case of tie, random number will decide.
+    var PV = Number(gameObj[username].PV);
+    for(var value in gameObj[username].troops) {
+      // console.log(value + ' is value in calculateStartingPlayer');  --additional logging for PV
+      // console.log(gameObj[username].troops[value].PerceivedValue + ' is PV for ' + value);
+      PV = PV + Number(gameObj[username].troops[value].PerceivedValue);
+    }
+    //assign new value
+    gameObj[username].PV = PV;
+    console.log('PV calculated as ' + PV + ' for ' + username);
+  }
+    var player1 = privateUsers[0];
+    var player2 = privateUsers[1];
+    //compare the calculated PV for both players
+    if (gameObj[player1].PV > gameObj[player2].PV) {
+        var startingPlayer = gameObj[player2].name;
+    } else if (gameObj[player2].PV > gameObj[player1].PV) {
+        var startingPlayer = gameObj[player1].name;
+    } else {
+      //pick a random player to start because their PV is the same
+      seekRandomPlayerToStart(privateUsers);
+    }
+      console.log('logging inside calculateStartingPlayer.... starting player is ' + startingPlayer);
+      setStartingPlayer(startingPlayer, privateUsers);
+    // console.log(JSON.stringify(gameObj, null, 4));  --uncomment to see gameObj. has long list of visible tiles here on.
+
+  return gameObj;
+}
+
+function seekRandomPlayerToStart(privateUsers) {
+  var startingPlayer;
+  var randomX = Math.floor(Math.random());
+  if (randomX <= .5) {
+    startingPlayer = privateUsers[0];
+  } else {
+    startingPlayer = privateUsers[1];
+  }
+  return startingPlayer;
+}
+
+function setStartingPlayer(startingPlayer, privateUsers) {
+  //send starting player name to 
+  io.emit('set-starting-player', startingPlayer, privateUsers);
+  console.log('set starting player ' + startingPlayer);
 }

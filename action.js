@@ -52,14 +52,13 @@ function drawing() {
 function welcomeModal() {
     setStorage('numberOfPlayers', 2);
     document.getElementById('welcomeModal').classList.remove('hidden');
-    //removed an if check from the following setDefaultStorage call. It checked to see if playerName2 in local storage == null 
+     
     setDefaultStorage();
-    // document.getElementById('welcomeModal').classList.remove('hidden');
-    // $("#welcomeModal").modal();
+ 
     var chosenColor = document.getElementById('playerColorSelect');
-    chosenColor.value = document.getElementById('playerColorSelection1').innerHTML;
+    chosenColor.value = document.getElementById('playerColorSelection').innerHTML;
     var nameField = document.getElementById('playerName');
-    nameField.value = document.getElementById('playerNameSelection1').innerHTML;   
+    nameField.value = document.getElementById('playerNameSelection').innerHTML;   
 }
 
 function showWelcomeModal() {
@@ -69,14 +68,15 @@ function showWelcomeModal() {
 
 function hideWelcomeModal() {
     document.getElementById('leftSideBarH3').classList.remove('hidden');
-    var chosenColor = document.getElementById('playerColorSelection1').innerHTML;
+    var chosenColor = document.getElementById('playerColorSelection').innerHTML;
     claimSelectedColor(chosenColor);
     var playerName = getStorage('username');
-    document.getElementById('playerNameSelection1').innerHTML = playerName;
-    setStorage("playerName1", playerName);
-    setStorage("playerColor1", chosenColor);
-    placeNameDisplayData(1);
-    placeTurnIndicatorData(1);
+    document.getElementById('playerNameSelection').innerHTML = playerName;
+    setStorage("playerName", playerName);
+    setStorage("playerColor", chosenColor);
+    placeNameDisplayData();
+    var stage = "intro";
+    placeTurnIndicatorData(stage);
     $.modal.close();
     hideModalOverlays();
     //color the action buttons the player's color
@@ -84,7 +84,7 @@ function hideWelcomeModal() {
     document.getElementById("option2").style.backgroundColor = chosenColor;
     document.getElementById("option3").style.backgroundColor = chosenColor;
     document.getElementById("option4").style.backgroundColor = chosenColor;
-    if ((document.getElementById('playerColorSelection1').innerHTML == "") || (document.getElementById('playerNameSelection1').innerHTML == "")){
+    if ((document.getElementById('playerColorSelection').innerHTML == "") || (document.getElementById('playerNameSelection').innerHTML == "")){
         document.getElementById('welcomeAlert').innerHTML = "You must submit player info to continue.";
         welcomeModal();
     } else {
@@ -102,7 +102,7 @@ function hideWelcomeModal() {
 
 function settingsModal(){
     var playerName = document.getElementById('playerName').value;
-    document.getElementById('playerNameSelection1').innerHTML = playerName;
+    document.getElementById('playerNameSelection').innerHTML = playerName;
     hideModalOverlays();
     document.getElementById('settingsModal').classList.remove('hidden');
     $("#settingsModal").modal();
@@ -147,7 +147,7 @@ function hideModalOverlays() {
 
 function playerColorPopulating(el){
     var playerColor = el.options[el.selectedIndex].value;
-    document.getElementById('playerColorSelection1').innerHTML = playerColor;
+    document.getElementById('playerColorSelection').innerHTML = playerColor;
 }
 
 //Run the Program based on User Selected Size
@@ -192,7 +192,7 @@ function createDivs(maxRow) {
         });
       }
     }
-    document.getElementById('gameAlertsSmall1').innerHTML = "Click where you would like to place your home base.";
+    document.getElementById('gameAlertsSmall').innerHTML = "Click where you would like to place your home base.";
     // document.getElementById('compareBaseLocationsButton').classList.remove('hidden');
 }
 
@@ -215,10 +215,10 @@ function functionSwitch(switchData, id) {
             checkPlayerUnitLocation(1,id);
         }
         else if (switchData == "troopsPlaced") {
-            progressToFirstMoveOrPause(1);
+            progressToFirstMoveOrPause();
         }
         else if (switchData == "gameTime") {
-            performGameAction(1,id);
+            performGameAction(username, id);
         }
         else if (switchData == "noClick") {
             return;
@@ -227,23 +227,23 @@ function functionSwitch(switchData, id) {
 
 function placePlayerBase(id) {
     var name = getStorage('username');
-    var playerColor = document.getElementById('playerColorSelection1').innerHTML;
+    var playerColor = document.getElementById('playerColorSelection').innerHTML;
     var homeBase = document.getElementById(id);
-    var playerBaseCheck = document.getElementById('playerBaseLocation1').innerHTML;
+    var playerBaseCheck = document.getElementById('playerBaseLocation').innerHTML;
     if (playerBaseCheck == ""){
-        document.getElementById('playerBaseLocation1').innerHTML = id;
+        document.getElementById('playerBaseLocation').innerHTML = id;
         homeBase.style.backgroundColor = playerColor;
-        setStorage("playerBaseLocation1", id); 
+        setStorage("playerBaseLocation", id); 
     } else {
-        var oldBase = document.getElementById('playerBaseLocation1').innerHTML;
+        var oldBase = document.getElementById('playerBaseLocation').innerHTML;
         document.getElementById(oldBase).classList.add("not-visible");
         document.getElementById(oldBase).style.backgroundColor = "";
-        document.getElementById('playerBaseLocation1').innerHTML = id;
+        document.getElementById('playerBaseLocation').innerHTML = id;
         homeBase.style.backgroundColor = playerColor;
-        setStorage("playerBaseLocation1", id);
+        setStorage("playerBaseLocation", id);
         }
     updateVisibility(name);
-    document.getElementById('gameAlertsSmall1').innerHTML = "";
+    document.getElementById('gameAlertsSmall').innerHTML = "";
 }
 
 //this is where they will select the units that they have to start the game with
@@ -270,7 +270,7 @@ function checkTroopSelection() {
         return this.value;
     }).get();
     if (troops.length == 3) {
-        playerTroopSelection1.innerHTML = troops;
+        playerTroopSelection.innerHTML = troops;
         hideTroopModal(true);
         //set current state to "baseConfirmed" back from "noClick" so users can place their units
         document.getElementById('currentState').innerHTML = "baseConfirmed";
@@ -294,14 +294,14 @@ function hideTroopModal(bool) {
         document.getElementById('troopModal').classList.remove('table');
         hideModalOverlays();
         if (bool == true){
-            gameAlertsSmall1.innerHTML = "";
-            gameAlertsLarge1.innerHTML = "";
-            let playerTroopSelection1 = document.getElementById('playerTroopSelection1').innerHTML;
-            let troopsChosen = getTroopObjects(playerTroopSelection1);
+            gameAlertsSmall.innerHTML = "";
+            gameAlertsLarge.innerHTML = "";
+            let playerTroopSelection = document.getElementById('playerTroopSelection').innerHTML;
+            let troopsChosen = getTroopObjects(playerTroopSelection);
             addPlayerTroopsToGameObject(name, troopsChosen);
-            var playerObj1 = createRequirementsForPlayerObject();
-            placeTroopDisplayData(1);
-            placePlayerUnits(playerObj1);
+            var playerObj = createRequirementsForPlayerObject();
+            placeTroopDisplayData();
+            placePlayerUnits(playerObj);
         }     
 }
 
@@ -350,49 +350,49 @@ function playerObject(player,troops,base) {
 
 //will be called when gameObject should be created.gathers the required data to create gameObject.
 function createRequirementsForPlayerObject(){
-    var playerName = document.getElementById('playerNameSelection1').innerHTML;
-    var playerColor = document.getElementById('playerColorSelection1').innerHTML;
+    var playerName = document.getElementById('playerNameSelection').innerHTML;
+    var playerColor = document.getElementById('playerColorSelection').innerHTML;
     var player = {
         Name : playerName,
         Color : playerColor
     };
 
-    var playerBaseLocation1 = document.getElementById('playerBaseLocation1').innerHTML;
+    var playerBaseLocation = document.getElementById('playerBaseLocation').innerHTML;
     var currentState = document.getElementById('currentState').innerHTML;
-    var playerTroopSelection1 = document.getElementById('playerTroopSelection1').innerHTML;
+    var playerTroopSelection = document.getElementById('playerTroopSelection').innerHTML;
 
-    var troopArray = getTroopObjects(playerTroopSelection1);
+    var troopArray = getTroopObjects(playerTroopSelection);
     var homeBaseObject = getHomeBaseObjects(1);
 
-    var playerObj1 = new playerObject(player,troopArray,homeBaseObject);
-    document.getElementById('playerObj1').innerHTML = playerObj1;
-    setStorage("playerObj1", playerObj1);
-    return playerObj1;
+    var playerObj = new playerObject(player,troopArray,homeBaseObject);
+    document.getElementById('playerObj').innerHTML = playerObj;
+    setStorage("playerObj", playerObj);
+    return playerObj;
 }
 
-function placePlayerUnits(playerObj1) {
+function placePlayerUnits(playerObj) {
     //this function handles the initial placement of units at game
-    var id = getStorage('playerBaseLocation1');
+    var id = getStorage('playerBaseLocation');
     var distance = 1;
     var player = 1;
     showAvailableTilesForAction(id, distance, player);  
-    document.getElementById('gameAlertsSmall1').innerHTML = "You will place your units in tiles adjacent to your base.";
-    document.getElementById('gameAlertsLarge1').innerHTML = "Click to place " + playerObj1.troops[0].Name;
+    document.getElementById('gameAlertsSmall').innerHTML = "You will place your units in tiles adjacent to your base.";
+    document.getElementById('gameAlertsLarge').innerHTML = "Click to place " + playerObj.troops[0].Name;
     setStorage("troopsToPlace1", 0);
-    setStorage("playerObj1", playerObj1);
+    setStorage("playerObj", playerObj);
 }
 
 function checkPlayerUnitLocation(player, id) {
     var troopsToPlace = getStorage("troopsToPlace1");
-    var locationCheck = verifyLocationForPlacement(player, id);
+    var locationCheck = verifyLocationForPlacement(id);
     if ((locationCheck == true) && (troopsToPlace >= 3)) {
         document.getElementById('currentState').innerHTML = "troopsPlaced";
         //clear gameAlertSmall message
-        document.getElementById("gameAlertsSmall1").innerHTML = "";
+        document.getElementById("gameAlertsSmall").innerHTML = "";
     } else if ((locationCheck == true) && (troopsToPlace < 3)) {
         if (document.getElementById(Number(id)).innerHTML == "") {
 
-        var playerObj = getStorage("playerObj1");
+        var playerObj = getStorage("playerObj");
         var name = playerObj.troops[troopsToPlace].Name;
         var color = playerObj.player.Color;
         var node = Number(id);
@@ -404,87 +404,38 @@ function checkPlayerUnitLocation(player, id) {
         document.getElementById(pictureID).style.width = '100%';
         //send troop location to server
         updateTroopLocation(name, node);
-        setStorage("playerObj1", playerObj);
-        resetVisibilityForTroops(1);
+        setStorage("playerObj", playerObj);
+        resetVisibilityForTroops();
         //Following two lines need defined in node version --
         // makeVisibleOtherPlayersUnits(1);
         // makeVisibleOtherPlayersUnits(2);
         //Testing this: placing troop data again once unitLocation is updated:
-        updateTroopDisplayData(player); 
+        updateTroopDisplayData(); 
         var troopsToPlace = getStorage("troopsToPlace1");
         troopsToPlace += 1;
         if (troopsToPlace < playerObj.troops.length) {
-        document.getElementById('gameAlertsLarge1').innerHTML = "Click to place " + playerObj.troops[troopsToPlace].Name;
+        document.getElementById('gameAlertsLarge').innerHTML = "Click to place " + playerObj.troops[troopsToPlace].Name;
         } else {
-            clearAvailableTilesForAction(1);
+            clearAvailableTilesForAction();
             setStorage("gameState1", "troopsPlaced");
-            document.getElementById('gameAlertsLarge1').innerHTML = "All units placed.";
-            progressToFirstMoveOrPause(1);
+            document.getElementById('gameAlertsLarge').innerHTML = "All units placed.";
+            progressToFirstMoveOrPause();
         }
         setStorage("troopsToPlace1", troopsToPlace);
         } else { 
-            document.getElementById('gameAlertsSmall1').innerHTML = "That tile is already occupied. Choose another.";
+            document.getElementById('gameAlertsSmall').innerHTML = "That tile is already occupied. Choose another.";
         }
     } else if (troopsToPlace <= 2) {
-        document.getElementById('gameAlertsSmall1').classList.add("redText");
-        document.getElementById('gameAlertsSmall1').innerHTML = "You must place your units in tiles adjacent to your base.";
+        document.getElementById('gameAlertsSmall').classList.add("redText");
+        document.getElementById('gameAlertsSmall').innerHTML = "You must place your units in tiles adjacent to your base.";
     }
 }
 
-
-// function clearBaseData() {
-//     clearBaseDisplayData();
-//     hideModalOverlays();
-//     var locationObj = getStorage("locationObj");
-//     document.getElementById(locationObj.base1).style.backgroundColor = "";
-//     resetVisibiilityToNone();
-//     document.getElementById('gameAlertsSmall1').classList.add('redText');
-//     document.getElementById('gameAlertsSmall1').innerHTML = "Your bases were too close. Please reselect your base location.";
-//     setStorage("playerBaseLocation1", "");
-//     document.getElementById("currentState").innerHTML = "selectBase";
-//     document.getElementById("openTroopModalButton").classList.add("hidden");
-//     // clear playerTroopSelection1
-//     // document.getElementById(playerTroopSelection1).innerHTML = "";
-//     document.getElementById("troopDisplay").innerHTML = "";
-//     document.getElementById('gameAlertsLarge1').innerHTML = "When you are happy with where your base is located, select your troops."
-//     var state = document.getElementById("currentState").innerHTML;
-//     if (state != "selectBase") {
-//         state = "selectBase";
-//     }
-// }
-
-// function clearBasesSendNotification() {
-//     clearBaseData();
-//     window2.clearBaseData();
-// }
- 
-// function triggerAlertModalForPlayerOne() {
-//     showAlertModal();
-//     window2.hideAlertModal();
-// }
-
-// function triggerAlertModalForPlayerTwo() {
-//    window2.showAlertModal();
-//    hideAlertModal();
-// }
-
-// function triggerHideAlertModal(player) {
-//     if (player == 1) {
-//         window2.hideAlertModal();
-//     } else {
-//         hideAlertModal();
-//     }
-//     switchActivePlayer(player);
-// }
-
-function updateTurnIndicator() {
+function updateTurnIndicator(username) {
     document.getElementById("currentState").innerHTML = "gameTime";
-    placeTurnIndicatorData(1);
-    window2.placeTurnIndicatorData(2);
-    addClickEventsTroopPics(1);
-    window2.addClickEventsTroopPics(2);
-    document.getElementById("gameAlertsLarge1").innerHTML = "Click on the picture [right menu] of the unit you'd like to activate.";
-    window2.document.getElementById("gameAlertsLarge2").innerHTML = "Click on the picture [right menu] of the unit you'd like to activate.";
+    placeTurnIndicatorData(username);
+    addClickEventsTroopPics();
+    document.getElementById("gameAlertsLarge").innerHTML = "Click on the picture [right menu] of the unit you'd like to activate.";
 }
 
 function hideinGameTroopDetailModal() {
@@ -493,56 +444,8 @@ function hideinGameTroopDetailModal() {
     hideModalOverlays();
 }
 
-// function makeVisibleOtherPlayersUnits(player) {
-//     var player = convertPlayerToNumber(player);
-//     if (player == 1) {
-//     var playerObj = getStorage("playerObj"+player);
-//     var visibleTileArray = getStorage("visibleTiles"+player);
-//     var otherPlayer = (player == 1 ? 2 : 1);
-//     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
-//     var makeKnown = getStorage("makeKnown"+player);
-//     //because this function will cause duplicates I must clear everything
-//     //found within makeKnown from the previous turn
-//     if (makeKnown != null) {
-//     for (var z=0; z<makeKnown.length; z++) {
-//         document.getElementById(makeKnown[z]).innerHTML = "";     
-//         }
-//         makeKnown = [];
-//     } else {
-//         makeKnown = [];
-//     }
-//     //this will add to the map the other player's units & base
-//     if ((otherPlayerObj != "") && (visibleTileArray != "")) {
-//         for (var k=0; k<visibleTileArray.length; k++) {
-//             for (var i=0; i<otherPlayerObj.troops.length; i++) {
-//                 if (otherPlayerObj.troops[i].Location == visibleTileArray[k]) {
-//                     makeKnown.push(otherPlayerObj.troops[i].Location);
-//                 }
-//                 setStorage("makeKnown"+player, makeKnown);
-//             }
-//             //if visible this will show the other players base
-//             if (otherPlayerObj.base.Location == visibleTileArray[k]) {
-//                 document.getElementById(otherPlayerObj.base.Location).style.backgroundColor = otherPlayerObj.player.Color;
-//                 } 
-//             }
-//         }
-//         //this part will fetch the innerHTML of divs that have units and return it to active dom
-//         if (makeKnown.length > 0) {
-//             for (var g=0; g<makeKnown.length; g++){
-//                 let loc = makeKnown[g];
-//                 getOtherPlayerTroopImages(player, loc);
-//                 }
-//             }
-//         }    
-//     else {
-//         document.getElementById('gameAlertsSmall1').innerHTML = "This function needs reworked [or removed]: makeVisibleOtherPlayersUnits.";
-//         // var item = window2.makeVisibleOtherPlayersUnits(player);
-//         // return item;
-//         }
 
-// }
-
-function updatePlayerOneTroopDisplayData(player) {
+function updateActivePlayerTroopDisplayData(player) {
     var playerObj = getStorage("playerObj"+player);
     if (playerObj == "") {
         document.getElementById("troopDisplay").innerHTML = "";
@@ -555,7 +458,7 @@ function updatePlayerOneTroopDisplayData(player) {
             var coords = convertIdToCoordinates(id);
         document.getElementById("troopDisplay").innerHTML +=
         "<span class='col-1-1 bottomSpacer'><h3>" + name +
-        "<img name="+name+" class='troopPic' id="+player+'troopPic'+i+" src=Assets/"+name+color+".png></img></h3>" +
+        "<img name="+name+" class='troopPic' id="+player+'troopPic'+i+" title="+name+': '+playerObj.troops[i].HealthPoints+' health'+" src=Assets/"+name+color+".png></img></h3>" +
         "<span class='col-1-2'><span> Health Points: "+ playerObj.troops[i].HealthPoints + " / "+playerObj.troops[i].MaxHealth +"</span><br>"+
         "<span> Attack Damage: "+ playerObj.troops[i].AttackDamage + "</span><br>"+
         "<span> Attack Range: "+ playerObj.troops[i].AttackRange + "</span><br>"+
@@ -569,40 +472,30 @@ function updatePlayerOneTroopDisplayData(player) {
     }
 }
 
-// function triggerPlayerTwoTroopDisplayData() {
-//     window2.updatePlayerTwoTroopDisplayData(2);
-// }
-
 function updatePlayerOneBaseHealth(player, healthAfterAttack) {
     document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+healthAfterAttack +" / 200";
-}
-
-function triggerPlayerTwoBaseHealth(healthAfterAttack) {
-    window2.updatePlayerTwoBaseHealth(2, healthAfterAttack);
 }
 
 function clearSingleTileInnerHtml(loc) {
     document.getElementById(loc).innerHTML = "";
 }
 
-function informPlayerAllUnitsOnCooldownCausedTurnToPass(player, activeInfo) {
-    if (player == 1) {
-        window2.informPlayerAllUnitsOnCooldownCausedTurnToPass(player, activeInfo);
-    } else if (player == 2) {
+function informPlayerAllUnitsOnCooldownCausedTurnToPass(activeInfo) {
+
         document.getElementById("currentAlertSmall").innerHTML = activeInfo;
-    }
 }
 
 function signalGameLoss(player) {
-    var player = convertPlayerToNumber(player);
-    var otherPlayer = (player == 1 ? 2 : 1);
+    var players = getStorage('usernames');
+    var otherPlayer = players.filter(function(x) { return x !== player});
+ 
     hideModalOverlays();
     if (!document.getElementById('alertModal').classList.contains('hidden')){
         document.getElementById('alertModal').classList.add('hidden');
     }
     //should trigger a consolation modal with embedded video and maybe some gamestats
-    document.getElementById("gameAlertsSmall"+otherPlayer).innerHTML = "";
-    document.getElementById("gameAlertsLarge"+otherPlayer).innerHTML = "You are defeated!";
+    document.getElementById("gameAlertsSmall").innerHTML = "";
+    document.getElementById("gameAlertsLarge").innerHTML = "You are defeated!";
     // document.getElementById("defeatVideo").classList.remove("hidden");
     // playSound("defeat");
     document.getElementById("finishedModal").classList.remove("hidden");

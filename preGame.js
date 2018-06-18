@@ -120,10 +120,10 @@ function setup() {
         if (name === username) {
             var message = "You placed your base. Please wait for your opponent to place their base."
             showAlertModal(message);
-            // document.getElementById('gameAlertsLarge1').innerHTML = "Base location submitted. Please wait for other player.";
+            // document.getElementById('gameAlertsLarge').innerHTML = "Base location submitted. Please wait for other player.";
         } else {
-            let playerName = checkPrivateUsers(privateUsers);
-            if (playerName === true) {
+            let playerInGame = checkPrivateUsers(privateUsers);
+            if (playerInGame === true) {
             setStorage('playerBaseLocation2', 'true');
             }
         }
@@ -134,9 +134,9 @@ function setup() {
         var users = getStorage('users');
         //clear selected base, remove alert modal, and inform them that they need to try again
         hideAlertModal();
-        let playerName = checkPrivateUsers(privateUsers);
-        if (playerName === true) {
-        document.getElementById('gameAlertsLarge1').innerHTML = "Your bases were too close. Choose again.";
+        let playerInGame = checkPrivateUsers(privateUsers);
+        if (playerInGame === true) {
+        document.getElementById('gameAlertsLarge').innerHTML = "Your bases were too close. Choose again.";
         //reset all mazeholes to default background color of ghostwhite
         for (var i=0; i<400; i++) {
             document.getElementById(i).style.backgroundColor = "ghostwhite";
@@ -147,16 +147,28 @@ function setup() {
     socket.on('second-base-has-been-selected-pass', function(privateUsers){
         console.log("2 bases chosen and locations PASS validation.");
         hideAlertModal();
-        document.getElementById('gameAlertsLarge1').innerHTML = "";
+        document.getElementById('gameAlertsLarge').innerHTML = "";
         revealOpenTroopModalButton(privateUsers);
         
     });
 
     socket.on('render-enemy-units', function(username, makeKnown) {
         //render out enemy units and base as present in makeKnown
-
+        drawEnemyUnitsToMap(username, makeKnown);
     });
 
+    socket.on('set-starting-player', function(name, privateUsers) {
+        setStorage('turnIndicator', username);
+        var username = getStorage('username');
+        if (name === username) {
+        console.log('I am the starting player. My name is ' + username);
+        hideAlertModal();
+        }
+        let playerInGame = checkPrivateUsers(privateUsers);
+        if (playerInGame === true) {
+            updateTurnIndicator(name);
+        }
+    });
 
 
      //end of setup
@@ -378,4 +390,29 @@ function updateTroopLocation(name, node) {
 function saveVisibletilesToServer(username, visibleTileArray) {
     console.log('updating server with most recent visible tiles');
     socket.emit('update-visible-tiles', username, visibleTileArray);
+}
+
+function drawEnemyUnitsToMap(username, makeKnown) {
+    console.log('INSIDE drawEnemyUnitsToMap');
+    console.log(JSON.stringify(makeKnown, null, 4));
+    //need to clear the map and redraw this user and enemy user's units
+    for (var i=0; i<makeKnown.length; i++) {
+
+    }
+}
+
+function checkUnitsForAllCooldowns(otherPlayer) {
+    //this function will need to check to see if all the other player's units are on cooldown
+    var otherPlayerObj = getStorage("playerObj"+otherPlayer);
+    var allOnCooldown = true;
+    for (var i=0; i<otherPlayerObj.troops.length; i++) {
+        if (otherPlayerObj.troops[i].Cooldown == 0) {
+            allOnCooldown = false;
+        }
+        if (allOnCooldown == false) {
+            return false;
+        }
+    }
+     
+    return true;
 }

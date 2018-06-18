@@ -10,41 +10,22 @@ function showAlertModal(message) {
 }
 
 function hideAlertModal() {
-    $.modal.close();
-    document.getElementById("alertModal").classList.add("hidden");
     //unhide or make available the next action
+    $.modal.close();
+    document.getElementById("alertModal").classList.add("hidden"); 
 }
 
-function switchActivePlayer(player) {
-    // var activePlayer = getStorage("turnIndicator");
-    // var activePlayer = player;
-    setStorage("alertMessage", "Please wait for your turn.");
-    if (player == 1) {
-        triggerAlertModalForPlayerOne();
-
-    } else if (player == 2) {
-        triggerAlertModalForPlayerTwo();
-
-    } else {
-        alert("Warning function alertModalForNotActivePlayer does not have valid activePlayer");
-    }
-    updateTurnIndicator();
-}
-
-function addActionInfoToAlertModal(actionInfo, player) {
-    var player = convertPlayerToNumber(player);
-    var otherPlayer = (player == 1 ? 2 : 1);
+function addActionInfoToAlertModal(actionInfo) {
     var turnDidNotSwitch = getStorage("allCoolDowns");
    if (turnDidNotSwitch == "false") {
         document.getElementById("currentAlertSmall").innerHTML = actionInfo;
     } else if (turnDidNotSwitch == "true") {
        //the turn did not switch -- inform the waiting player that their turn has been passed
        var actionInfo = "All of your units were on cooldown and your turn has been passed.";
-       informPlayerAllUnitsOnCooldownCausedTurnToPass(player, actionInfo);
-    }
-        else {
+       informPlayerAllUnitsOnCooldownCausedTurnToPass(actionInfo);
+    } else {
             //should not get here. Error has occurred
-            console.log("addActionInfoToAlertModal has incorrect turnDidNotSwitch value. Please troubleshoot.");
+            console.log("addActionInfoToAlertModal (in AlertSystem.js) has incorrect turnDidNotSwitch value. Please troubleshoot.");
    }
 }
 
