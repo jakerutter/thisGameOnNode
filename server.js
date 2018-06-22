@@ -156,7 +156,6 @@ io.sockets.on('connection', function (socket) {
         //passed validation
         console.log("2 bases chosen. PASS");
         console.log(privateUsers + " <----------- private users");
-    
         io.emit('second-base-has-been-selected-pass', privateUsers);
       } else {
         //failed validation
@@ -356,9 +355,13 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
 }
 
 function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
+  console.log('inside serverUpdateVisibleTiles!! about to call makeVisibleOtherPlayersUnits');
+  var otherPlayer = privateUsers.filter(function(x) { return x !== username});
+  otherPlayer = otherPlayer[0];
   //server update the visible tiles for a specific player
   gameObj[username].visibleTiles = visibleTileArray;
   makeVisibleOtherPlayersUnits(username, gameObj, privateUsers);
+  makeVisibleOtherPlayersUnits(otherPlayer, gameObj, privateUsers);
   // console.log(JSON.stringify(gameObj, null, 4));    --uncomment to see gameObj
   // console.log(visibleTileArray);                    --uncomment to see visibleTiles
   return gameObj;
@@ -368,41 +371,50 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
 
   // this will add to the map the other player's units & base
   var otherPlayer = privateUsers.filter(function(x) { return x !== username});
+  otherPlayer = otherPlayer[0];
   let visibleTileArray = gameObj[username].visibleTiles;
   var makeKnown = [];
-  
+  // console.log(otherPlayer);
+  // console.log(gameObj[otherPlayer].base.loc);
+  // console.log(gameObj[otherPlayer]);
+  var count = 0;
       for (var k=0; k<visibleTileArray.length; k++) {
-          for (var i=0; i<gameObj[otherPlayer].troops.length; i++) {
-              if (gameObj[otherPlayer].troops[i].Location == visibleTileArray[k]) {
-                console.log('EUREKA we have a match! -- inside makeVisibleOtherPlayersUnits');  
+          for (var troop in gameObj[otherPlayer].troops) {
+            if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
+              var troopLocation = gameObj[otherPlayer].troops[troop].Location;
+              count += 1;
+              // console.log('checking '+visibleTileArray[k] + " " + troop +' location is ---> '+ troopLocation);
+
+              if (troopLocation == visibleTileArray[k]) {
+                // console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
               //add the desired details into a visibleItem which will be placed in makeKnown array
               //then returned and rendered on client side
               let visibleItem = {};
-              visibleItem.location = gameObj[otherPlayer].troops[i].Location;
-              visibleItem.name = gameObj[otherPlayer].troops[i].troopName;
+              visibleItem.location = troopLocation;
+              visibleItem.name = gameObj[otherPlayer].troops[troop].Name;
               visibleItem.color = gameObj[otherPlayer].color;
-              visibleItem.health = gameObj[otherPlayer].health;
+              visibleItem.health = gameObj[otherPlayer].troops[troop].HealthPoints;
               console.log(JSON.stringify(visibleItem, null, 4));
               makeKnown.push(visibleItem);
               }
-             
+            }            
           }
           //if visible this will show the other players base
-          if (gameObj[otherPlayer].base.Location == visibleTileArray[k]) {
+          if (visibleTileArray[k] == (gameObj[otherPlayer].base.loc)) {
+            console.log('BASE LOCATED!');
             let visibleItem = {};
-            visibleItem.location = gameObj[otherPlayer].troops[i].Location;
+            visibleItem.location = gameObj[otherPlayer].base.loc;
             visibleItem.name = 'enemy base';
             visibleItem.color = gameObj[otherPlayer].color;
             visibleItem.health = gameObj[otherPlayer].base.health;
             makeKnown.push(visibleItem);
               } 
           }
-      
+      // console.log('inside makeVisibleOtherPlayersUnits and makeKnkown length is...'+ makeKnown.length);
       //send the data to the client to render
       if (makeKnown.length > 0) {
           io.emit('render-enemy-units', username, makeKnown);
           }
-
 }
 
 function serverTriggerGameStart(gameObj) {

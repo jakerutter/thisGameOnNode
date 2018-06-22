@@ -132,6 +132,8 @@ function setup() {
     socket.on('second-base-has-been-selected-fail', function(privateUsers) {
         var name = getStorage('username');
         var users = getStorage('users');
+        //clear base location in local storage
+        
         //clear selected base, remove alert modal, and inform them that they need to try again
         hideAlertModal();
         let playerInGame = checkPrivateUsers(privateUsers);
@@ -145,6 +147,7 @@ function setup() {
     });
 
     socket.on('second-base-has-been-selected-pass', function(privateUsers){
+    
         console.log("2 bases chosen and locations PASS validation.");
         hideAlertModal();
         document.getElementById('gameAlertsLarge').innerHTML = "";
@@ -393,11 +396,29 @@ function saveVisibletilesToServer(username, visibleTileArray) {
 }
 
 function drawEnemyUnitsToMap(username, makeKnown) {
+    var name = getStorage('username');
     console.log('INSIDE drawEnemyUnitsToMap');
     console.log(JSON.stringify(makeKnown, null, 4));
     //need to clear the map and redraw this user and enemy user's units
-    for (var i=0; i<makeKnown.length; i++) {
-
+    //account for Name, Location, Color, Health of units & base
+    if (name === username) {
+        for (var i=0; i<makeKnown.length; i++) {
+            //handle base first
+            if(makeKnown[i].name === 'enemy base'){
+                document.getElementById(makeKnown[i].location).style.backgroundColor = makeKnown[i].color;
+                document.getElementById(makeKnown[i].location).title = "Enemy Base "+ makeKnown[i].health+" / 200 health";   
+            } 
+            else {
+                document.getElementById(makeKnown[i].location).innerText = "";
+                var health = getTroopMaxHealth(makeKnown[i].name);
+                var pictureID = "player1"+makeKnown[i].name;
+                document.getElementById(makeKnown[i].location).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].name+""+" src=/Assets/"+makeKnown[i].name+makeKnown[i].color+".png></img>";
+                document.getElementById(makeKnown[i].location).title = "Enemy "+ makeKnown[i].name + ", "+health+" / "+health+" Health Points";
+                // document.getElementById(pictureID).style.height = '100%';
+                // document.getElementById(pictureID).style.width = '100%';
+                
+            }
+        }
     }
 }
 

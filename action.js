@@ -233,12 +233,14 @@ function placePlayerBase(id) {
     if (playerBaseCheck == ""){
         document.getElementById('playerBaseLocation').innerHTML = id;
         homeBase.style.backgroundColor = playerColor;
+        document.getElementById(id).title = "Base, 200 / 200 Health Points";
         setStorage("playerBaseLocation", id); 
     } else {
         var oldBase = document.getElementById('playerBaseLocation').innerHTML;
         document.getElementById(oldBase).classList.add("not-visible");
         document.getElementById(oldBase).style.backgroundColor = "";
         document.getElementById('playerBaseLocation').innerHTML = id;
+        document.getElementById(oldBase).title = "";
         homeBase.style.backgroundColor = playerColor;
         setStorage("playerBaseLocation", id);
         }
@@ -253,7 +255,9 @@ function troopModal() {
     document.getElementById('troopModal').classList.add('table');
     document.getElementById('troopModal').classList.remove('hidden');
     $("#troopModal").modal();
-    placeBaseDisplayData(1);
+    var playerbj = getStorage('playerObj');
+    console.log(JSON.stringify(playerObj, null, 4));
+    placeBaseDisplayData(0);
     var tempTroopArray = getStorage("tempTroopArray1");
     if ((tempTroopArray != null) && (tempTroopArray.length > 0)) {
     for (var i=0; i<tempTroopArray.length; i++) {
@@ -397,9 +401,10 @@ function checkPlayerUnitLocation(player, id) {
         var color = playerObj.player.Color;
         var node = Number(id);
         playerObj.troops[troopsToPlace].Location = node;
-        
+        var health = getTroopMaxHealth(name);
         var pictureID = "player1"+name;
         document.getElementById(node).innerHTML = "<img id=player1"+""+name+""+" src=Assets/"+name+color+".png></img>";
+        document.getElementById(node).title = name + ", "+health+" / "+health+" Health Points";
         document.getElementById(pictureID).style.height = '100%';
         document.getElementById(pictureID).style.width = '100%';
         //send troop location to server
@@ -472,10 +477,6 @@ function updateActivePlayerTroopDisplayData(player) {
     }
 }
 
-function updatePlayerOneBaseHealth(player, healthAfterAttack) {
-    document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+healthAfterAttack +" / 200";
-}
-
 function clearSingleTileInnerHtml(loc) {
     document.getElementById(loc).innerHTML = "";
 }
@@ -488,7 +489,7 @@ function informPlayerAllUnitsOnCooldownCausedTurnToPass(activeInfo) {
 function signalGameLoss(player) {
     var players = getStorage('usernames');
     var otherPlayer = players.filter(function(x) { return x !== player});
- 
+    otherPlayer = otherPlayer[0];
     hideModalOverlays();
     if (!document.getElementById('alertModal').classList.contains('hidden')){
         document.getElementById('alertModal').classList.add('hidden');

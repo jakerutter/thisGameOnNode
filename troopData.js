@@ -1279,3 +1279,24 @@ function applyBombardierDamage(player, damagedArray) {
     setStorage("playerObj"+otherPlayer, otherPlayerObj);
 }
 
+function getTroopMaxHealth(name) {
+    if (name == "DepthCharge") {
+        return "15";
+    } else if (name == "Swarm") {
+        return "128";
+    } else if (name == "Scan") {
+        return "15";
+    } else if (name == "Pirate") {
+        return "60";
+    } else if (name == "Bombardier") {
+        return "60";
+    } else if (name == "Destroyer") {
+        return "100";
+    } else if (name == "Ruskie") {
+        return "70";
+    } else if (name == "Gremlin") {
+        return "90";
+    } else if (name == "Scout") {
+        return "35";
+    }
+}

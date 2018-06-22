@@ -179,13 +179,13 @@ function placeTurnIndicatorData(username) {
     }
 }
 
-function placeBaseDisplayData(playerObj) {
-      
+function placeBaseDisplayData(signal) {
+        var playerObj = getStorage('playerObj');
         var base = document.getElementById("playerBaseLocation").innerHTML;
         var coords = document.getElementById(base).dataset.coords;
         document.getElementById("baseLocationDisplay").innerHTML = "Your base is located at "+coords;
         document.getElementById("baseHealthDisplay").innerHTML = "Base Health: 200 / 200";
-        if (playerObj != null) {
+        if (signal > 0) {
         document.getElementById("baseLocationDisplay").innerHTML = "Your base is located at "+coords;
         document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+playerObj.base.HealthPoints+ " / 200"; 
     }
@@ -648,8 +648,7 @@ function prepareGameAction(activeUnit, event) {
 
 function performGameAction(id) {
     var moveType = getStorage("moveType");
-    var activeUnit = getStorage("activeTroop");
-    var cooldown = checkCoolDown(activeUnit);
+    var cooldown = checkCoolDown();
     if (cooldown == 0) {
     //will control all things needed to move a unit/progress player turn
         if (moveType == "option1") {
@@ -753,12 +752,12 @@ function handlePlayerMove(id) {
 }
 
 function processTurn() {
-    var playerObj = getStorage("playerObj");
+    
     document.getElementById("gameAlertsSmall").classList.remove("redText");
     document.getElementById("gameAlertsSmall").innerHTML = "";
     var otherPlayer = getStorage('opponent');
     placeTurnIndicatorData();
-    placeBaseDisplayData(playerObj);
+    placeBaseDisplayData(1);
     updateTroopDisplayData();
     resetVisibilityForTroops();
     //this will need to occur on the server
