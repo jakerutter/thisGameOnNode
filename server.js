@@ -32,7 +32,11 @@ var clientCount = 0;
 io.sockets.on('connection', function (socket) {
 
   // We are given a websocket object in our function
-  clientCount +=1;
+  //clientCount +=1;
+  server.getConnections(function(error, count){ 
+    clientCount = count;
+  });
+
   console.log(clientCount + " number of clients connected. That is more than we had before.");
   io.sockets.emit('broadcast',{ description: clientCount + ' clients connected!'});
   io.sockets.emit('usernames-taken', users);
