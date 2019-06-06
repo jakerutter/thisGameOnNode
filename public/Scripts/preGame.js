@@ -141,7 +141,7 @@ function setup() {
         if (playerInGame === true) {
             document.getElementById('gameAlertsLarge').innerHTML = "Your bases were too close. Choose again.";
             //reset all mazeholes to default background color of ghostwhite
-            let tiles = "empty";
+            var tiles = "empty";
             renderVisibilityForBase(tiles);
         }
     });
@@ -380,6 +380,13 @@ function createPlayerButtons(users) {
         } else {
            return;
         }
+}
+
+function renderVisibilityForBase(tiles){
+    console.log('inside renderVisibilityForBase tiles is '+ tiles);
+    if (tiles == "empty"){
+        $(".mazehole").removeClass("not-visible");
+    }
 }
 
 function addPlayerTroopsToGameObject(name, troopArray) {

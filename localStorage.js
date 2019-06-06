@@ -183,10 +183,10 @@ function placeBaseDisplayData(signal) {
         var playerObj = getStorage('playerObj');
         var base = document.getElementById("playerBaseLocation").innerHTML;
         var coords = document.getElementById(base).dataset.coords;
-        document.getElementById("baseLocationDisplay").innerHTML = "Your base is located at "+coords;
+        document.getElementById("baseLocationDisplay").innerHTML = "Base location: "+coords;
         document.getElementById("baseHealthDisplay").innerHTML = "Base Health: 200 / 200";
         if (signal > 0) {
-        document.getElementById("baseLocationDisplay").innerHTML = "Your base is located at "+coords;
+        document.getElementById("baseLocationDisplay").innerHTML = "Base location: "+coords;
         document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+playerObj.base.HealthPoints+ " / 200"; 
     }
 }

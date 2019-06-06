@@ -169,9 +169,10 @@ io.sockets.on('connection', function (socket) {
         //failed validation
         console.log("2 bases chosen. FAIL. RESET.");
         //clear the values for base placement
+        gameObj['stage'] = "TwoColorsSelected";
         addBaseLocationToUserObj(privateUsers[0], "","", "", gameObj);
         addBaseLocationToUserObj(privateUsers[1], "","", "", gameObj);
-        gameObj['stage'] = "TwoColorsSelected";
+        
         io.emit('second-base-has-been-selected-fail', privateUsers);
       }
     });
@@ -210,7 +211,7 @@ function compareBaseLocations(gameObj) {
     var xdiff = getXDifference(b1x,b2x);
     var ydiff = getYDifference(b1y,b2y);
     console.log("xDiff = "+ xdiff+ " & yDiff = "+ ydiff);
-         if ((xdiff >= buffer) || (ydiff >= buffer)) {
+         if ((xdiff >= buffer) && (ydiff >= buffer)) {
           //return true if the bases pass location validation and the game should commence
           return true;
          } else {
@@ -291,7 +292,7 @@ function addBaseLocationToUserObj(name, location, bx, by, gameObj) {
   gameObj[name].base["xyCoord"] = bx.toString() +","+ by.toString();
   //update stage to track progress in game setup
   let stage = gameObj['stage'];
-  
+  console.log('stage is ' + stage);
   if (stage == "TwoColorsSelected") {
     gameObj['stage'] = "OneLocationSelected";
   } else if (stage == "OneLocationSelected") {

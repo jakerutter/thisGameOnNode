@@ -1,5 +1,4 @@
 var window2;
-//window2.callAlert();  example how to call window2 function
 
 //canvas that is drawn on body.onload and sits in the background
 function generateBackground() {
