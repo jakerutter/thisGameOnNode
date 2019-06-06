@@ -248,9 +248,10 @@ function checkforEnterKeyPress(identifier,e) {
 
 // This one is for chat feature
 function sendChatMessage() {
+
    var username = getStorage('username');
    var chatmessage = $('#m').val();
-   if (chatmessage == "") {
+   if (chatmessage.replace(" ", "") == "") {
         document.getElementById('noMessage').innerHTML = "Please type a message you'd like to send.";
    } else {
        
@@ -260,6 +261,7 @@ function sendChatMessage() {
         socket.emit('send-message', data);
     }
     $('#m').val('');
+    
 }
 
 function hideModalOverlays() {
@@ -350,6 +352,7 @@ function createPlayerButtons(users) {
             // console.log(users[n].nickname);
             userArray.push(users[n].nickname);
             let button = document.createElement("button");
+            button.id = username;
             button.innerHTML = users[n].nickname;
 
             // 2. Append buttons where I want them

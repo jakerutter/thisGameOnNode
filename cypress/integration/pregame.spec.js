@@ -13,21 +13,21 @@ describe('Player1 button displayed in banner at top', function() {
   })
 })
 
-describe('Player1 can click into the text bar and type a message', function(){
-  it('Text appears in input bar of chat room', function(){
-    cy.get('#m').click()
-    cy.get('#m').type('Testing the chat input')
-    cy.get('#m').contains('Testing the chat input')
-  })
-})
-
-describe('Player1 can submit chat text into the chat forum', function(){
+describe('Player1 can submit chat text into the chat forum by typing Enter', function(){
   it('Text appears in the chat room', function(){
+    cy.get('#m').type('Testing the chat input')
     cy.get('#m').click().type('{enter}')
     cy.get('#chatFeature').contains('Testing the chat input')
   })
 })
 
+describe('Player1 can submit chat text into the chat forum by clicking Send', function(){
+  it('Text appears in the chat room', function(){
+    cy.get('#m').type('Testing the chat input again')
+    cy.get('#chatSend').click()
+    cy.get('#chatFeature').contains('Testing the chat input again')
+  })
+})
 
 
 })
