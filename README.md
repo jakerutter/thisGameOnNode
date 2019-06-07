@@ -4,8 +4,14 @@ A game I made using node.js and socket.io. The game is similar to a cross betwee
 
 ## Current Status
 
-Once again deciding where I want to host this game. Previously had it operational in Azure, but the cost was prohibitive for a for-fun project.
-Also working to have automated cypress tests for regression prevention and help speed up future development with data entry and feature testing.
+Working on this project once again.
+Currently working to fix errors when updating the visible and not-visible areas of the game board to each player as units are placed and moved about the map.
+
+### Adding automated cypress tests
+These are for regression prevention and help speed up future development with data entry and feature testing. Next step on this front is to add stubs that mock a second user logging on and entering a game with the initial user. End goal is to test a game end to end with cypress tests.
+
+### Chrome Node.js debugger
+This has been a very handy tool in debugging this application.
 
 
 ### Acknowledgments
