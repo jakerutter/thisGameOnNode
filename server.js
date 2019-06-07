@@ -559,5 +559,6 @@ function convertIdToCoordinates(id) {
 }
 
 function returnArrayWithoutDuplicates(a) {
+  console.log(a);
   return Array.from(new Set(a));
 }
