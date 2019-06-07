@@ -1,4 +1,7 @@
-
+//Chrome debug instructions
+//$ node --inspect server.js
+//type into chrome: about:inspect
+//select open dedicated dev tools for node
 const fs = require('fs');
 
 var express = require('express');
@@ -359,7 +362,7 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
     } else alert('there is an error in serverUpdateTroopLocation. please troubleshoot');
   }
     
-    return gameObj;
+    return visibleTileArray;
 }
 
 function updateVisibilityForBase(location) {
@@ -377,6 +380,42 @@ function updateVisibilityForBase(location) {
       }
       return tiles;
 }
+
+//Update the visible tiles for the troop placed or moved
+// function updateVisibilityForTroops(username) {
+//   var visibleArray = gameObj[username].visibleTiles;
+//   var otherPlayer = privateUsers.filter(function(x) { return x !== username});
+//   otherPlayer = otherPlayer[0];
+//   if (visibleArray == "") {
+//       var visibleTileArray = [];
+//   } else {
+//       var visibleTileArray = visibleArray;
+//   }
+//   for (var troop in gameObj[username].troops) {
+//     if (gameObj[username].troops.hasOwnProperty(troop)) {
+//       var troopLocation = gameObj[username].troops[troop].Location;
+//       if (troopLocation != "tbd") {
+//         console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
+//       var visibility = gameObj[username].troops[troop].Visibility;
+//         console.log('visibility is ');
+//         console.log(visibility);
+//               var tCoordsArray = convertIdToCoordinates(troopLocation);
+//               var tx = Number(tCoordsArray[0]);
+//               var ty = Number(tCoordsArray[1]);
+//               for (var m=Math.max((tx-visibility),0); m<Math.min((tx+visibility+1),20); m++) {
+//                   for (var n=Math.max((ty-visibility),0); n<Math.min((ty+visibility+1),20); n++) {
+//                       var id = convertCoordsToId(m,n);
+                      
+//                       visibleTileArray.push(id);
+//                   }   
+//                 }
+//           }
+//       }
+//   }
+//   visibleTileArray = returnArrayWithoutDuplicates(visibleTileArray);
+  
+//   return visibleTileArray;
+// }
 
 function updateVisibilityForTroops(username) {
   var visibleArray = gameObj[username].visibleTiles;

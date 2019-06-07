@@ -261,13 +261,19 @@ function renderVisibilityForBase(tiles) {
 function renderVisibleTilesForClient(username, tiles) {
     console.log('inside renderVisibleTilesForClient! ' + username);
     console.log(tiles);
-    resetVisibiilityToNone();
+    var thisPlayer = getStorage("playerName");
+    if (username == thisPlayer){
+        //grey out all tiles
+        resetVisibiilityToNone();
     if (tiles != "empty") {
+        //make white visible tiles
         for (var i=0; i<tiles.length; i++) {
             document.getElementById(tiles[i]).classList.add('visible');
         }
     }
     setStorage('visibleTiles', tiles);
+    }
+    
 }
 
 function returnArrayWithoutDuplicates(a) {
