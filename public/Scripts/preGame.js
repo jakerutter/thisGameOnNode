@@ -74,7 +74,7 @@ function setup() {
      });
 
      socket.on('update-users-challenge-refused', function(name, challenger) {
-        //clear challenger from localstorage since the challenge was deined
+        //clear challenger from localstorage since the challenge was denied
         var challengerStored = getStorage('challenger');
         if (challengerStored != "") {
             setStorage('challenger', '');
@@ -352,7 +352,7 @@ function createPlayerButtons(users) {
             // console.log(users[n].nickname);
             userArray.push(users[n].nickname);
             let button = document.createElement("button");
-            button.id = username;
+            button.id = users[n].nickname;
             button.innerHTML = users[n].nickname;
 
             // 2. Append buttons where I want them

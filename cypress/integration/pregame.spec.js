@@ -29,5 +29,11 @@ describe('Player1 can submit chat text into the chat forum by clicking Send', fu
   })
 })
 
+describe('Player1 can click on Jake\'s player button', function(){
+  it('Clicks on the player button with ID of jake', function(){
+    cy.get('#jake').click()
+  })
+})
+
 
 })
