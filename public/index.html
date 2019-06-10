@@ -142,10 +142,10 @@
       </div>
 
   <div id="welcomeModal" class="modal center hidden"><h1>Welcome to This Game</h1>
-      <div><h3 id="welcomeModalTopH3">Enter your player info.</h3></div>
+      <div><h3 id="welcomeModalTopH3">Select a color</Select></h3></div>
       <form id="welcomeForm">
       
-          <div>Your color:
+          <div>colors:
               <select id="playerColorSelect" onchange="playerColorPopulating(this);">
                   <option disabled selected value> -- select an option -- </option>
                   <option class="redText" value="red">red</option>
@@ -160,7 +160,7 @@
       </form>
           <div><h4 id="welcomeAlert">The goal is to find and eliminate the other players.</h4></div>
           <span class="simplemodal-close"></span>
-          <button onclick="settingsModal()" >Settings and Info</button>
+          <button id="btnSettingsModal" onclick="settingsModal()" >Settings and Info</button>
           <button id="confirmSettings" onclick="hideWelcomeModal()" >Continue to Game</button>
     
   </div>
@@ -173,7 +173,7 @@
               PV gets to go first.
           </h5></div>
           <span class="simplemodal-close">A Rutter Production. 2018.</span>
-          <button onclick="hideSettingsModal()">Continue</button>
+          <button id="btnHideSettingsModal" onclick="hideSettingsModal()">Continue</button>
    
   </div>
  
