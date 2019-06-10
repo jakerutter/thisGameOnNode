@@ -276,7 +276,7 @@ function sendChatMessage() {
    var username = getStorage('username');
    var chatmessage = $('#m').val();
    if (chatmessage.replace(' ', '') == '') {
-        document.getElementById('noMessage').innerHTML = 'Please type a message you'd like to send.';
+        document.getElementById('noMessage').innerHTML = 'Please type a message you\'d like to send.';
    } else {
        
         document.getElementById('noMessage').innerHTML = '';
