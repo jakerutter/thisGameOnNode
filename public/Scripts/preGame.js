@@ -1,4 +1,5 @@
 
+
 // Keep track of our socket connection
 var socket;
 socket = io.connect('http://localhost:8080');
@@ -108,7 +109,7 @@ function setup() {
     });
 
     socket.on('first-color-has-been-selected', function(name, chosenColor, privateUsers) {
-        console.log('first color' + chosenColor +' has been selected by '+name+'. showing alert modal.');
+        console.log('first color ' + chosenColor +' has been selected by '+name+'. showing alert modal.');
         var username = getStorage('username');
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
         document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
@@ -194,13 +195,22 @@ function setup() {
         }
     });
 
-
+    //actually run particular client-side function for a specific user
+    socket.on("run-function", function(username, functionToRun){
+        console.log('running '+ functionToRun +' for user: '+ username);
+        functionToRun(username);
+    });
 
      //end of setup
 }
 
+//call run-function to run a particular client-side function for a specific user
+function runFunction(username, functionToRun){
+    console.log('about to call run-function: '+ functionToRun +' for '+ username);
+    socket.emit('cross-server-control', username, functionToRun);
+}
 
-
+//validate then save player name
 function savePlayerName() {
     var name = document.getElementById('playerName').value;
     var namesTaken = getStorage('usernamesTaken');
@@ -216,7 +226,7 @@ function savePlayerName() {
     //set id value for this user to emit to the server
     id = Math.floor(Date.now() * Math.random());
     
-    if (name === "") {
+    if (name == "" || name == 'undefined' || name == null) {
         document.getElementById('nameFail').innerHTML = 'That is not an acceptable name. Please enter a name.';
     } else if (isNameTaken === true) {
         document.getElementById('nameFail').innerHTML = 'That is taken by another user. Please enter a different name.';
@@ -244,11 +254,11 @@ function savePlayerName() {
 //this will check the entry screen so that the enter button can be pressed or 'enter' key used
 function checkforEnterKeyPress(identifier,e) {
    
-    if (e && e.keyCode == 13) {
-        if (identifier == "name"){
+    if (e && e.keyCode === 13) {
+        if (identifier === "name"){
             savePlayerName();
             return false;
-        } else if (identifier == "chat") {
+        } else if (identifier === "chat") {
             sendChatMessage();
             return false;
         }
@@ -336,10 +346,10 @@ function claimSelectedColor(chosenColor, name) {
     }
     //End CYPRESS
     var otherPlayerColor = getStorage('playerColor2');
-    if ((otherPlayerColor != "") && (otherPlayerColor != null)) {
-        socket.emit('second-color-selected', name, chosenColor);
-    } else {
+    if ((otherPlayerColor == '')) {
         socket.emit('first-color-selected', name, chosenColor);
+    } else {
+        socket.emit('second-color-selected', name, chosenColor);
     }
 }
 

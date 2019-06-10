@@ -65,15 +65,17 @@ function showWelcomeModal() {
     $("#welcomeModal").modal();
 }
 
-function hideWelcomeModal(e) {
+function hideWelcomeModal(username) {
     document.getElementById('leftSideBarH3').classList.remove('hidden');
     var chosenColor = document.getElementById('playerColorSelection').innerHTML;
-
-    if(getStorage('playerColor') == 'undefined' || getStorage('playerColor') == ''){
+    //CYPRESS
+    if(getStorage('playerColor') == 'undefined' || getStorage('playerColor') == '' || getStorage('playerColor' == null)){
         claimSelectedColor(chosenColor);
     }
-    
-    var playerName = getStorage('username');
+    if(username == '' || username == 'undefined' || username == null){
+        var playerName = getStorage('username');  
+    }
+    //END CYPRESS
     document.getElementById('playerNameSelection').innerHTML = playerName;
     setStorage("playerName", playerName);
     setStorage("playerColor", chosenColor);
@@ -87,14 +89,16 @@ function hideWelcomeModal(e) {
     document.getElementById("option2").style.backgroundColor = chosenColor;
     document.getElementById("option3").style.backgroundColor = chosenColor;
     document.getElementById("option4").style.backgroundColor = chosenColor;
+
     if ((document.getElementById('playerColorSelection').innerHTML == "") || (document.getElementById('playerNameSelection').innerHTML == "")){
         document.getElementById('welcomeAlert').innerHTML = "You must submit player info to continue.";
         welcomeModal();
     } else {
-    var continueOn = setStorageNamesAndColorsForPlayerDisplay();
-    if (continueOn == true) {
-        startGame();
-    }
+        var continueOn = setStorageNamesAndColorsForPlayerDisplay();
+
+        if (continueOn == true) {
+            startGame();
+        }
         else {
             document.getElementById('welcomeAlert').classList.add('redText');
             document.getElementById('welcomeAlert').innerHTML = continueOn;

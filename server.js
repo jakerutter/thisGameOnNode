@@ -189,8 +189,12 @@ io.sockets.on('connection', function (socket) {
       var visibleTileArray = serverUpdateTroopLocation(username, name, node, gameObj);
       serverUpdateVisibleTiles(username, visibleTileArray, gameObj);
     });
-
-
+    
+    //use this function to call a client side function for the other player
+    socket.on('cross-server-control', function(name, functionToRun){
+      console.log('in server.js, supposed to call '+ functionToRun + ' for user: ' +name);
+      controlOtherClientThroughServer(name, functionToRun);
+    })
 
     //end of socket.on section
   });
@@ -198,6 +202,10 @@ io.sockets.on('connection', function (socket) {
 
 
   //Server-Side Functions
+function controlOtherClientThroughServer(username, functionToRun){
+  io.emit("run-function", username, functionToRun);
+}
+
 function compareBaseLocations(gameObj) {
     //get user names from privateUsers array
     var p1 = privateUsers[0];
@@ -431,7 +439,7 @@ function updateVisibilityForTroops(username) {
       var troopLocation = gameObj[otherPlayer].troops[troop].Location;
       if (troopLocation != "tbd") {
         console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
-      var visibility = gameObj[otherPlayer].troops[troop].Visibility;
+        var visibility = gameObj[otherPlayer].troops[troop].Visibility;
         console.log('visibility is ');
         console.log(visibility);
               var tCoordsArray = convertIdToCoordinates(troopLocation);
