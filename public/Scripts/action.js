@@ -4,7 +4,7 @@ var window2;
 function generateBackground() {
     //error here
     drawing();
-    var command = "playIntro";
+    var command = 'playIntro';
     // playSound(command);
 }
 
@@ -33,7 +33,7 @@ function drawing() {
                 ctx.shadowBlur = Math.floor((Math.random()*15)+5);
                 ctx.shadowColor = color(255,255,255);
                 }
-                ctx.fillStyle = color("hsla("+randomHue+", 30%, 80%, ."+randomOpacityOne+randomOpacityTwo+")");
+                ctx.fillStyle = color('hsla('+randomHue+', 30%, 80%, .'+randomOpacityOne+randomOpacityTwo+')');
                 ctx.fillRect(randomX, randomY, randomSize, randomSize);
             }
                 ctx.save();
@@ -62,7 +62,7 @@ function welcomeModal() {
 
 function showWelcomeModal() {
      document.getElementById('welcomeModal').classList.remove('hidden');
-    $("#welcomeModal").modal();
+    $('#welcomeModal').modal();
 }
 
 function hideWelcomeModal(username) {
@@ -77,21 +77,21 @@ function hideWelcomeModal(username) {
     }
     //END CYPRESS
     document.getElementById('playerNameSelection').innerHTML = playerName;
-    setStorage("playerName", playerName);
-    setStorage("playerColor", chosenColor);
+    setStorage('playerName', playerName);
+    setStorage('playerColor', chosenColor);
     placeNameDisplayData();
-    var stage = "intro";
+    var stage = 'intro';
     placeTurnIndicatorData(stage);
     $.modal.close();
     hideModalOverlays();
     //color the action buttons the player's color
-    document.getElementById("option1").style.backgroundColor = chosenColor;
-    document.getElementById("option2").style.backgroundColor = chosenColor;
-    document.getElementById("option3").style.backgroundColor = chosenColor;
-    document.getElementById("option4").style.backgroundColor = chosenColor;
+    document.getElementById('option1').style.backgroundColor = chosenColor;
+    document.getElementById('option2').style.backgroundColor = chosenColor;
+    document.getElementById('option3').style.backgroundColor = chosenColor;
+    document.getElementById('option4').style.backgroundColor = chosenColor;
 
-    if ((document.getElementById('playerColorSelection').innerHTML == "") || (document.getElementById('playerNameSelection').innerHTML == "")){
-        document.getElementById('welcomeAlert').innerHTML = "You must submit player info to continue.";
+    if ((document.getElementById('playerColorSelection').innerHTML == '') || (document.getElementById('playerNameSelection').innerHTML == '')){
+        document.getElementById('welcomeAlert').innerHTML = 'You must submit player info to continue.';
         welcomeModal();
     } else {
         var continueOn = setStorageNamesAndColorsForPlayerDisplay();
@@ -112,7 +112,7 @@ function settingsModal(){
     document.getElementById('playerNameSelection').innerHTML = playerName;
     hideModalOverlays();
     document.getElementById('settingsModal').classList.remove('hidden');
-    $("#settingsModal").modal();
+    $('#settingsModal').modal();
 }
 
 function hideSettingsModal() {
@@ -166,40 +166,40 @@ function startGame() {
     var userChoice = 20;
     maxRow = Number(userChoice);
     maxColumn = Number(userChoice);
-    setStorage("maxRow", maxRow);
+    setStorage('maxRow', maxRow);
     createDivs(maxRow);
 }
 
 //Creates the divs based on maxRow and maxColumn
 function createDivs(maxRow) {
-    document.getElementById('currentState').innerHTML = "selectBase";
+    document.getElementById('currentState').innerHTML = 'selectBase';
     
     var switchData = document.getElementById('currentState').innerHTML;
-    var wrapperDiv = document.getElementById("mazeWrapper");
+    var wrapperDiv = document.getElementById('mazeWrapper');
     var rowDiv;
       for (var i=0; i < maxRow; i++) {
-          var thisDiv = document.createElement("div");
-      thisDiv.id = "mazeRow-" + i;
-      thisDiv.className = "row";
+          var thisDiv = document.createElement('div');
+      thisDiv.id = 'mazeRow-' + i;
+      thisDiv.className = 'row';
         wrapperDiv.appendChild(thisDiv);
         for (var j=0; j < maxColumn; j++) {
-          rowDiv = document.getElementById("mazeRow-" + i);
-              var thisColumnDiv = document.createElement("div");
+          rowDiv = document.getElementById('mazeRow-' + i);
+              var thisColumnDiv = document.createElement('div');
                 thisColumnDiv.id = (i*maxRow)+j;               
-                thisColumnDiv.className = "mazehole";
+                thisColumnDiv.className = 'mazehole';
                 rowDiv.appendChild(thisColumnDiv);
                 //Adding in a html data-set to hold X,Y values for coordinate system
                 var elemID = (thisColumnDiv.id).toString();
                 var elem = document.getElementById(elemID);
-                var att = document.createAttribute("data-coords");
-                att.value = j+","+i;
+                var att = document.createAttribute('data-coords');
+                att.value = j+','+i;
                 elem.setAttributeNode(att);
-                thisColumnDiv.addEventListener("click", function(){
+                thisColumnDiv.addEventListener('click', function(){
                     functionSwitch(switchData, this.id);
         });
       }
     }
-    document.getElementById('gameAlertsSmall').innerHTML = "Click where you would like to place your home base.";
+    document.getElementById('gameAlertsSmall').innerHTML = 'Click where you would like to place your home base.';
     // document.getElementById('compareBaseLocationsButton').classList.remove('hidden');
 }
 
@@ -214,20 +214,20 @@ function functionSwitch(switchData, id) {
     }
     var id = id;
 
-        if (switchData == "selectBase") {
+        if (switchData == 'selectBase') {
             placePlayerBase(id);
             claimSelectedBase(id, username);
         }
-        else if (switchData == "baseConfirmed") { 
+        else if (switchData == 'baseConfirmed') { 
             checkPlayerUnitLocation(1,id);
         }
-        else if (switchData == "troopsPlaced") {
+        else if (switchData == 'troopsPlaced') {
             progressToFirstMoveOrPause();
         }
-        else if (switchData == "gameTime") {
+        else if (switchData == 'gameTime') {
             performGameAction(username, id);
         }
-        else if (switchData == "noClick") {
+        else if (switchData == 'noClick') {
             return;
         }
 }
@@ -237,22 +237,22 @@ function placePlayerBase(id) {
     var playerColor = document.getElementById('playerColorSelection').innerHTML;
     var homeBase = document.getElementById(id);
     var playerBaseCheck = document.getElementById('playerBaseLocation').innerHTML;
-    if (playerBaseCheck == ""){
+    if (playerBaseCheck == ''){
         document.getElementById('playerBaseLocation').innerHTML = id;
         homeBase.style.backgroundColor = playerColor;
-        document.getElementById(id).title = "Base, 200 / 200 Health Points";
-        setStorage("playerBaseLocation", id); 
+        document.getElementById(id).title = 'Base, 200 / 200 Health Points';
+        setStorage('playerBaseLocation', id); 
     } else {
         var oldBase = document.getElementById('playerBaseLocation').innerHTML;
-        document.getElementById(oldBase).classList.add("not-visible");
-        document.getElementById(oldBase).style.backgroundColor = "";
+        document.getElementById(oldBase).classList.add('not-visible');
+        document.getElementById(oldBase).style.backgroundColor = '';
         document.getElementById('playerBaseLocation').innerHTML = id;
-        document.getElementById(oldBase).title = "";
+        document.getElementById(oldBase).title = '';
         homeBase.style.backgroundColor = playerColor;
-        setStorage("playerBaseLocation", id);
+        setStorage('playerBaseLocation', id);
         }
         
-    document.getElementById('gameAlertsSmall').innerHTML = "";
+    document.getElementById('gameAlertsSmall').innerHTML = '';
 }
 
 //this is where they will select the units that they have to start the game with
@@ -261,11 +261,11 @@ function troopModal() {
     // setStorage("state", "baseConfirmed");
     document.getElementById('troopModal').classList.add('table');
     document.getElementById('troopModal').classList.remove('hidden');
-    $("#troopModal").modal();
+    $('#troopModal').modal();
     var playerbj = getStorage('playerObj');
     console.log(JSON.stringify(playerObj, null, 4));
     placeBaseDisplayData(0);
-    var tempTroopArray = getStorage("tempTroopArray1");
+    var tempTroopArray = getStorage('tempTroopArray1');
     if ((tempTroopArray != null) && (tempTroopArray.length > 0)) {
     for (var i=0; i<tempTroopArray.length; i++) {
         var tname = tempTroopArray[i];
@@ -284,17 +284,17 @@ function checkTroopSelection() {
         playerTroopSelection.innerHTML = troops;
         hideTroopModal(true);
         //set current state to "baseConfirmed" back from "noClick" so users can place their units
-        document.getElementById('currentState').innerHTML = "baseConfirmed";
-        setStorage("state", "baseConfirmed");
+        document.getElementById('currentState').innerHTML = 'baseConfirmed';
+        setStorage('state', 'baseConfirmed');
     }
      if (troops.length == 0) {
-        troopModalAlert.innerHTML = "You must make a selection before proceeding.";      
+        troopModalAlert.innerHTML = 'You must make a selection before proceeding.';      
     }
      if ((troops.length > 0) &&(troops.length < 3)) {
-        troopModalAlert.innerHTML = "Select 3 troops before continuing.";
+        troopModalAlert.innerHTML = 'Select 3 troops before continuing.';
     }
     if (troops.length > 3) {
-        troopModalAlert.innerHTML = "You may only select 3 units."
+        troopModalAlert.innerHTML = 'You may only select 3 units.';
     }
 }
 
@@ -324,29 +324,29 @@ function hideTroopDetailModal() {
 }
 
 // function playSound(command) {
-//     if (command == "playIntro") {
+//     if (command == 'playIntro') {
 //         document.getElementById('spaceIntro').play();
 //     }
-//     else if (command == "validation") {
-//         document.getElementById("wrongBuzz").play();
+//     else if (command == 'validation') {
+//         document.getElementById('wrongBuzz').play();
 //     }
-//     else if (command == "attack") {
-//         document.getElementById("spaceShot").play();
+//     else if (command == 'attack') {
+//         document.getElementById('spaceShot').play();
 //     }
-//     else if (command == "move") {
-//         document.getElementById("moveSound").play();
+//     else if (command == 'move') {
+//         document.getElementById('moveSound').play();
 //     }
-//     else if (command == "scan") {
-//         document.getElementById("scanSound").play();
+//     else if (command == 'scan') {
+//         document.getElementById('scanSound').play();
 //     }
-//     else if (command == "swarm") {
-//         document.getElementById("swarmSound").play();
+//     else if (command == 'swarm') {
+//         document.getElementById('swarmSound').play();
 //     }
-//     else if (command == "depthCharge") {
-//         document.getElementById("depthChargeSound").play();
+//     else if (command == 'depthCharge') {
+//         document.getElementById('depthChargeSound').play();
 //     }
-//     else if (command == "bomb") {
-//         document.getElementById("bombSound").play();
+//     else if (command == 'bomb') {
+//         document.getElementById('bombSound').play();
 //     }
     
 // }
@@ -377,7 +377,7 @@ function createRequirementsForPlayerObject(){
 
     var playerObj = new playerObject(player,troopArray,homeBaseObject);
     document.getElementById('playerObj').innerHTML = playerObj;
-    setStorage("playerObj", playerObj);
+    setStorage('playerObj', playerObj);
     return playerObj;
 }
 
@@ -387,67 +387,67 @@ function placePlayerUnits(playerObj) {
     var distance = 1;
     var player = 1;
     showAvailableTilesForAction(id, distance, player);  
-    document.getElementById('gameAlertsSmall').innerHTML = "You will place your units in tiles adjacent to your base.";
-    document.getElementById('gameAlertsLarge').innerHTML = "Click to place " + playerObj.troops[0].Name;
-    setStorage("troopsToPlace1", 0);
-    setStorage("playerObj", playerObj);
+    document.getElementById('gameAlertsSmall').innerHTML = 'You will place your units in tiles adjacent to your base.';
+    document.getElementById('gameAlertsLarge').innerHTML = 'Click to place ' + playerObj.troops[0].Name;
+    setStorage('troopsToPlace1', 0);
+    setStorage('playerObj', playerObj);
 }
 
 function checkPlayerUnitLocation(player, id) {
-    var troopsToPlace = getStorage("troopsToPlace1");
+    var troopsToPlace = getStorage('troopsToPlace1');
     var locationCheck = verifyLocationForPlacement(id);
     if ((locationCheck == true) && (troopsToPlace >= 3)) {
-        document.getElementById('currentState').innerHTML = "troopsPlaced";
+        document.getElementById('currentState').innerHTML = 'troopsPlaced';
         //clear gameAlertSmall message
-        document.getElementById("gameAlertsSmall").innerHTML = "";
+        document.getElementById('gameAlertsSmall').innerHTML = '';
     } else if ((locationCheck == true) && (troopsToPlace < 3)) {
-        if (document.getElementById(Number(id)).innerHTML == "") {
+        if (document.getElementById(Number(id)).innerHTML == '') {
 
-        var playerObj = getStorage("playerObj");
+        var playerObj = getStorage('playerObj');
         var name = playerObj.troops[troopsToPlace].Name;
         var color = playerObj.player.Color;
         var node = Number(id);
         playerObj.troops[troopsToPlace].Location = node;
         var health = getTroopMaxHealth(name);
-        var pictureID = "player1"+name;
-        document.getElementById(node).innerHTML = "<img id=player1"+""+name+""+" src=Assets/"+name+color+".png></img>";
-        document.getElementById(node).title = name + ", "+health+" / "+health+" Health Points";
+        var pictureID = 'player1'+name;
+        document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+color+'.png></img>';
+        document.getElementById(node).title = name + ', '+health+' / '+health+' Health Points';
         document.getElementById(pictureID).style.height = '100%';
         document.getElementById(pictureID).style.width = '100%';
         //send troop location to server
         updateTroopLocation(name, node);
-        setStorage("playerObj", playerObj);
+        setStorage('playerObj', playerObj);
         
         //Following two lines need defined in node version --
         // makeVisibleOtherPlayersUnits(1);
         // makeVisibleOtherPlayersUnits(2);
         //Testing this: placing troop data again once unitLocation is updated:
         updateTroopDisplayData(); 
-        var troopsToPlace = getStorage("troopsToPlace1");
+        var troopsToPlace = getStorage('troopsToPlace1');
         troopsToPlace += 1;
         if (troopsToPlace < playerObj.troops.length) {
-        document.getElementById('gameAlertsLarge').innerHTML = "Click to place " + playerObj.troops[troopsToPlace].Name;
+        document.getElementById('gameAlertsLarge').innerHTML = 'Click to place ' + playerObj.troops[troopsToPlace].Name;
         } else {
             clearAvailableTilesForAction();
-            setStorage("gameState1", "troopsPlaced");
-            document.getElementById('gameAlertsLarge').innerHTML = "All units placed.";
+            setStorage('gameState1', 'troopsPlaced');
+            document.getElementById('gameAlertsLarge').innerHTML = 'All units placed.';
             progressToFirstMoveOrPause();
         }
-        setStorage("troopsToPlace1", troopsToPlace);
+        setStorage('troopsToPlace1', troopsToPlace);
         } else { 
-            document.getElementById('gameAlertsSmall').innerHTML = "That tile is already occupied. Choose another.";
+            document.getElementById('gameAlertsSmall').innerHTML = 'That tile is already occupied. Choose another.';
         }
     } else if (troopsToPlace <= 2) {
-        document.getElementById('gameAlertsSmall').classList.add("redText");
-        document.getElementById('gameAlertsSmall').innerHTML = "You must place your units in tiles adjacent to your base.";
+        document.getElementById('gameAlertsSmall').classList.add('redText');
+        document.getElementById('gameAlertsSmall').innerHTML = 'You must place your units in tiles adjacent to your base.';
     }
 }
 
 function updateTurnIndicator(username) {
-    document.getElementById("currentState").innerHTML = "gameTime";
+    document.getElementById('currentState').innerHTML = 'gameTime';
     placeTurnIndicatorData(username);
     addClickEventsTroopPics();
-    document.getElementById("gameAlertsLarge").innerHTML = "Click on the picture [right menu] of the unit you'd like to activate.";
+    document.getElementById('gameAlertsLarge').innerHTML = 'Click on the picture [right menu] of the unit you\'d like to activate.';
 }
 
 function hideinGameTroopDetailModal() {
@@ -458,17 +458,17 @@ function hideinGameTroopDetailModal() {
 
 
 function updateActivePlayerTroopDisplayData(player) {
-    var playerObj = getStorage("playerObj"+player);
-    if (playerObj == "") {
-        document.getElementById("troopDisplay").innerHTML = "";
+    var playerObj = getStorage('playerObj'+player);
+    if (playerObj == '') {
+        document.getElementById('troopDisplay').innerHTML = '';
     } else {
-        document.getElementById("troopDisplay").innerHTML = "";
+        document.getElementById('troopDisplay').innerHTML = '';
         for (var i=0; i<playerObj.troops.length; i++) {
             var name = playerObj.troops[i].Name;
             var color = playerObj.player.Color;
             var id = playerObj.troops[i].Location;
             var coords = convertIdToCoordinates(id);
-        document.getElementById("troopDisplay").innerHTML +=
+        document.getElementById('troopDisplay').innerHTML +=
         "<span class='col-1-1 bottomSpacer'><h3>" + name +
         "<img name="+name+" class='troopPic' id="+player+'troopPic'+i+" title="+name+': '+playerObj.troops[i].HealthPoints+' health'+" src=Assets/"+name+color+".png></img></h3>" +
         "<span class='col-1-2'><span> Health Points: "+ playerObj.troops[i].HealthPoints + " / "+playerObj.troops[i].MaxHealth +"</span><br>"+
@@ -485,12 +485,12 @@ function updateActivePlayerTroopDisplayData(player) {
 }
 
 function clearSingleTileInnerHtml(loc) {
-    document.getElementById(loc).innerHTML = "";
+    document.getElementById(loc).innerHTML = '';
 }
 
 function informPlayerAllUnitsOnCooldownCausedTurnToPass(activeInfo) {
 
-        document.getElementById("currentAlertSmall").innerHTML = activeInfo;
+        document.getElementById('currentAlertSmall').innerHTML = activeInfo;
 }
 
 function signalGameLoss(player) {
@@ -502,15 +502,15 @@ function signalGameLoss(player) {
         document.getElementById('alertModal').classList.add('hidden');
     }
     //should trigger a consolation modal with embedded video and maybe some gamestats
-    document.getElementById("gameAlertsSmall").innerHTML = "";
-    document.getElementById("gameAlertsLarge").innerHTML = "You are defeated!";
+    document.getElementById('gameAlertsSmall').innerHTML = '';
+    document.getElementById('gameAlertsLarge').innerHTML = 'You are defeated!';
     // document.getElementById("defeatVideo").classList.remove("hidden");
     // playSound("defeat");
-    document.getElementById("finishedModal").classList.remove("hidden");
-    $("#finishedModal").modal();
-    document.getElementById("finishedAlert").innerHTML = "You are defeated.";
-    document.getElementById("finishedAlertSmall").innerHTML = "I suggest you read the Art of War then try again.";
-    document.getElementById("defeatVideo").classList.remove("hidden");
+    document.getElementById('finishedModal').classList.remove('hidden');
+    $('#finishedModal').modal();
+    document.getElementById('finishedAlert').innerHTML = 'You are defeated.';
+    document.getElementById('finishedAlertSmall').innerHTML = 'I suggest you read the Art of War then try again.';
+    document.getElementById('defeatVideo').classList.remove('hidden');
 }
 
 function convertPlayerToNumber(player) {
