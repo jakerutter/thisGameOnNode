@@ -108,6 +108,7 @@ function setup() {
     });
 
     socket.on('first-color-has-been-selected', function(name, chosenColor, privateUsers) {
+        console.log('first color' + chosenColor +' has been selected by '+name+'. showing alert modal.');
         var username = getStorage('username');
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+"Text");
         document.getElementById('welcomeModalTopH3').innerHTML = name + " has selected " + chosenColor + " as their color.";
@@ -121,6 +122,7 @@ function setup() {
     });
 
     socket.on('second-color-has-been-selected', function(name, chosenColor, privateUsers) {
+        console.log('second color ' +chosenColor +' has been selected by '+ name+'. showing alert modal.');
         setChosenColorInLocalStorage(name, chosenColor, privateUsers);
         hideAlertModal();    
     });
@@ -323,9 +325,16 @@ function respondToChallenge(response, name, challenger) {
         document.getElementById('chatWelcomeModal').classList.add('hidden');
     }
 }
-
-function claimSelectedColor(chosenColor) {
-    var name = getStorage('username');
+//a player selects a their color, send the selection to the server
+function claimSelectedColor(chosenColor, name) {
+    if (name == 'undefined' || name == ''){
+        var name = getStorage('username');
+    }
+    //CYPRESS
+    if (name != getStorage('username')){
+        setStorage('playerColor2', chosenColor);
+    }
+    //End CYPRESS
     var otherPlayerColor = getStorage('playerColor2');
     if ((otherPlayerColor != "") && (otherPlayerColor != null)) {
         socket.emit('second-color-selected', name, chosenColor);

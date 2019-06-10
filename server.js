@@ -135,13 +135,13 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('first-color-selected', function(name, chosenColor) {
-      console.log(name + " has chosen "+ chosenColor +" as their color.");
+      console.log('first player ' + name + " has chosen "+ chosenColor +" as their color.");
       io.emit('first-color-has-been-selected', name, chosenColor, privateUsers);
       addColorToUserObj(name, chosenColor, gameObj);
     });
 
     socket.on('second-color-selected', function(name, chosenColor) {
-      console.log(name + " has chosen "+ chosenColor +" as their color.");
+      console.log('second player ' + name + " has chosen "+ chosenColor +" as their color.");
       io.emit('second-color-has-been-selected', name, chosenColor, privateUsers);
       addColorToUserObj(name, chosenColor, gameObj);
     });

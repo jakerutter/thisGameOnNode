@@ -65,10 +65,14 @@ function showWelcomeModal() {
     $("#welcomeModal").modal();
 }
 
-function hideWelcomeModal() {
+function hideWelcomeModal(e) {
     document.getElementById('leftSideBarH3').classList.remove('hidden');
     var chosenColor = document.getElementById('playerColorSelection').innerHTML;
-    claimSelectedColor(chosenColor);
+
+    if(getStorage('playerColor') == 'undefined' || getStorage('playerColor') == ''){
+        claimSelectedColor(chosenColor);
+    }
+    
     var playerName = getStorage('username');
     document.getElementById('playerNameSelection').innerHTML = playerName;
     setStorage("playerName", playerName);

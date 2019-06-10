@@ -84,6 +84,12 @@ describe('Clicks the color selector and chooses red', function(){
   })
 })
 
+describe('player1 sends red to the server', function(){
+  it('Red is chosen for player1', function(){
+    cy.window().then(win => win.claimSelectedColor('red', 'player1'))
+  })
+})
+
 describe('After selecting a color Player1 clicks continue', function(){
   it('Player1 clicks continue to enter the game', function(){
     cy.get('#confirmColorSettings').click()
@@ -92,9 +98,8 @@ describe('After selecting a color Player1 clicks continue', function(){
 
 describe('jake selects the color green', function(){
   it('Green is chosen for jake', function(){
-    cy.window().then(win => win.claimSelectedColor('green'))
+    cy.window().then(win => win.claimSelectedColor('green', 'jake'))
   })
 })
-
 
 })
