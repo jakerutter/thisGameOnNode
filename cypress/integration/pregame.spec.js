@@ -35,14 +35,19 @@ describe('Player1 can click on Jake\'s player button', function(){
   })
 })
 
+describe('jake accepts the challenge', function(){
+  it('Furthers game when jake accepts challenge', function(){
+    cy.window().then(win => win.respondToChallenge('accept', 'jake', 'player1'))
+  })
+})
+
 describe('Welcome modal is displayed when the challenge is accepted', function(){
   it('Welcome modal appears for player1', function(){
-    cy.get('#welcomeModal').invoke('show')
     cy.get('#welcomeModal').contains('Select a color')
   })
 })
 
-describe('Clicks on the settings button and can read the game pemise', function(){
+describe('Clicks on the settings button and can read the game premise', function(){
   it('Opens the info modal', function(){
     cy.get('#btnSettingsModal').click()
     cy.get('#welcomeModal').invoke('hide')
@@ -72,11 +77,24 @@ describe('Color dropdown has all available color options', function(){
       .select('violet').should('have.value', 'violet')
   })
 })
+
 describe('Clicks the color selector and chooses red', function(){
   it('Selects red as Player1\'s color', function(){
-    cy.get('#playerColorSelect').select('red')
-    cy.get('#confirmSettings').click()
+    cy.get('#playerColorSelect').select('red').invoke('val')
   })
 })
+
+describe('After selecting a color Player1 clicks continue', function(){
+  it('Player1 clicks continue to enter the game', function(){
+    cy.get('#confirmColorSettings').click()
+  })
+})
+
+describe('jake selects the color green', function(){
+  it('Green is chosen for jake', function(){
+    cy.window().then(win => win.claimSelectedColor('green'))
+  })
+})
+
 
 })

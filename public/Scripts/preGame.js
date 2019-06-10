@@ -65,13 +65,23 @@ function setup() {
         }
      });
 
+     //challenge accepted. send challenger into the private game
      socket.on('challenger-join-private', function(challenger, name) {
         var username = getStorage('username');
         if (username === challenger) {
             setStorage("opponent", name);
             socket.emit('join-private', username);
+        } 
+        else
+        {
+            //CYPRESS hide the accept challenge modal for the player that accepted challenge
+            var modal = document.getElementById('chatWelcomeModal');
+            if (! modal.classList.contains('hidden')){
+                modal.classList.add('hidden');
+            }
         }
-     });
+
+    });
 
      socket.on('update-users-challenge-refused', function(name, challenger) {
         //clear challenger from localstorage since the challenge was denied
@@ -289,9 +299,16 @@ function getStorage(key) {
     return JSON.parse(item);
 }
 
-function respondToChallenge(response) {
-    var challenger = getStorage('challenger');
-    var name = getStorage('username');
+//this is triggered when a player clicks to accept or refuse a challenge
+function respondToChallenge(response, name, challenger) {
+    //load up the name name and challenger name if they're not provided
+    if (challenger == 'undefined' || challenger == ''){
+        var challenger = getStorage('challenger');
+    }
+    if (name == 'undefined' || name == ''){
+        var name = getStorage('username');  
+    }
+    
     //accepted challenge
     if (response === 'accept') {
         // let msg = 'Challenge sent and accepted! '+ challenger + ' versus '+name+"!";
