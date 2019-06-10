@@ -198,7 +198,10 @@ function setup() {
     //actually run particular client-side function for a specific user
     socket.on("run-function", function(username, functionToRun){
         console.log('running '+ functionToRun +' for user: '+ username);
-        functionToRun(username);
+        let thisUser = getStorage('username');
+        if (username == thisUser){
+            functionToRun(username);
+        }
     });
 
      //end of setup

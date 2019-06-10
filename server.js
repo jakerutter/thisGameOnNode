@@ -1,5 +1,5 @@
 //Chrome debug instructions
-//$ node --inspect server.js
+//$ nodemon --inspect server.js
 //type into chrome: about:inspect
 //select open dedicated dev tools for node
 const fs = require('fs');
@@ -14,15 +14,14 @@ app.get('/', function(req, res) {
 });
 
 // Set up the server
-var server = app.listen( 8080, listen);
+var server = app.listen(8080, listen);
 var users = [];
 var gameObj = {};
+var userObj = {};
 var privateUsers = [];
 // This call back just tells us that the server has started
 function listen() {
-
   var port = server.address().port;
-  // console.log('This Game listening at http://' + 'localhost' + ':' + port);
 }
 
 app.use(express.static('public'));
@@ -35,18 +34,17 @@ var clientCount = 0;
 io.sockets.on('connection', function (socket) {
 
   // We are given a websocket object in our function
-  //clientCount +=1;
   server.getConnections(function(error, count){ 
     clientCount = count;
   });
 
-  console.log(clientCount + " number of clients connected. That is more than we had before.");
+  console.log(clientCount + ' number of clients connected. That is more than we had before.');
   io.sockets.emit('broadcast',{ description: clientCount + ' clients connected!'});
   io.sockets.emit('usernames-taken', users);
 
   socket.on('disconnect', function() {
     clientCount -=1;
-    console.log(clientCount + " number of clients connected. Less than we had before.");
+    console.log(clientCount + ' number of clients connected. Less than we had before.');
     io.emit('broadcast',{ description: clientCount + ' clients connected!'});
     users = users.filter(function(item) {
       return item.nickname !== socket.nickname;
@@ -54,7 +52,6 @@ io.sockets.on('connection', function (socket) {
     io.emit('all-users', users);
   });
 
-  // io.emit('user.add', socket.id);
     // Join private room
     socket.on('join-private', function(data) {
       socket.join('private');
@@ -64,7 +61,7 @@ io.sockets.on('connection', function (socket) {
       var newHtml = app.get('/', function(req, res) {
         res.sendFile(path.join(__dirname, '../public/', 'game1.html'));
         });
-        io.in('private').emit('new-game-html', "woo");
+        io.in('private').emit('new-game-html', 'woo');
     });
   
     socket.on('private-chat', function(data) {
@@ -78,10 +75,10 @@ io.sockets.on('connection', function (socket) {
   
     // When new socket joins
     socket.on('join', function(data) {
-      console.log("this is data.nickname value inside of join on server side " + data.name);
+      console.log('this is data.nickname value inside of join on server side ' + data.name);
       socket.nickname = data.name;
       // users[socket.nickname] = socket; 
-      var userObj = {
+      userObj = {
         nickname: data.name,
         socketid: socket.id
       }
@@ -107,7 +104,7 @@ io.sockets.on('connection', function (socket) {
     });
   
     socket.on('extend-challenge', function(name, challenged) {
-      console.log(name + " has challenged " + challenged + " to a game. Begin game protocols.");
+      console.log(name + ' has challenged ' + challenged + ' to a game. Begin game protocols.');
       //send challenge to the player who has been challenged
       io.emit('check-challenge-response', name, challenged);
     });
@@ -135,20 +132,20 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('first-color-selected', function(name, chosenColor) {
-      console.log('first player ' + name + " has chosen "+ chosenColor +" as their color.");
+      console.log('first player ' + name + ' has chosen '+ chosenColor +' as their color.');
       io.emit('first-color-has-been-selected', name, chosenColor, privateUsers);
       addColorToUserObj(name, chosenColor, gameObj);
     });
 
     socket.on('second-color-selected', function(name, chosenColor) {
-      console.log('second player ' + name + " has chosen "+ chosenColor +" as their color.");
+      console.log('second player ' + name + ' has chosen '+ chosenColor +' as their color.');
       io.emit('second-color-has-been-selected', name, chosenColor, privateUsers);
       addColorToUserObj(name, chosenColor, gameObj);
     });
   
     socket.on('first-base-selected', function(location, name, bx, by) {
-      console.log(name + " has selected this location for their base "+ location);
-      console.log("1st NOT COMPARED / VERIFIED");
+      console.log(name + ' has selected this location for their base '+ location);
+      console.log('1st NOT COMPARED / VERIFIED');
       addBaseLocationToUserObj(name, location, bx, by, gameObj);
       var tiles = updateVisibilityForBase(location);
       // console.log(tiles);
@@ -156,25 +153,25 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('second-base-selected', function(location, name, bx, by) {
-      console.log(name + " has selected this location for their base "+ location);
-      console.log("2nd NOT COMPARED / VERIFIED");
+      console.log(name + ' has selected this location for their base '+ location);
+      console.log('2nd NOT COMPARED / VERIFIED');
       
       addBaseLocationToUserObj(name, location, bx, by, gameObj);
       var basesAccepted = compareBaseLocations(gameObj);
 
       if (basesAccepted) {
         //passed validation
-        console.log("2 bases chosen. PASS");
+        console.log('2 bases chosen. PASS');
         var tiles = updateVisibilityForBase(location);
         // console.log(tiles);
         io.emit('second-base-has-been-selected-pass', name, privateUsers, tiles);
       } else {
         //failed validation
-        console.log("2 bases chosen. FAIL. RESET.");
+        console.log('2 bases chosen. FAIL. RESET.');
         //clear the values for base placement
-        gameObj['stage'] = "TwoColorsSelected";
-        addBaseLocationToUserObj(privateUsers[0], "","", "", gameObj);
-        addBaseLocationToUserObj(privateUsers[1], "","", "", gameObj);
+        gameObj['stage'] = 'TwoColorsSelected';
+        addBaseLocationToUserObj(privateUsers[0], '','', '', gameObj);
+        addBaseLocationToUserObj(privateUsers[1], '','', '', gameObj);
         
         io.emit('second-base-has-been-selected-fail', privateUsers);
       }
@@ -193,7 +190,9 @@ io.sockets.on('connection', function (socket) {
     //use this function to call a client side function for the other player
     socket.on('cross-server-control', function(name, functionToRun){
       console.log('in server.js, supposed to call '+ functionToRun + ' for user: ' +name);
-      controlOtherClientThroughServer(name, functionToRun);
+      // controlOtherClientThroughServer(name, functionToRun, userObj);
+      var socketid = userObj[socketid];
+      socket.broadcast.to(socketid).emit('run-function', username, functionToRun);
     })
 
     //end of socket.on section
@@ -202,8 +201,11 @@ io.sockets.on('connection', function (socket) {
 
 
   //Server-Side Functions
-function controlOtherClientThroughServer(username, functionToRun){
-  io.emit("run-function", username, functionToRun);
+
+//this function is supposed to target a specific socket client and run a given function
+function controlOtherClientThroughServer(username, functionToRun, userObj){
+  var socketid = userObj[socketid];
+  socket.broadcast.to(socketid).emit('run-function', username, functionToRun);
 }
 
 function compareBaseLocations(gameObj) {
@@ -211,17 +213,17 @@ function compareBaseLocations(gameObj) {
     var p1 = privateUsers[0];
     var p2 = privateUsers[1];
     //get base coordinates from gameObj 
-    var b1x = gameObj[p1].base["xCoord"];
-    var b1y = gameObj[p1].base["yCoord"];
-    var b2x = gameObj[p2].base["xCoord"];
-    var b2y = gameObj[p2].base["yCoord"];
+    var b1x = gameObj[p1].base['xCoord'];
+    var b1y = gameObj[p1].base['yCoord'];
+    var b2x = gameObj[p2].base['xCoord'];
+    var b2y = gameObj[p2].base['yCoord'];
     //establish buffer
     var maxRow = 20;
     var buffer = maxRow/5;
     //determine differences
     var xdiff = getXDifference(b1x,b2x);
     var ydiff = getYDifference(b1y,b2y);
-    console.log("xDiff = "+ xdiff+ " & yDiff = "+ ydiff);
+    console.log('xDiff = '+ xdiff+ ' & yDiff = '+ ydiff);
          if ((xdiff >= buffer) && (ydiff >= buffer)) {
           //return true if the bases pass location validation and the game should commence
           return true;
@@ -247,8 +249,8 @@ function getYDifference(b1y,b2y) {
 
 function createDefaultGameObject(name, challenger, gameObj) {
     //creating a "stage" and a "turn" object so that these things can be monitored and updated as needed
-    gameObj['stage'] = "pregame";
-    gameObj['turn'] = "pregame";
+    gameObj['stage'] = 'pregame';
+    gameObj['turn'] = 'pregame';
     //Take the names of the two users and create a default user object for each of them
     let firstname = name;
     let secondname = challenger;
@@ -264,12 +266,12 @@ function createDefaultGameObject(name, challenger, gameObj) {
 }
 
 function createDefaultUserObject(user) {
-    user = {"name": user};
+    user = {'name': user};
     user.troopsPlaced = 0;
     user.PV = 0;
-    user.color = "";
+    user.color = '';
     user.visibleTiles = [];
-    user.base = {"health": 200, "loc":"", "xCoord":"", "yCoord":"", "xyCoord":""};
+    user.base = {'health': 200, 'loc':'', 'xCoord':'', 'yCoord':'', 'xyCoord':''};
     user.troops = {};
     //Uncomment this to see the default user object generated when a challenge is accepted
     // console.log(JSON.stringify(user, null, 4));         --uncomment to see gameObj
@@ -281,12 +283,12 @@ function addColorToUserObj(name, chosenColor, gameObj) {
   gameObj[name].color = chosenColor;
   let stage = gameObj['stage'];
   //update stage to track game setup
-  if (stage == "pregame") {
-    gameObj['stage'] = "OneColorSelected";
-  } else if (stage == "OneColorSelected") {
-    gameObj['stage'] = "TwoColorsSelected";
+  if (stage == 'pregame') {
+    gameObj['stage'] = 'OneColorSelected';
+  } else if (stage == 'OneColorSelected') {
+    gameObj['stage'] = 'TwoColorsSelected';
   } else {
-    console.log("addColorToUserObj fell into an unexpected state.");
+    console.log('addColorToUserObj fell into an unexpected state.');
   }
 
   //Uncomment this to see the gameObj after a player's chosen color is added
@@ -297,19 +299,19 @@ function addColorToUserObj(name, chosenColor, gameObj) {
 //add the selected location data to the user object
 function addBaseLocationToUserObj(name, location, bx, by, gameObj) {
 
-  gameObj[name].base["loc"] = location;
-  gameObj[name].base["xCoord"] = bx;
-  gameObj[name].base["yCoord"] = by;
-  gameObj[name].base["xyCoord"] = bx.toString() +","+ by.toString();
+  gameObj[name].base['loc'] = location;
+  gameObj[name].base['xCoord'] = bx;
+  gameObj[name].base['yCoord'] = by;
+  gameObj[name].base['xyCoord'] = bx.toString() +','+ by.toString();
   //update stage to track progress in game setup
   let stage = gameObj['stage'];
   console.log('stage is ' + stage);
-  if (stage == "TwoColorsSelected") {
-    gameObj['stage'] = "OneLocationSelected";
-  } else if (stage == "OneLocationSelected") {
-    gameObj['stage'] = "TwoLocationsSelected";
+  if (stage == 'TwoColorsSelected') {
+    gameObj['stage'] = 'OneLocationSelected';
+  } else if (stage == 'OneLocationSelected') {
+    gameObj['stage'] = 'TwoLocationsSelected';
   } else {
-    console.log("addBaseLocationToUserObj fell into an unexpected state.");
+    console.log('addBaseLocationToUserObj fell into an unexpected state.');
   }
   //Uncomment this to see the gameObj after a player's location is added
   console.log(JSON.stringify(gameObj, null, 4));
@@ -350,7 +352,7 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
   //name is the name of the troop being updated
     gameObj[username].troops[name].Location = node;
     // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
-    console.log(username + " moved their "+ name + " to "+ node);
+    console.log(username + ' moved their '+ name + ' to '+ node);
     var visibleTileArray = updateVisibilityForTroops(username);
     io.emit('update-visible-tiles', username, visibleTileArray);
     //check the current game state (stage) and update accordingly when all units for a player are placed
@@ -437,7 +439,7 @@ function updateVisibilityForTroops(username) {
   for (var troop in gameObj[otherPlayer].troops) {
     if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
       var troopLocation = gameObj[otherPlayer].troops[troop].Location;
-      if (troopLocation != "tbd") {
+      if (troopLocation != 'tbd') {
         console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
         var visibility = gameObj[otherPlayer].troops[troop].Visibility;
         console.log('visibility is ');
@@ -593,8 +595,8 @@ function convertCoordsToId(x,y) {
 }
 
 function convertIdToCoordinates(id) {
-  if (id == "tbd"){
-      return "tbd";
+  if (id == 'tbd'){
+      return 'tbd';
   }
     var x,y;
     y = Math.floor(id/20);
