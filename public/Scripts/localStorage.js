@@ -14,56 +14,56 @@ function getStorage(key) {
 
 function setDefaultStorage() {
     //Set local storage maxRow to 20
-    setStorage("maxRow", 20);
+    setStorage('maxRow', 20);
     //Set local storage defaults for playerObj & playerObj2
-    setStorage("playerObj", "");
-    setStorage("playerObj2", "");
+    setStorage('playerObj', '');
+    setStorage('playerObj2', '');
     //Set local storage Name & Color defaults for player1
-    setStorage("playerName", "");
-    setStorage("playerColor", "");
+    setStorage('playerName', '');
+    setStorage('playerColor', '');
     //Set local storage  Name & Color defaults for player2
-    setStorage("playerName2", "");
-    setStorage("playerColor2", "");
+    setStorage('playerName2', '');
+    setStorage('playerColor2', '');
     //Set local storage defaults for player1 & player2
-    setStorage("playerBaseLocation", "");
-    setStorage("playerBaseLocation2", "");
+    setStorage('playerBaseLocation', '');
+    setStorage('playerBaseLocation2', '');
     //Set local storage defaults for bases confirmed (placement)
-    setStorage("confirmedValue", "0");
+    setStorage('confirmedValue', '0');
     //Set local storage defaults for turn indicator
-    setStorage("turnIndicator", "Game Setup...");
+    setStorage('turnIndicator', 'Game Setup...');
     //Set local storage defaults for visibleTiles player1 & player2
-    setStorage("visibleTiles", "");
+    setStorage('visibleTiles', '');
     //Set local storage defaults for gameState player1 & player2
-    setStorage("gameState", "");
+    setStorage('gameState', '');
     //Set local storage defaults for alertMessage as used on AlertModal
-    setStorage("alertMessage", "");
+    setStorage('alertMessage', '');
 }
 
 function  setChosenColorInLocalStorage(name, chosenColor, privateUsers) {
-    var username = getStorage("username");
+    var username = getStorage('username');
     if (username == name) {
-        setStorage("playerColor", chosenColor);
+        setStorage('playerColor', chosenColor);
     } else {
         let playerName = checkPrivateUsers(privateUsers);
         if (playerName == true) {
-        setStorage("playerColor2", chosenColor);
+        setStorage('playerColor2', chosenColor);
         }
     }
 }
 
 //Changing this from compareNamesAndColors to setStorageNamesAndColorsForPlayerDisplay because name and color validation happens earlier than it did in pre-node version
 function setStorageNamesAndColorsForPlayerDisplay() {
-    var name1 = getStorage("username");
-    var name2 = getStorage("opponent");
-    var color1 = getStorage("playerColor");
-    var color2 = getStorage("playerColor2");
+    var name1 = getStorage('username');
+    var name2 = getStorage('opponent');
+    var color1 = getStorage('playerColor');
+    var color2 = getStorage('playerColor2');
     //Don't need compareNames any longer since it is handled earlier in the program -- leaving it for now
     var nameSuccess = compareNames(name1,name2);
     //Don't need compareColors any longer. It is handled earlier in the program -- leaving it for now
     var colorSuccess = compareColors(color1,color2);
 
     if ((nameSuccess === true) && (colorSuccess === true)){
-        setStorage("nameDisplaysForPlayer", name1+" Vs "+name2);
+        setStorage('nameDisplaysForPlayer', name1+' Vs '+name2);
         return true;
     }
     else {
@@ -77,10 +77,10 @@ function setStorageNamesAndColorsForPlayerDisplay() {
 }
 
 function compareNames(name1,name2) {
-    if ((name1 != "") && (name2 != "")) { 
+    if ((name1 != '') && (name2 != '')) { 
     if (name1 == name2) {
-        playSound("validation");
-        var nameConflict = "You have chosen the same name as the other player. Please enter another name.";
+        playSound('validation');
+        var nameConflict = 'You have chosen the same name as the other player. Please enter another name.';
         return nameConflict;
     }
     else {
@@ -93,10 +93,10 @@ function compareNames(name1,name2) {
 }   
 
 function compareColors(color1,color2) {
-    if ((color1 != "") && (color2 != "")) { 
+    if ((color1 != '') && (color2 != '')) { 
     if (color1 == color2) {
-        playSound("validation");
-        var colorConflict = "You have selected the same color as the other player. Please select another color.";
+        playSound('validation');
+        var colorConflict = 'You have selected the same color as the other player. Please select another color.';
         return colorConflict;
     }
     else {
@@ -107,7 +107,7 @@ function compareColors(color1,color2) {
 }
 
 function isOnTopOfGrid(item) {
-    var maxRow = getStorage("maxRow");
+    var maxRow = getStorage('maxRow');
     if (item <= maxRow-1) {
         return true;
     } else {
@@ -116,7 +116,7 @@ function isOnTopOfGrid(item) {
 }
 
 function isOnLeftOfGrid(item) {
-    var maxRow = getStorage("maxRow");
+    var maxRow = getStorage('maxRow');
     if ((item == 0) || (item % maxRow == 0)) {
         return true;
     } else {
@@ -125,7 +125,7 @@ function isOnLeftOfGrid(item) {
 }
 
 function isOnRightOfGrid(item) {
-    var maxRow = getStorage("maxRow");
+    var maxRow = getStorage('maxRow');
     if (item+1 % maxRow == 0) {
         return true;
     } else {
@@ -134,7 +134,7 @@ function isOnRightOfGrid(item) {
 }
 
 function isOnBottomOfGrid(item) {
-    var maxRow = getStorage("maxRow");
+    var maxRow = getStorage('maxRow');
     if ((item < maxRow*maxRow) && (item >= maxRow*maxRow-maxRow)) {
         return true;
     } else {
@@ -144,13 +144,13 @@ function isOnBottomOfGrid(item) {
 
 function checkForCorner(top,left,right,bottom) {
     if (top && left) {
-        return "topleft";
+        return 'topleft';
     } else if (top && right) {
-        return "topright";
+        return 'topright';
     } else if (bottom && left) {
-        return "bottomleft";
+        return 'bottomleft';
     } else if (bottom && right) {
-        return "bottomright";
+        return 'bottomright';
     }
     else {
          return false;
@@ -158,24 +158,24 @@ function checkForCorner(top,left,right,bottom) {
 }
 
 function placeNameDisplayData() {
-    var color = getStorage("playerColor");
-    document.getElementById('playerNameDisplay').classList.add(color+"Text");
-    document.getElementById('playerNameDisplay').innerHTML = "Player: "+getStorage("username");
+    var color = getStorage('playerColor');
+    document.getElementById('playerNameDisplay').classList.add(color+'Text');
+    document.getElementById('playerNameDisplay').innerHTML = 'Player: '+getStorage('username');
     //add highlight to the name label background if a dark color was chosen
-    if ((color == "green") || (color == "blue") || (color == "indigo")) {
+    if ((color == 'green') || (color == 'blue') || (color == 'indigo')) {
         document.getElementById('playerNameDisplay').classList.add('highlight');
     }
 }
 
 function placeTurnIndicatorData(username) {
-    var name = getStorage("username");
-    if (username == "intro") {
-        document.getElementById("turnIndicator").innerHTML = "Game Setup..."
+    var name = getStorage('username');
+    if (username == 'intro') {
+        document.getElementById('turnIndicator').innerHTML = 'Game Setup...'
     }
     else if (username == name) {
-        document.getElementById("turnIndicator").innerHTML = "Your Turn";
+        document.getElementById('turnIndicator').innerHTML = 'Your Turn';
     } else {
-        document.getElementById("turnIndicator").innerHTML = "Their Turn";
+        document.getElementById('turnIndicator').innerHTML = 'Their Turn';
     }
 }
 

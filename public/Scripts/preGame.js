@@ -398,21 +398,24 @@ function createPlayerButtons(users) {
 
             // 3. Add event handler for all buttons that do not have your name on them
             if (button.innerHTML !== username) {
-            button.addEventListener('click', function() {
+                button.addEventListener('click', function() {
                 var challenged = button.innerHTML;
                 
                 let msg = username + ' clicked on ' + challenged + '. They must be considering a challenge.';
                 socket.emit('send-message', msg);
-                $('#messages').append($('<li>').text(msg));
+
                 if (confirm('Are you sure you want to challenge ' + challenged + '?')) {
                     socket.emit('extend-challenge', username, challenged);
+
                 } else {
+
                     let noChallengeMsg = username + ' decided not to challenge ' + challenged +' at this time.';
                     socket.emit('send-message', noChallengeMsg);
-                    $('#messages').append($('<li>').text(username + ' decided not to challenge at this time.'));
+                    
                 }
                 });
-            }}
+            }
+        }
             //saving this in local storage. will use this array to update buttons visible
             setStorage('users', userArray);
         } else {

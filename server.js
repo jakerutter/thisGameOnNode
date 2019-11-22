@@ -83,6 +83,7 @@ io.sockets.on('connection', function (socket) {
         socketid: socket.id
       }
       users.push(userObj);
+      console.log('a user joined!! -----> current users:');
       console.log(users);
       io.emit('usernames-taken', users);
       io.emit('all-users', users);
