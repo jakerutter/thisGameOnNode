@@ -2,13 +2,13 @@
 
 // Keep track of our socket connection
 var socket;
-socket = io.connect('http://localhost:8080');
+socket = io.connect('http://localhost:8181');
 
 function setup() {
 
   // Start a socket connection to the server
   // Some day we would run this server somewhere else
-  socket = io.connect('http://localhost:8080');
+  socket = io.connect('http://localhost:8181');
   // We make a named event called 'join' and write an
   // anonymous callback function
   socket.on('join', function(name) {
@@ -228,7 +228,7 @@ function savePlayerName() {
     //set id value for this user to emit to the server
     id = Math.floor(Date.now() * Math.random());
     
-    if (name == "" || name == 'undefined' || name == null) {
+    if (name == "" || name == undefined || name == null) {
         document.getElementById('nameFail').innerHTML = 'That is not an acceptable name. Please enter a name.';
     } else if (isNameTaken === true) {
         document.getElementById('nameFail').innerHTML = 'That is taken by another user. Please enter a different name.';
@@ -316,10 +316,10 @@ function getStorage(key) {
 //this is triggered when a player clicks to accept or refuse a challenge
 function respondToChallenge(response, name, challenger) {
     //load up the name name and challenger name if they're not provided
-    if (challenger == 'undefined' || challenger == ''){
+    if (challenger == undefined){
         var challenger = getStorage('challenger');
     }
-    if (name == 'undefined' || name == ''){
+    if (name == undefined){
         var name = getStorage('username');  
     }
     
@@ -339,7 +339,7 @@ function respondToChallenge(response, name, challenger) {
 }
 //a player selects a their color, send the selection to the server
 function claimSelectedColor(chosenColor, name) {
-    if (name == 'undefined' || name == ''){
+    if (name == undefined){
         var name = getStorage('username');
     }
     //CYPRESS
