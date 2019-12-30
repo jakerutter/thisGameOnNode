@@ -224,8 +224,8 @@ function compareBaseLocations(gameObj) {
     //determine differences
     var xdiff = getXDifference(b1x,b2x);
     var ydiff = getYDifference(b1y,b2y);
-    console.log('xDiff = '+ xdiff+ ' & yDiff = '+ ydiff);
-         if ((xdiff >= buffer) && (ydiff >= buffer)) {
+    console.log('xDiff = '+ xdiff+ '        yDiff = '+ ydiff);
+         if ((xdiff >= buffer) || (ydiff >= buffer)) {
           //return true if the bases pass location validation and the game should commence
           return true;
          } else {
@@ -406,10 +406,10 @@ function updateVisibilityForTroops(username) {
     if (gameObj[username].troops.hasOwnProperty(troop)) {
       var troopLocation = gameObj[username].troops[troop].Location;
       if (troopLocation != "tbd") {
-        console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
+        //console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
       var visibility = gameObj[username].troops[troop].Visibility;
-        console.log('visibility is ');
-        console.log(visibility);
+        //console.log('visibility is ');
+        //console.log(visibility);
               var tCoordsArray = convertIdToCoordinates(troopLocation);
               var tx = Number(tCoordsArray[0]);
               var ty = Number(tCoordsArray[1]);
@@ -466,7 +466,7 @@ function updateVisibilityForTroops(username) {
 // }
 
 function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
-  console.log('inside serverUpdateVisibleTiles!! about to call makeVisibleOtherPlayersUnits');
+  //console.log('inside serverUpdateVisibleTiles!! about to call makeVisibleOtherPlayersUnits');
   var otherPlayer = privateUsers.filter(function(x) { return x !== username});
   otherPlayer = otherPlayer[0];
   //server update the visible tiles for a specific player
@@ -497,7 +497,7 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
               // console.log('checking '+visibleTileArray[k] + " " + troop +' location is ---> '+ troopLocation);
 
               if (troopLocation == visibleTileArray[k]) {
-                // console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
+                console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
               //add the desired details into a visibleItem which will be placed in makeKnown array
               //then returned and rendered on client side
               let visibleItem = {};
@@ -552,14 +552,16 @@ function calculateStartingPlayer(gameObj, privateUsers) {
   }
     var player1 = privateUsers[0];
     var player2 = privateUsers[1];
+    var startingPlayer;
     //compare the calculated PV for both players
     if (gameObj[player1].PV > gameObj[player2].PV) {
-        var startingPlayer = gameObj[player2].name;
+        startingPlayer = gameObj[player2].name;
     } else if (gameObj[player2].PV > gameObj[player1].PV) {
-        var startingPlayer = gameObj[player1].name;
+        startingPlayer = gameObj[player1].name;
     } else {
       //pick a random player to start because their PV is the same
-      seekRandomPlayerToStart(privateUsers);
+      startingPlayer = seekRandomPlayerToStart(privateUsers);
+
     }
       console.log('logging inside calculateStartingPlayer.... starting player is ' + startingPlayer);
       setStartingPlayer(startingPlayer, privateUsers);
@@ -569,14 +571,14 @@ function calculateStartingPlayer(gameObj, privateUsers) {
 }
 
 function seekRandomPlayerToStart(privateUsers) {
-  var startingPlayer;
+  var playerName;
   var randomX = Math.floor(Math.random());
   if (randomX <= .5) {
-    startingPlayer = privateUsers[0];
+    playerName = privateUsers[0];
   } else {
-    startingPlayer = privateUsers[1];
+    playerName = privateUsers[1];
   }
-  return startingPlayer;
+  return playerName;
 }
 
 function setStartingPlayer(startingPlayer, privateUsers) {
