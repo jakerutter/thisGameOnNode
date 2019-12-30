@@ -67,3 +67,9 @@ function getValueFromArray(array){
     var value = array[getRandomInt(0,array.length-1)];
     return value;
 }
+
+//remove dupes from an array
+function returnArrayWithoutDuplicates(a) {
+    console.log(a);
+    return Array.from(new Set(a));
+  }

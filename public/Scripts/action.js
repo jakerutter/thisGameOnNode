@@ -69,10 +69,10 @@ function hideWelcomeModal(username) {
     document.getElementById('leftSideBarH3').classList.remove('hidden');
     var chosenColor = document.getElementById('playerColorSelection').innerHTML;
     //CYPRESS
-    if(getStorage('playerColor') == 'undefined' || getStorage('playerColor') == '' || getStorage('playerColor' == null)){
+    if(getStorage('playerColor') == undefined || getStorage('playerColor') == '' || getStorage('playerColor' == null)){
         claimSelectedColor(chosenColor);
     }
-    if(username == '' || username == 'undefined' || username == null){
+    if(username == '' || username == undefined || username == null){
         var playerName = getStorage('username');  
     }
     //END CYPRESS
@@ -212,20 +212,20 @@ function functionSwitch(switchData, id) {
     if (state != 0){
         var switchData = state;
     }
-    var id = id;
+    var id = Number(id);
 
         if (switchData == 'selectBase') {
             placePlayerBase(id);
             claimSelectedBase(id, username);
         }
         else if (switchData == 'baseConfirmed') { 
-            checkPlayerUnitLocation(1,id);
+            checkPlayerUnitLocation(id);
         }
         else if (switchData == 'troopsPlaced') {
             progressToFirstMoveOrPause();
         }
         else if (switchData == 'gameTime') {
-            performGameAction(username, id);
+            performGameAction(id);
         }
         else if (switchData == 'noClick') {
             return;
@@ -262,8 +262,8 @@ function troopModal() {
     document.getElementById('troopModal').classList.add('table');
     document.getElementById('troopModal').classList.remove('hidden');
     $('#troopModal').modal();
-    var playerbj = getStorage('playerObj');
-    console.log(JSON.stringify(playerObj, null, 4));
+    // var playerObj = getStorage('playerObj');
+    // console.log(JSON.stringify(playerObj, null, 4));
     placeBaseDisplayData(0);
     var tempTroopArray = getStorage('tempTroopArray1');
     if ((tempTroopArray != null) && (tempTroopArray.length > 0)) {
@@ -272,7 +272,6 @@ function troopModal() {
         document.getElementById(tname).checked = true;
         }
     }
-    var troops = [];
 }
 
 //check the troops selection and checkboxes to verify that the correct selections have been made
@@ -323,33 +322,33 @@ function hideTroopDetailModal() {
     troopModal();
 }
 
-// function playSound(command) {
-//     if (command == 'playIntro') {
-//         document.getElementById('spaceIntro').play();
-//     }
-//     else if (command == 'validation') {
-//         document.getElementById('wrongBuzz').play();
-//     }
-//     else if (command == 'attack') {
-//         document.getElementById('spaceShot').play();
-//     }
-//     else if (command == 'move') {
-//         document.getElementById('moveSound').play();
-//     }
-//     else if (command == 'scan') {
-//         document.getElementById('scanSound').play();
-//     }
-//     else if (command == 'swarm') {
-//         document.getElementById('swarmSound').play();
-//     }
-//     else if (command == 'depthCharge') {
-//         document.getElementById('depthChargeSound').play();
-//     }
-//     else if (command == 'bomb') {
-//         document.getElementById('bombSound').play();
-//     }
+function playSound(command) {
+    if (command == 'playIntro') {
+        document.getElementById('spaceIntro').play();
+    }
+    else if (command == 'validation') {
+        document.getElementById('wrongBuzz').play();
+    }
+    else if (command == 'attack') {
+        document.getElementById('spaceShot').play();
+    }
+    else if (command == 'move') {
+        document.getElementById('moveSound').play();
+    }
+    else if (command == 'scan') {
+        document.getElementById('scanSound').play();
+    }
+    else if (command == 'swarm') {
+        document.getElementById('swarmSound').play();
+    }
+    else if (command == 'depthCharge') {
+        document.getElementById('depthChargeSound').play();
+    }
+    else if (command == 'bomb') {
+        document.getElementById('bombSound').play();
+    }
     
-// }
+}
 
 //the constructor for what the main game object will look like.
 function playerObject(player,troops,base) {
@@ -393,7 +392,7 @@ function placePlayerUnits(playerObj) {
     setStorage('playerObj', playerObj);
 }
 
-function checkPlayerUnitLocation(player, id) {
+function checkPlayerUnitLocation(id) {
     var troopsToPlace = getStorage('troopsToPlace1');
     var locationCheck = verifyLocationForPlacement(id);
     if ((locationCheck == true) && (troopsToPlace >= 3)) {
@@ -403,37 +402,40 @@ function checkPlayerUnitLocation(player, id) {
     } else if ((locationCheck == true) && (troopsToPlace < 3)) {
         if (document.getElementById(Number(id)).innerHTML == '') {
 
-        var playerObj = getStorage('playerObj');
-        var name = playerObj.troops[troopsToPlace].Name;
-        var color = playerObj.player.Color;
-        var node = Number(id);
-        playerObj.troops[troopsToPlace].Location = node;
-        var health = getTroopMaxHealth(name);
-        var pictureID = 'player1'+name;
-        document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+color+'.png></img>';
-        document.getElementById(node).title = name + ', '+health+' / '+health+' Health Points';
-        document.getElementById(pictureID).style.height = '100%';
-        document.getElementById(pictureID).style.width = '100%';
-        //send troop location to server
-        updateTroopLocation(name, node);
-        setStorage('playerObj', playerObj);
-        
-        //Following two lines need defined in node version --
-        // makeVisibleOtherPlayersUnits(1);
-        // makeVisibleOtherPlayersUnits(2);
-        //Testing this: placing troop data again once unitLocation is updated:
-        updateTroopDisplayData(); 
-        var troopsToPlace = getStorage('troopsToPlace1');
-        troopsToPlace += 1;
-        if (troopsToPlace < playerObj.troops.length) {
-        document.getElementById('gameAlertsLarge').innerHTML = 'Click to place ' + playerObj.troops[troopsToPlace].Name;
-        } else {
-            clearAvailableTilesForAction();
-            setStorage('gameState1', 'troopsPlaced');
-            document.getElementById('gameAlertsLarge').innerHTML = 'All units placed.';
-            progressToFirstMoveOrPause();
-        }
-        setStorage('troopsToPlace1', troopsToPlace);
+            var playerObj = getStorage('playerObj');
+            var name = playerObj.troops[troopsToPlace].Name;
+            var color = playerObj.player.Color;
+            var node = Number(id);
+            playerObj.troops[troopsToPlace].Location = node;
+            var health = getTroopMaxHealth(name);
+            var pictureID = 'player1'+name;
+            document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+color+'.png></img>';
+            document.getElementById(node).title = name + ', '+health+' / '+health+' Health Points';
+            document.getElementById(pictureID).style.height = '100%';
+            document.getElementById(pictureID).style.width = '100%';
+            //send troop location to server
+            updateTroopLocation(name, node);
+            setStorage('playerObj', playerObj);
+            
+            //TODO:Following two lines need defined in node version --
+            // makeVisibleOtherPlayersUnits(1);
+            // makeVisibleOtherPlayersUnits(2);
+            //Testing this: placing troop data again once unitLocation is updated:
+            updateTroopDisplayData(); 
+            var troopsToPlace = getStorage('troopsToPlace1');
+            troopsToPlace += 1;
+
+                if (troopsToPlace < playerObj.troops.length) {
+                    document.getElementById('gameAlertsLarge').innerHTML = 'Click to place ' + playerObj.troops[troopsToPlace].Name;
+                } else {
+
+                    clearAvailableTilesForAction();
+                    setStorage('gameState1', 'troopsPlaced');
+                    document.getElementById('gameAlertsLarge').innerHTML = 'All units placed.';
+                    progressToFirstMoveOrPause();
+                }
+
+            setStorage('troopsToPlace1', troopsToPlace);
         } else { 
             document.getElementById('gameAlertsSmall').innerHTML = 'That tile is already occupied. Choose another.';
         }
@@ -443,11 +445,22 @@ function checkPlayerUnitLocation(player, id) {
     }
 }
 
-function updateTurnIndicator(username) {
+function updateTurnIndicator(name) {
+    let username = getStorage('username');
     document.getElementById('currentState').innerHTML = 'gameTime';
-    placeTurnIndicatorData(username);
-    addClickEventsTroopPics();
-    document.getElementById('gameAlertsLarge').innerHTML = 'Click on the picture [right menu] of the unit you\'d like to activate.';
+    placeTurnIndicatorData(name);
+    if (name === username){
+        console.log('it should be my turn! my name is ' + username);
+        hideModalOverlays();
+        hideAlertModal();
+        addClickEventsTroopPics();
+        document.getElementById('gameAlertsLarge').innerHTML = 'Click on the picture [right menu] of the unit you\'d like to activate.';
+    } else {
+        let message = 'Other player is taking their turn.';
+        showAlertModal(message);
+        document.getElementById('gameAlertsLarge').innerHTML = 'Other player is taking their turn.';
+    }
+    
 }
 
 function hideinGameTroopDetailModal() {
@@ -504,8 +517,8 @@ function signalGameLoss(player) {
     //should trigger a consolation modal with embedded video and maybe some gamestats
     document.getElementById('gameAlertsSmall').innerHTML = '';
     document.getElementById('gameAlertsLarge').innerHTML = 'You are defeated!';
-    // document.getElementById("defeatVideo").classList.remove("hidden");
-    // playSound("defeat");
+    //document.getElementById("defeatVideo").classList.remove("hidden");
+    //playSound("defeat");
     document.getElementById('finishedModal').classList.remove('hidden');
     $('#finishedModal').modal();
     document.getElementById('finishedAlert').innerHTML = 'You are defeated.';

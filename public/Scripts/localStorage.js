@@ -259,8 +259,8 @@ function renderVisibilityForBase(tiles) {
 }
 
 function renderVisibleTilesForClient(username, tiles) {
-    console.log('inside renderVisibleTilesForClient! ' + username);
-    console.log(tiles);
+    //console.log('inside renderVisibleTilesForClient! ' + username);
+    //console.log(tiles);
     var thisPlayer = getStorage("playerName");
     if (username == thisPlayer){
         //grey out all tiles
@@ -466,6 +466,8 @@ function verifyLocationForPlacement(id) {
 }
 
 function progressToFirstMoveOrPause() {
+    // set this to false before game kicks off. it will be set True/False later as required
+    setStorage("allCoolDowns", "false");
 
     var username = getStorage("username");
     var gameState = getStorage("gameState");
@@ -534,16 +536,16 @@ function setActiveUnit(event) {
 function addClickEventsToTurnOptions(activeUnit) {
         //allows clicking the 1,2,3 buttons to prepare 3 types of actions
         document.getElementById("option1").onclick = function() { 
-            prepareGameAction(player, activeUnit, this);
+            prepareGameAction(activeUnit, this);
          }
          document.getElementById("option2").onclick = function() { 
-            prepareGameAction(player, activeUnit, this);
+            prepareGameAction(activeUnit, this);
          }
          document.getElementById("option3").onclick = function() { 
-            prepareGameAction(player, activeUnit, this);
+            prepareGameAction(activeUnit, this);
          }
          document.getElementById("option4").onclick = function() { 
-            prepareGameAction(player, activeUnit, this);
+            prepareGameAction(activeUnit, this);
          }
          //this part allows 1,2,3 to also prepare the 3 types of actions
          document.addEventListener('keypress', (event) => {
@@ -580,8 +582,7 @@ function prepareGameAction(activeUnit, event) {
     } 
     else if (event.id == "option2") {
         var distance = activeUnit.AttackRange;
-        document.getElementById(alertLoc).innerHTML = "Click the tile you want to attack. If you click an"+
-        " empty tile you are in effect passing your turn.";
+        document.getElementById(alertLoc).innerHTML = "Click the tile you want to attack.";
     }
     else if (event.id == "option3") {
         var distance = activeUnit.UniqueRange;
@@ -590,10 +591,11 @@ function prepareGameAction(activeUnit, event) {
     else if (event.id == "option4") {
         populateTroopDetailModalInGame(activeUnit.Name);
     }
+
     clearAvailableTilesForAction();
-    showAvailableTilesForAction(loc, distance, player);
+    showAvailableTilesForAction(loc, distance);
     if (event.id == "option3") {
-        displayUniqueMoveTiles(activeUnit, player);
+        displayUniqueMoveTiles(activeUnit);
     }
     document.getElementById("currentState").innerHTML = "gameTime";
     setStorage("gameState", "gameTime");
@@ -625,58 +627,66 @@ function performGameAction(id) {
 function sendTurnActionInfo(moveType) {
     var activeUnit = getStorage("activeTroop");
     var name = activeUnit.Name;
+    var actionInfo;
     //send each moveType down its own path
-        //handle move
+    //handle move
     if (moveType == "option1") {
         //get new location/old location and their coord values
         var loc = activeUnit.Location;
         loc = document.getElementById(loc).dataset.coords;
         var oldLoc = getStorage("oldLoc");
         oldLoc = document.getElementById(oldLoc).dataset.coords;
-        var actionInfo = "You moved your "+name+" from "+oldLoc+" to "+loc+".";
+        actionInfo = "You moved your "+name+" from "+oldLoc+" to "+loc+".";
     }
-        //handle attack
+    //handle attack
     else if (moveType == "option2") {
         var targetedEnemy = getStorage("targetedEnemy");
-        var actionInfo = "You attacked the enemy "+targetedEnemy.Name+" with your "+name+" and inflicted "+activeUnit.AttackDamage+" damage. The enemy has "+targetedEnemy.HealthPoints+" health remaining.";
+        
+        if (targetedEnemy != undefined){
+            actionInfo = "You attacked the enemy "+targetedEnemy.Name+" with your "+name+" and inflicted "+activeUnit.AttackDamage+" damage. The enemy has "+targetedEnemy.HealthPoints+" health remaining.";
+        } else {
+            actionInfo = "You attacked an empty location dealing no damage.";
+        }
     }
-        //handle unique action
+    //handle unique action
     else if (moveType == "option3") {
         var actionInfo = "You used "+activeUnit.UniqueName+"."
     }
-        //apply the action info to alert modal
-        addActionInfoToAlertModal(actionInfo);
+    //apply the action info to alert modal
+    addActionInfoToAlertModal(actionInfo);
 }
 
 function handlePlayerMove(id) {
     var playerObj = getStorage("playerObj");
     var activeUnit = getStorage("activeTroop");
+    var validTile;
     if (activeUnit != null) {
         var loc = activeUnit.Location;
         setStorage("oldLoc", loc);
     }
+
     var inRange = getStorage("tilesForMove");
     //first check that "id" tile is included in the array of available tiles
     if (inRange != null) {
+
         var oneValid = false;
-    for (var i=0; i<inRange.length; i++) {
-        if (id == inRange[i]) {
-            var validTile = id;
+
+        if(inRange.includes(id)){
+            validTile = id;
             oneValid = true;
-            }
         }
-            if (oneValid == false) {
-                document.getElementById("gameAlertsSmall").classList.add("redText");
-                document.getElementById("gameAlertsSmall").innerHTML = "You can only move to one of the styled tiles.";
-                return false;
-            }
+
+        if (oneValid == false) {
+            document.getElementById("gameAlertsSmall").classList.add("redText");
+            document.getElementById("gameAlertsSmall").innerHTML = "You can only move to one of the styled tiles.";
+            return false;
         }
+    }
         // verify the targeted tile is not occupied
     if (document.getElementById(validTile).innerHTML != "") {
         document.getElementById("gameAlertsSmall").classList.add("redText");
-        document.getElementById("gameAlertsLarge").innerHTML = "That tile is taken. You cannot move to a taken tile.";
+        document.getElementById("gameAlertsLarge").innerHTML = "Tile is taken. Cannot move to an occupied tile.";
     } else {
-        //check cooldown here ??
         //play move sound
         playSound("move");
         //get image from current tile
@@ -687,53 +697,54 @@ function handlePlayerMove(id) {
         document.getElementById(validTile).innerHTML = pic;
         //update troopObj location
         activeUnit.Location = parseInt(validTile);
-        var name = activeUnit.Name;
+        var unitName = activeUnit.Name;
         //save the new info for the activeUnit into the playerObj
         for (var i=0; i<playerObj.troops.length; i++) {
-            if (playerObj.troops[i].Name == name) {
+            if (playerObj.troops[i].Name == unitName) {
                 playerObj.troops[i] = activeUnit;
             }
         }
-        //clear gameAlertsSmall if it had retext and a message
-        document.getElementById("gameAlertsSmall").classList.remove("redText");
-        document.getElementById("gameAlertsSmall").innerHTML = "";
+        
        setStorage("playerObj", playerObj);
        //this is to save ActiveUnit after the changes have been made to location
         setStorage("activeTroop", activeUnit);
         //get rid of availableMove styling
+        updateTroopLocation(unitName, id);
         clearAvailableTilesForAction();
         processTurn();
     }
 }
 
 function processTurn() {
-    
+    //clear gameAlertsSmall if it had retext and a message
     document.getElementById("gameAlertsSmall").classList.remove("redText");
     document.getElementById("gameAlertsSmall").innerHTML = "";
-    var otherPlayer = getStorage('opponent');
-    placeTurnIndicatorData();
+
     placeBaseDisplayData(1);
     updateTroopDisplayData();
-    
     resetCoolDowns();
    
-    var enemyUnitsAllKilled = areEnemyUnitsAllKilled(otherPlayer);
+    //var enemyUnitsAllKilled = areEnemyUnitsAllKilled();
+    let enemyUnitsAllKilled = false;
     if (enemyUnitsAllKilled === true) {
         signalGameOver(player);
     }
-    var otherPlayerAllUnitsOnCooldown = checkUnitsForAllCooldowns(otherPlayer);
+
+    let otherPlayerAllUnitsOnCooldown = false;
+    // var otherPlayerAllUnitsOnCooldown = checkOpponentUnitsForAllCooldowns();
     if (otherPlayerAllUnitsOnCooldown == false) {
-        var otherPlayer = getStorage('opponent'); 
-        updateTurnIndicator();
+        let username = getStorage('username');
+        // updateTurnIndicator(opponent);
+        signalTurnOver(username);
         setStorage("allCoolDowns", "false");
     } else {
         setStorage("allCoolDowns", "true");
         //all of the otherPlayer's units are on cooldown. Just -=1 each cooldown and current player goes again
-        resetCoolDowns(otherPlayer);
+        resetCoolDowns();
     }
 }
 
-function handlePlayerAttack(player, id) {
+function handlePlayerAttack(id) {
     var player = convertPlayerToNumber(player);
     //get variables needed
     var otherPlayer = (player == 1 ? 2 : 1);
@@ -916,20 +927,20 @@ function resetCoolDowns() {
     setStorage("playerObj", playerObj);
 }
 
-function areEnemyUnitsAllKilled(otherPlayer) {
-    var otherPlayerObj = getStorage("playerObj"+otherPlayer);
-    if (otherPlayerObj.troops[0] == "") {
-        return true;
-    }
-    if (otherPlayerObj.troops[0] == null) {
-        return true;
-    }
-    if (otherPlayerObj.troops[0] == 'undefined'){
-        return true;
-    }
-    //else there are units in the otherPlayerObj
-    return false;
-}
+// function areEnemyUnitsAllKilled(otherPlayer) {
+//     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
+//     if (otherPlayerObj.troops[0] == "") {
+//         return true;
+//     }
+//     if (otherPlayerObj.troops[0] == null) {
+//         return true;
+//     }
+//     if (otherPlayerObj.troops[0] == 'undefined'){
+//         return true;
+//     }
+//     //else there are units in the otherPlayerObj
+//     return false;
+// }
 
 function clearTileInnerHtml(loc, player) {
     document.getElementById(loc).innerHTML = "";

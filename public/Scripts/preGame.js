@@ -172,7 +172,7 @@ function setup() {
     });
 
     socket.on('update-visible-tiles', function(username, visibleTileArray){
-    console.log('updating client with most recent visible tiles');
+    //console.log('updating client with most recent visible tiles');
     renderVisibleTilesForClient(username, visibleTileArray);
     });
 
@@ -194,12 +194,17 @@ function setup() {
         }
     });
 
+    socket.on('set-current-player', function(name) {
+        setStorage('turnIndicator', name);
+        updateTurnIndicator(name);
+    });
+
     //actually run particular client-side function for a specific user
-    socket.on('run-function', function(username, functionToRun){
+    socket.on('run-function', function(username, functionToRun, arg1, arg2){
         console.log('running '+ functionToRun +' for user: '+ username);
         let thisUser = getStorage('username');
         if (username == thisUser){
-            functionToRun(username);
+            functionToRun(username, arg1, arg2);
         }
     });
 
@@ -207,9 +212,9 @@ function setup() {
 }
 
 //call run-function to run a particular client-side function for a specific user
-function runFunction(username, functionToRun){
+function runFunction(username, functionToRun, arg1, arg2){
     console.log('about to call run-function: '+ functionToRun +' for '+ username);
-    socket.emit('cross-server-control', username, functionToRun);
+    socket.emit('cross-server-control', username, functionToRun, arg1, arg2);
 }
 
 //validate then save player name
@@ -446,9 +451,9 @@ function revealOpenTroopModalButton() {
     }
 }
 
-function updateTroopLocation(name, node) {
+function updateTroopLocation(unitName, node) {
     var username = getStorage('username');
-    socket.emit('update-troop-location', username, name, node);
+    socket.emit('update-troop-location', username, unitName, node);
 }
 
 function drawEnemyUnitsToMap(username, makeKnown) {
@@ -478,18 +483,14 @@ function drawEnemyUnitsToMap(username, makeKnown) {
     }
 }
 
-function checkUnitsForAllCooldowns(otherPlayer) {
+function checkOpponentUnitsForAllCooldowns() {
     //this function will need to check to see if all the other player's units are on cooldown
-    var otherPlayerObj = getStorage('playerObj'+otherPlayer);
-    var allOnCooldown = true;
-    for (var i=0; i<otherPlayerObj.troops.length; i++) {
-        if (otherPlayerObj.troops[i].Cooldown == 0) {
-            allOnCooldown = false;
-        }
-        if (allOnCooldown == false) {
-            return false;
-        }
-    }
-     
-    return true;
+    var opponent = getStorage('opponent');
+    var allOnCooldown = false;
+    
+    socket.emit('check-', location, username, bx,by);
+}
+
+function signalTurnOver(username){
+    socket.emit('signal-turn-over', username);
 }

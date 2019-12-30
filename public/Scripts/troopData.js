@@ -579,7 +579,8 @@ function createBombardier() {
 }
 
 //utility functions for troops below
-function checkCoolDown(activeUnit) {
+function checkCoolDown() {
+    var activeUnit = getStorage('activeTroop');
     var cooldown = parseInt(activeUnit.Cooldown);
     if (cooldown > 0) {
         document.getElementById("gameAlertsLarge").innerHTML = "That unit is on cooldown for "+ cooldown +" turn(s).";
