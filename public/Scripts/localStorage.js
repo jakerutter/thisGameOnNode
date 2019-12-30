@@ -527,7 +527,7 @@ function setActiveUnit(event) {
     }
     
     document.getElementById("rightSideBar").classList.remove("hidden");
-    addClickEventsToTurnOptions(player, activeUnit)
+    addClickEventsToTurnOptions(activeUnit)
     
 }
 

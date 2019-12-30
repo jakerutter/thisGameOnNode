@@ -5,7 +5,7 @@ var socket;
 function setup() {
   // Start a socket connection to the server
   // Some day we would run this server somewhere else
-  socket = io.connect('http://localhost:8080');
+  socket = io.connect('http://localhost:8181');
   // We make a named event called 'updateGamestate' and write an
   // anonymous callback function
   socket.on('updateGamestate',
