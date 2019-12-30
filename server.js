@@ -182,19 +182,28 @@ io.sockets.on('connection', function (socket) {
       addTroopsToGameObject(name, troopArray, gameObj);
     });
 
-    socket.on('update-troop-location', function(username, name, node){ 
+    socket.on('update-troop-location', function(username, unitName, node){ 
       //name is name of the troop
-      var visibleTileArray = serverUpdateTroopLocation(username, name, node, gameObj);
+      var visibleTileArray = serverUpdateTroopLocation(username, unitName, node, gameObj);
       serverUpdateVisibleTiles(username, visibleTileArray, gameObj);
     });
     
     //use this function to call a client side function for the other player
-    socket.on('cross-server-control', function(name, functionToRun){
+    socket.on('cross-server-control', function(name, functionToRun, arg1, arg2){
       console.log('in server.js, supposed to call '+ functionToRun + ' for user: ' +name);
       // controlOtherClientThroughServer(name, functionToRun, userObj);
       var socketid = userObj[socketid];
-      socket.broadcast.to(socketid).emit('run-function', username, functionToRun);
-    })
+      socket.broadcast.to(socketid).emit('run-function', username, functionToRun, arg1, arg2);
+    });
+
+    socket.on('signal-turn-over', function(username){
+      console.log(username +'\'s turn is coming to an end.');
+      let currentPlayerArray = privateUsers.filter(function(x) { return x !== username});
+      let currentPlayer = currentPlayerArray[0];
+      console.log('it should now be ' + currentPlayer +'\'s turn');
+      io.emit('set-current-player', currentPlayer);
+      
+    });
 
     //end of socket.on section
   });
@@ -260,8 +269,8 @@ function createDefaultGameObject(name, challenger, gameObj) {
     //adding the 2 player objects to the gameObj object
     gameObj[firstname] = name;
     gameObj[secondname] = challenger;
-    //comment out this line to hide gameObj being written to console
-    console.log(JSON.stringify(gameObj, null, 4));   
+    //uncomment this line to see gameObj at initial creation
+    //console.log(JSON.stringify(gameObj, null, 4));   
     
     return gameObj;
 }
@@ -293,7 +302,7 @@ function addColorToUserObj(name, chosenColor, gameObj) {
   }
 
   //Uncomment this to see the gameObj after a player's chosen color is added
-  console.log(JSON.stringify(gameObj, null, 4));
+  //console.log(JSON.stringify(gameObj, null, 4));
   return gameObj;
 }
 
@@ -315,7 +324,7 @@ function addBaseLocationToUserObj(name, location, bx, by, gameObj) {
     console.log('addBaseLocationToUserObj fell into an unexpected state.');
   }
   //Uncomment this to see the gameObj after a player's location is added
-  console.log(JSON.stringify(gameObj, null, 4));
+  //console.log(JSON.stringify(gameObj, null, 4));
   return gameObj;
 }
 
@@ -344,7 +353,7 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
     gameObj[username].troops[troopName] = troopArray[i];
   }
   console.log('troops added to gameObj for '+username);
-  console.log(JSON.stringify(gameObj, null, 4));
+  //console.log(JSON.stringify(gameObj, null, 4));
 
   return gameObj;
 }
@@ -427,43 +436,6 @@ function updateVisibilityForTroops(username) {
   
   return visibleTileArray;
 }
-// NOTE -- this function was active (but not working when I arrived 12/30/19)
-// NOTE -- the function above did work so I switched back to it
-
-// function updateVisibilityForTroops(username) {
-//   var visibleArray = gameObj[username].visibleTiles;
-//   var otherPlayer = privateUsers.filter(function(x) { return x !== username});
-//   otherPlayer = otherPlayer[0];
-//   if (visibleArray == "") {
-//       var visibleTileArray = [];
-//   } else {
-//       var visibleTileArray = visibleArray;
-//   }
-//   for (var troop in gameObj[otherPlayer].troops) {
-//     if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
-//       var troopLocation = gameObj[otherPlayer].troops[troop].Location;
-//       if (troopLocation != 'tbd') {
-//         console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
-//         var visibility = gameObj[otherPlayer].troops[troop].Visibility;
-//         console.log('visibility is ');
-//         console.log(visibility);
-//               var tCoordsArray = convertIdToCoordinates(troopLocation);
-//               var tx = Number(tCoordsArray[0]);
-//               var ty = Number(tCoordsArray[1]);
-//               for (var m=Math.max((tx-visibility),0); m<Math.min((tx+visibility+1),20); m++) {
-//                   for (var n=Math.max((ty-visibility),0); n<Math.min((ty+visibility+1),20); n++) {
-//                       var id = convertCoordsToId(m,n);
-                      
-//                       visibleTileArray.push(id);
-//                   }   
-//                 }
-//           }
-//       }
-//   }
-//   visibleTileArray = returnArrayWithoutDuplicates(visibleTileArray);
-  
-//   return visibleTileArray;
-// }
 
 function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
   //console.log('inside serverUpdateVisibleTiles!! about to call makeVisibleOtherPlayersUnits');
