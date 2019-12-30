@@ -1,6 +1,6 @@
 # Space Raiders
 
-A game I made using node.js and socket.io. The game is similar to a cross between Battleship and Chess, with a space theme.
+A game I made using node.js and socket.io. The game is a space themed mix of Battleship and Chess. Each player will select units, place a base on the game board & place their units adjacent their base location. Players will then take turns moving their space ships in an attempt to locate and destroy the other player's ships or base before their ships or base are destroyed.
 
 ## Current Status
 
