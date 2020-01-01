@@ -270,12 +270,33 @@ button.link:hover {
   .col-1-1 {
       width: 100%;
   }
+  .col-9-10{
+    width: 90%;   
+}
+.col-8-10{
+    width: 80%;   
+}
+  .col-7-10{
+    width: 70%;   
+}
+  .col-6-10{
+      width:60%;
+  }
+  .col-5-10{
+      width: 50%;
+  }
   .col-4-10 {
       width: 40%;
   }
   .col-3-10 {
       width: 30%;
   }
+  .col-2-10{
+    width: 20%;   
+}
+.col-1-10{
+    width: 10%;   
+}
   .left-gutter {
       text-align: left;
       padding-left: 20px;
