@@ -1,17 +1,13 @@
 //This page will hold the data and information regarding the various troop units
 
-function populateTroopDetailModal(name, player){
+function populateTroopDetailModal(name){
     var time = "troopModal";
     //hide inGame button show preGame button
     document.getElementById("inGameTroopDetailButton").classList.add("hidden");
     document.getElementById("preGameTroopDetailButton").classList.remove("hidden");
-    showTroopSelected(player);
+    showTroopSelected();
     hideTroopModal(false);
-    if (player == 1) {
-        var color = document.getElementById('playerColorSelection').innerHTML;
-    } else {
-        var color = document.getElementById('playerColorSelection2').innerHTML;
-    }
+    var color = document.getElementById('playerColorSelection').innerHTML;
 
     if ((name.id == "scout") || (name == "Scout")) {
         populateScout(name, color, time);
@@ -1025,7 +1021,7 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
            
 function clearPlayerColorFromMap() {
     var playerObj = getStorage("playerObj");
-    var color = playerObj.player.Color;
+    var color = playerObj.color;
       for (var i=0; i<400; i++) {
          var tile = document.getElementById(i);
          if (tile.classList.contains("availableForUnique"+color)) {

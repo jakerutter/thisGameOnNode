@@ -206,10 +206,11 @@ function placeTroopDisplayData() {
             var name = playerObj.troops[i].Name;
             var color = playerObj.player.Color;
             var coords = convertIdToCoordinates(playerObj.troops[i].Location);
+            var title = name + ", " + playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth + " Health Points";
             // document.getElementById("troopDisplay").innerHTML = "";
             document.getElementById("troopDisplay").innerHTML +=
             "<span class='col-1-1 bottomSpacer'><h3>" + name +
-            "<img name="+name+" class='troopPic' id="+'1troopPic'+i+" src=Assets/"+name+color+".png></img></h3>" +
+            "<img name="+name+" class='troopPic' id="+'1troopPic'+i+" src=Assets/"+name+color+".png title="+title+"></img></h3>" +
             "<span class='col-1-2'><span> Health Points: "+ playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth+ "</span><br>"+
             "<span> Attack Damage: "+ playerObj.troops[i].AttackDamage + "</span><br>"+
             "<span> Attack Range: "+ playerObj.troops[i].AttackRange + "</span><br>"+
@@ -225,7 +226,9 @@ function placeTroopDisplayData() {
 
 function updateTroopDisplayData() {
     var playerObj = getStorage("playerObj");
-    if (playerObj == "") {
+    console.log(JSON.stringify(playerObj, null, 4)); 
+
+    if (playerObj == "" || playerObj == undefined) {
         document.getElementById("troopDisplay").innerHTML = "";
     } else {
         document.getElementById("troopDisplay").classList.remove("hidden");
@@ -386,7 +389,7 @@ function removeValueFromArray(array, value) {
 
 function clearAvailableTilesForAction() {
     var tileArray = getStorage("tilesForMove");
-    if (tileArray != null) {
+    if (tileArray != null && tileArray != undefined) {
         for (var i = 0; i < tileArray.length; i++) {
             document.getElementById(tileArray[i]).classList.remove("availableToMove");
         }
@@ -516,9 +519,7 @@ function setActiveUnit(event) {
     clearUniqueEventHandlers(activeUnit);
     
     var playerObj = getStorage("playerObj");
-    var activePhoto = event.id;
     var name = event.name;
-    var activeTroop = ("player1"+event.name);
     document.getElementById("gameAlertsLarge").innerHTML = "Active troop is "+ name+". See menu for options.";
 
     for (var i=0; i<playerObj.troops.length; i++) {
@@ -530,7 +531,6 @@ function setActiveUnit(event) {
     
     document.getElementById("rightSideBar").classList.remove("hidden");
     addClickEventsToTurnOptions(activeUnit)
-    
 }
 
 function addClickEventsToTurnOptions(activeUnit) {
@@ -569,12 +569,10 @@ function addClickEventsToTurnOptions(activeUnit) {
 function prepareGameAction(activeUnit, event) {
     clearAvailableTilesForAction();
     clearPlayerColorFromMap();
-    //this next function may need improved
+    //TODO -this next function may need improved
     clearUniqueEventHandlers();
     var alertLoc = "gameAlertsSmall";
-    var coords = document.getElementById(activeUnit.Location).dataset.coords;
     var loc = activeUnit.Location;
-    var playerObj = getStorage("playerObj");
 
     if (event.id == "option1") {
         var distance = activeUnit.MovementDistance;
@@ -659,15 +657,19 @@ function sendTurnActionInfo(moveType) {
 function handlePlayerMove(id) {
     var playerObj = getStorage("playerObj");
     var activeUnit = getStorage("activeTroop");
-    var validTile;
-    if (activeUnit != null) {
-        var loc = activeUnit.Location;
-        setStorage("oldLoc", loc);
+    if (playerObj == undefined || playerObj == "" || activeUnit == undefined || activeUnit == ""){
+        alert('error in handlePlayerMove. either playerObj or activeUnit is undefined or empty string');
     }
+
+    var validTile;
+    var loc = activeUnit.Location;
+    setStorage("oldLoc", loc);
 
     var inRange = getStorage("tilesForMove");
     //first check that "id" tile is included in the array of available tiles
-    if (inRange != null) {
+    if (inRange == null || inRange == undefined || inRange == "") {
+        alert('error in handlePlayerMove. inRange is null or undefined or empty string');
+    } else {
 
         var oneValid = false;
 
@@ -708,8 +710,11 @@ function handlePlayerMove(id) {
        setStorage("playerObj", playerObj);
        //this is to save ActiveUnit after the changes have been made to location
         setStorage("activeTroop", activeUnit);
-        //get rid of availableMove styling
+        
+        removeUnitImageFromOpponent(username, loc);
         updateTroopLocation(unitName, id);
+        
+        //get rid of availableMove styling
         clearAvailableTilesForAction();
         processTurn();
     }
@@ -745,60 +750,21 @@ function processTurn() {
 }
 
 function handlePlayerAttack(id) {
-    var player = convertPlayerToNumber(player);
     //get variables needed
-    var otherPlayer = (player == 1 ? 2 : 1);
-    var playerObj = getStorage("playerObj" + player);
-    var otherPlayerObj = getStorage("playerObj" + otherPlayer);
-    var otherBase = otherPlayerObj.base.Location;
-    var activeUnit = getStorage("activeTroop");
-    var targetFound = false;
-        //returns true if id (clicked tile) has appropriate styling that indicates it is in range
-        var inRange = checkAttackRange(id);
-        if (inRange !== true) {
-            document.getElementById("gameAlertsLarge").innerHTML = "That is beyond your attack range.";
-            return false;
-        } else {
-        //returns true if clicked tile has enemy unit or base
-        var check = checkTileForEnemyUnit(otherBase, id, otherPlayerObj);
-        if (check == true){
-            //take the damage amount from activeTroop and subtract that from the unit's health or baseHealth
-            var damage = parseInt(activeUnit.AttackDamage);
-            var targetedEnemy = getTargetedUnit(otherPlayerObj, id);
-            var healthRemaining = applyDamageForAttack(damage, targetedEnemy, otherPlayer);
-            var loc = targetedEnemy.Location;
-            //play attack sound
-            playSound("attack");
-            targetedEnemy.HealthPoints = healthRemaining;
-            setStorage("targetedEnemy", targetedEnemy);
-                if (healthRemaining == 0) {
-                    //if unit dies, attacker will move to that tile -- remove unit image 
-                    var oldInnerHtml = document.getElementById(activeUnit.Location).innerHTML;
-                    document.getElementById(loc).innerHTML = oldInnerHtml;
-                    document.getElementById(activeUnit.Location).innerHTML = "";
-                    activeUnit.Location = loc;
-                    var name = activeUnit.Name;
-                    //if activeUnit is a troop save the new info into the playerObj
-                    var saved = false;
-                    for (var i=0; i<playerObj.troops.length; i++) {
-                        if (playerObj.troops[i].Name == name) {
-                           
-                            playerObj.troops[i] = activeUnit;
-                            saved = true;
-                        }
-                    }
+    let username = getStorage('username');
+    let activeUnit = getStorage("activeTroop");
 
-                    // this will remove unit from playerObj
-                    determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player); 
-                }
-            //save both playerObjects after
-            setStorage("playerObj", playerObj);
-            setStorage("playerObj"+otherPlayer, otherPlayerObj);
-        } else {
-            //attacked an empty tile -- turn passes
-        }
-    clearAvailableTilesForAction(player);
-    processTurn(player);
+    //returns true if id (clicked tile) has appropriate styling that indicates it is in range
+    var inRange = clientSideCheckAttackRange(id);
+    if (!inRange) {
+        document.getElementById("gameAlertsLarge").innerHTML = "That is beyond your attack range.";
+        return false;
+    } else {
+        sendAttackToServer(username, activeUnit.Name, id);
+        //play attack sound
+        playSound("attack");
+        clearAvailableTilesForAction();
+        processTurn();
     }
 }
 
@@ -808,6 +774,14 @@ function checkAttackRange(id) {
     } else {
         return false;
     }
+}
+
+function clientSideCheckAttackRange(id){
+    let currentRange = getStorage('tilesForMove');
+    if (currentRange.includes(id)){
+        return true;
+    }
+    return false;
 }
 
 function checkTileForEnemyUnit(base, id, otherPlayerObj) {
@@ -851,65 +825,37 @@ function applyDamageForAttack(damage, targetedEnemy, otherPlayer) {
     }
 }
 
-function determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player) {
-    var player = convertPlayerToNumber(player);
-    var otherPlayer = (player == 1 ? 2 : 1);
-    if (targetedEnemy.Name == "Base") {
-        //this will trigger a win for attacking player
-        signalGameOver(player);
-    } else {
-        //remove this value from makeKnown array so the innerHTML doesn't get cleared in makeVisibleOtherPlayersUnits()
-        var location = targetedEnemy.Location;
-        var makeKnown = getStorage("makeKnown"+player);
-        var indexOfTarget = makeKnown.indexOf(location);
-        makeKnown.splice(indexOfTarget, 1);
-        setStorage("makeKnown"+player, makeKnown);
-        //this finds and removes the killed unit from the playerObj
-        for (var n=0; n<otherPlayerObj.troops.length; n++) {
-            if (otherPlayerObj.troops[n].Name == targetedEnemy.Name) {
-                (otherPlayerObj.troops).splice(n,1);
-            }   
-        }
-        setStorage("playerObj"+otherPlayer, otherPlayerObj);
-    }
-}
-
-function handleUniqueMove(player, id) {
-    //get needed variables
-    var playerObj = getStorage("playerObj");
+function handleUniqueMove(id) {
     var activeUnit = getStorage("activeTroop");
     //ensure active unit has a unique move
-    var check = checkActiveUnitForUniqueMove(activeUnit, player);
+    var check = checkActiveUnitForUniqueMove(activeUnit);
     //send unit to its specific unique move function
     if (check == true) {
-        routeUniqueMoveForActiveUnit(player, id);
+        routeUniqueMoveForActiveUnit(id);
     }
 }
 
-function checkActiveUnitForUniqueMove(activeUnit, player) {
+function checkActiveUnitForUniqueMove(activeUnit) {
     var check = false;
     var unitsWithUniqueMoves = ["DepthCharge","Swarm","Scan","Pirate","Bombardier"];
     //check to see if active unit is one with a unique move
     for(var x=0; x<unitsWithUniqueMoves.length; x++) {
         if (unitsWithUniqueMoves[x] == activeUnit.Name) {
-            check = true;
+            return true;
         } 
     }
-    if (check == true) 
-        { return check; } else {
-            //alert user that the active unit does not have a unique move
-            document.getElementById("gameAlertsLarge").innerHTML = "That unit does not have a unique move.";
-            return false;
-    }
+    //alert user that the active unit does not have a unique move
+    document.getElementById("gameAlertsLarge").innerHTML = "That unit does not have a unique move.";
+    return false;
+    
 }
 
-function updateAttackedBaseHealth(otherPlayer, healthAfterAttack) {
-    if (otherPlayer == 1) {
+function updateAttackedBaseHealth(healthAfterAttack) {
+    //TODO consolidate the two versions of this into one
         triggerPlayerOneBaseHealth(healthAfterAttack);
-    } else if (otherPlayer == 2) {
         triggerPlayerTwoBaseHealth(healthAfterAttack);
-    }
 }
+
 //this needs to be moved server side
 function resetCoolDowns() {
     var activeUnit = getStorage("activeTroop");
@@ -942,13 +888,8 @@ function resetCoolDowns() {
 //     return false;
 // }
 
-function clearTileInnerHtml(loc, player) {
+function clearTileInnerHtml(loc) {
     document.getElementById(loc).innerHTML = "";
-    if (player == 1) {
-        window2.clearSingleTileInnerHtml(loc);
-    } else if (player ==2) {
-        window1.clearSingleTileInnerHtml(loc);
-    }
 }
 
 function signalGameOver(player) {
@@ -965,7 +906,7 @@ function signalGameOver(player) {
     document.getElementById("finishedAlert").innerHTML = "You are VICTORIOUS!";
     document.getElementById("finishedAlertSmall").innerHTML = "I send you a kaffis of mustard seed, that you may taste and acknowledge the bitterness of my victory. - Alexander da Great";
     document.getElementById("victoryVideo").classList.remove("hidden");
-    //alert the loser of their defeat
+    //TODO --alert the loser of their defeat (replacing following lines)
     if (player == 1) {
         window2.signalGameLoss(player);
     } else if (player == 2) {

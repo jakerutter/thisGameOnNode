@@ -208,6 +208,26 @@ function setup() {
         }
     });
 
+    socket.on('update-client-post-attack', function(username, playerObj, id){
+        //TODO determine best way to update tooltip displaying updated health for attacked unit
+        let thisUser = getStorage('username');
+        if (username == thisUser){
+            setStorage('playerObj', playerObj);
+        }
+    });
+
+    socket.on('remove-unit-from-board-for-user', function(id, username){
+        let user = getStorage('username');
+        if (user === username){
+          document.getElementById(id).innerHTML = "";  
+        }
+    });
+
+    socket.on('remove-unit-from-board', function(id){
+        document.getElementById(id).innerHTML = "";
+    });
+
+
      //end of setup
 }
 
@@ -458,8 +478,8 @@ function updateTroopLocation(unitName, node) {
 
 function drawEnemyUnitsToMap(username, makeKnown) {
     var name = getStorage('username');
-    console.log('INSIDE drawEnemyUnitsToMap');
-    console.log(JSON.stringify(makeKnown, null, 4));
+    //console.log('INSIDE drawEnemyUnitsToMap');
+    //console.log(JSON.stringify(makeKnown, null, 4));
     //need to clear the map and redraw this user and enemy user's units
     //account for Name, Location, Color, Health of units & base
     if (name === username) {
@@ -471,10 +491,8 @@ function drawEnemyUnitsToMap(username, makeKnown) {
             } 
             else {
                 document.getElementById(makeKnown[i].location).innerText = '';
-                var health = getTroopMaxHealth(makeKnown[i].name);
-                var pictureID = "player1"+makeKnown[i].name;
-                document.getElementById(makeKnown[i].location).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].name+""+" src=/Assets/"+makeKnown[i].name+makeKnown[i].color+".png></img>";
-                document.getElementById(makeKnown[i].location).title = 'Enemy '+ makeKnown[i].name + ', '+health+' / '+health+' Health Points';
+                var title = "Enemy "+ makeKnown[i].name + ", "+makeKnown[i].health+" / "+makeKnown[i].maxHealth+" Health Points";
+                document.getElementById(makeKnown[i].location).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].name+""+" src=/Assets/"+makeKnown[i].name+makeKnown[i].color+".png title="+title+"></img>";
                 // document.getElementById(pictureID).style.height = '100%';
                 // document.getElementById(pictureID).style.width = '100%';
                 
@@ -493,4 +511,13 @@ function checkOpponentUnitsForAllCooldowns() {
 
 function signalTurnOver(username){
     socket.emit('signal-turn-over', username);
+}
+
+function sendAttackToServer(username, unitName, id){
+    socket.emit('send-attack-to-server', username, unitName, id);
+}
+
+function removeUnitImageFromOpponent(username, id){
+    //remove the old image from the other player's map
+    socket.emit('remove-moved-unit', id, username);
 }
