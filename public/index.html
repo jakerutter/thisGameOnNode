@@ -1,4 +1,4 @@
-<!--run http-server at C:\dev\ThisGameOnNode and it should work on localhost:8080 -->
+<!--run http-server at C:\dev\ThisGameOnNode and it should work on localhost:8181 -->
 
 
 <!doctype html>
@@ -83,7 +83,7 @@
   <div class="grid">
           <div id="outterLeftDiv" class="col-2-10 whiteText">
               <div id="leftSideBar">
-              <h3 id="leftSideBarH3" class="hidden"> .................... Additional Game Data ....................</h3>
+              <h3 id="leftSideBarH3" class="hidden"> ............... Additional Game Data ...............</h3>
                   <div class="col-1-2">
                       <span id="playerNameDisplay" class="bottomSpacer"></span>
                       <span id="baseLocationDisplay" class="bottomSpacer"></span>
@@ -184,39 +184,39 @@
       <form id="troopCheckboxes" action="" class="troopCheckBox">
               <input id="scout" type="checkbox" name="troops" value="scout" class="checkboxes" >
                   <span title="quick travelling unit great for initial scouting. 2PV">
-                      <button class="link" onclick="populateTroopDetailModal(scout, 1)">Scout</button></span><br>
+                      <button class="link" onclick="populateTroopDetailModal(scout)">Scout</button></span><br>
 
               <input id="depthCharge" type="checkbox" name="troops" value="depthCharge" class="checkboxes" >
                   <span title="powerful explosive that disables a 3x3 area for 1 turn and returns info on any opponent units within. slight cooldown. 2PV">
-                          <button class="link" onclick="populateTroopDetailModal(depthCharge, 1)">Depth Charge</button></span><br>
+                          <button class="link" onclick="populateTroopDetailModal(depthCharge)">Depth Charge</button></span><br>
 
               <input id="destroyer" type="checkbox" name="troops" value="destroyer" class="checkboxes" >
                   <span title="slow and powerful unit that attacks one unit at a time. 5PV">
-                      <button class="link" onclick="populateTroopDetailModal(destroyer, 1)">Destroyer</button></span><br>
+                      <button class="link" onclick="populateTroopDetailModal(destroyer)">Destroyer</button></span><br>
 
               <input id="swarm" type="checkbox" name="troops" value="swarm" class="checkboxes" >
                   <span title="a unique unit searches and attacks in a binary method. 5PV">
-                      <button class="link" onclick="populateTroopDetailModal(swarm, 1)">Swarm</button></span><br>
+                      <button class="link" onclick="populateTroopDetailModal(swarm)">Swarm</button></span><br>
 
               <input id="scan" type="checkbox" name="troops" value="scan" class="checkboxes" >
                   <span title="scans the target area revealing a 5x5 area. 3PV">
-                          <button class="link" onclick="populateTroopDetailModal(scan, 1)">Scan</button></span><br>
+                          <button class="link" onclick="populateTroopDetailModal(scan)">Scan</button></span><br>
 
               <input id="ruskie" type="checkbox" name="troops" value="ruskie" class="checkboxes" >
                   <span title="a decent all around unit. 3PV">
-                          <button class="link" onclick="populateTroopDetailModal(ruskie, 1)">Ruskie</button></span><br>
+                          <button class="link" onclick="populateTroopDetailModal(ruskie)">Ruskie</button></span><br>
 
               <input id="gremlin" type="checkbox" name="troops" value="gremlin" class="checkboxes" >
                   <span title="medium unit all around. 4PV">
-                      <button class="link" onclick="populateTroopDetailModal(gremlin, 1)">Gremlin</button></span><br>
+                      <button class="link" onclick="populateTroopDetailModal(gremlin)">Gremlin</button></span><br>
 
               <input id="pirate" type="checkbox" name="troops" value="pirate" class="checkboxes" >
                   <span title="this unit searches the places it passes and sends the loot back to your base. 2PV">
-                          <button class="link" onclick="populateTroopDetailModal(pirate, 1)">Pirate</button></span><br>
+                          <button class="link" onclick="populateTroopDetailModal(pirate)">Pirate</button></span><br>
 
               <input id="bombardier" type="checkbox" name="troops" value="bombardier" class="checkboxes" >
                   <span title="medium unit that has a bomb attack with enhanced range and area of attack. 4PV">
-                      <button class="link" onclick="populateTroopDetailModal(bombardier, 1)">Bombardier</button></span><br>
+                      <button class="link" onclick="populateTroopDetailModal(bombardier)">Bombardier</button></span><br>
 
           </form>
             <div id="troopModalAlert">...................</div>
@@ -271,14 +271,14 @@
 <div id="playerObj" class="hidden"></div>
 
 <!-- <audio type="audio" id='spaceIntro' src="/Sounds/spaceIntro.mp3"></audio> -->
-<!-- <audio type="audio" id="wrongBuzz" src="/Sounds/wrongBuzz.wav"></audio>
+<audio type="audio" id="wrongBuzz" src="/Sounds/wrongBuzz.wav"></audio>
 <audio type="audio" id="spaceShot" src="/Sounds/spaceShot.wav"></audio>
 <audio type="audio" id="moveSound" src="/Sounds/move.wav"></audio>
 <audio type="audio" id="scanSound" src="/Sounds/scan.wav"></audio>
 <audio type="audio" id="swarmSound" src="/Sounds/swarm.wav"></audio>
 <audio type="audio" id="depthChargeSound" src="/Sounds/depthCharge.wav"></audio>
 <audio type="audio" id="bombSound" src="/Sounds/bombSound.wav"></audio>
- -->
+
 
 
 
