@@ -183,7 +183,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('update-troop-location', function(username, unitName, node){ 
-      //name is name of the troop
+
       var visibleTileArray = serverUpdateTroopLocation(username, unitName, node, gameObj);
       serverUpdateVisibleTiles(username, visibleTileArray, gameObj);
     });
@@ -204,6 +204,32 @@ io.sockets.on('connection', function (socket) {
       io.emit('set-current-player', currentPlayer);
       
     });
+
+    socket.on('send-attack-to-server', function(username, unitName, id){
+      console.log(username + ' has attacked location ' + id + ' with ' + unitName);
+      let opponentArray = privateUsers.filter(function(x) { return x !== username});
+      let opponent = opponentArray[0];
+      
+      let unitPresent = isUnitAtLocation(opponent, id);
+      console.log('unit is found to attack?' + unitPresent);
+      //unit not at location. pass turn to other player
+      if(unitPresent){
+        let playerObj = attackEnemyUnit(username, opponent, unitName, id);
+        io.emit('update-client-post-attack', opponent, playerObj, id);
+      }
+
+      console.log('attack over, calling set-current-player to '+ opponent);
+      io.emit('set-current-player', opponent);
+
+    });
+
+    socket.on('remove-moved-unit', function(id, username){
+      let opponentArray = privateUsers.filter(function(x) { return x !== username});
+      let opponent = opponentArray[0];
+      io.emit('remove-unit-from-board-for-user', id, opponent);
+    });
+
+
 
     //end of socket.on section
   });
@@ -341,7 +367,7 @@ function showProps(obj, objName) {
 }
 
 //this function will remove items from gameObj when the key & id are provided
-function deleteFromGameObj(key, id, gameObj) {
+function deleteFromGameObj(key, id) {
   delete gameObj[key][id];
   return gameObj;
 }
@@ -360,29 +386,31 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
 
 function serverUpdateTroopLocation(username, name, node, gameObj) {
   //name is the name of the troop being updated
-    gameObj[username].troops[name].Location = node;
-    // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
-    console.log(username + ' moved their '+ name + ' to '+ node);
-    var visibleTileArray = updateVisibilityForTroops(username);
-    io.emit('update-visible-tiles', username, visibleTileArray);
-    //check the current game state (stage) and update accordingly when all units for a player are placed
-    let stage = gameObj['stage'];
-    let numberOfTroopsPlaced = gameObj[username].troopsPlaced + 1;
-    gameObj[username].troopsPlaced = numberOfTroopsPlaced;
-    console.log(username +' troopsPlaced = '+ numberOfTroopsPlaced);
-    if (numberOfTroopsPlaced === 3) {
-      if (stage === 'TwoLocationsSelected') {
-        gameObj['stage'] = 'UnitsPlacedForOnePlayer';
-        console.log('game state updated to '+ gameObj['stage']);
-      }
-      else if (stage === 'UnitsPlacedForOnePlayer') {
-        gameObj['stage'] = 'UnitsPlacedForTwoPlayers';
-        console.log('game state updated to '+ gameObj['stage']);
-        serverTriggerGameStart(gameObj);
+  gameObj[username].troops[name].Location = node;
+  // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
+  console.log(username + ' moved their '+ name + ' to '+ node);
+  var visibleTileArray = updateVisibilityForTroops(username);
+  io.emit('update-visible-tiles', username, visibleTileArray);
+  
+  //check the current game state (stage) and update accordingly when all units for a player are placed
+  let stage = gameObj['stage'];
+  let numberOfTroopsPlaced = gameObj[username].troopsPlaced + 1;
+  gameObj[username].troopsPlaced = numberOfTroopsPlaced;
+  console.log(username +' troopsPlaced = '+ numberOfTroopsPlaced);
+
+  if (numberOfTroopsPlaced === 3) {
+    if (stage === 'TwoLocationsSelected') {
+      gameObj['stage'] = 'UnitsPlacedForOnePlayer';
+      console.log('game state updated to '+ gameObj['stage']);
+    }
+    else if (stage === 'UnitsPlacedForOnePlayer') {
+      gameObj['stage'] = 'UnitsPlacedForTwoPlayers';
+      console.log('game state updated to '+ gameObj['stage']);
+      serverTriggerGameStart(gameObj);
     } else alert('there is an error in serverUpdateTroopLocation. please troubleshoot');
   }
     
-    return visibleTileArray;
+  return visibleTileArray;
 }
 
 function updateVisibilityForBase(location) {
@@ -416,20 +444,20 @@ function updateVisibilityForTroops(username) {
       var troopLocation = gameObj[username].troops[troop].Location;
       if (troopLocation != "tbd") {
         //console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
-      var visibility = gameObj[username].troops[troop].Visibility;
+        var visibility = gameObj[username].troops[troop].Visibility;
         //console.log('visibility is ');
         //console.log(visibility);
-              var tCoordsArray = convertIdToCoordinates(troopLocation);
-              var tx = Number(tCoordsArray[0]);
-              var ty = Number(tCoordsArray[1]);
-              for (var m=Math.max((tx-visibility),0); m<Math.min((tx+visibility+1),20); m++) {
-                  for (var n=Math.max((ty-visibility),0); n<Math.min((ty+visibility+1),20); n++) {
-                      var id = convertCoordsToId(m,n);
-                      
-                      visibleTileArray.push(id);
-                  }   
-                }
+        var tCoordsArray = convertIdToCoordinates(troopLocation);
+        var tx = Number(tCoordsArray[0]);
+        var ty = Number(tCoordsArray[1]);
+        for (var m=Math.max((tx-visibility),0); m<Math.min((tx+visibility+1),20); m++) {
+            for (var n=Math.max((ty-visibility),0); n<Math.min((ty+visibility+1),20); n++) {
+                var id = convertCoordsToId(m,n);
+                
+                visibleTileArray.push(id);
+            }   
           }
+        }
       }
   }
   visibleTileArray = returnArrayWithoutDuplicates(visibleTileArray);
@@ -461,43 +489,44 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
   // console.log(gameObj[otherPlayer].base.loc);
   // console.log(gameObj[otherPlayer]);
  
-      for (var k=0; k<visibleTileArray.length; k++) {
-          for (var troop in gameObj[otherPlayer].troops) {
-            if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
-              var troopLocation = gameObj[otherPlayer].troops[troop].Location;
-              
-              // console.log('checking '+visibleTileArray[k] + " " + troop +' location is ---> '+ troopLocation);
+  for (var k=0; k<visibleTileArray.length; k++) {
+      for (var troop in gameObj[otherPlayer].troops) {
+        if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
+          var troopLocation = gameObj[otherPlayer].troops[troop].Location;
+          
+          // console.log('checking '+visibleTileArray[k] + " " + troop +' location is ---> '+ troopLocation);
 
-              if (troopLocation == visibleTileArray[k]) {
-                console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
-              //add the desired details into a visibleItem which will be placed in makeKnown array
-              //then returned and rendered on client side
-              let visibleItem = {};
-              visibleItem.location = troopLocation;
-              visibleItem.name = gameObj[otherPlayer].troops[troop].Name;
-              visibleItem.color = gameObj[otherPlayer].color;
-              visibleItem.health = gameObj[otherPlayer].troops[troop].HealthPoints;
-              console.log(JSON.stringify(visibleItem, null, 4));
-              makeKnown.push(visibleItem);
-              }
-            }            
+          if (troopLocation == visibleTileArray[k]) {
+            console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
+          //add the desired details into a visibleItem which will be placed in makeKnown array
+          //then returned and rendered on client side
+          let visibleItem = {};
+          visibleItem.location = troopLocation;
+          visibleItem.name = gameObj[otherPlayer].troops[troop].Name;
+          visibleItem.color = gameObj[otherPlayer].color;
+          visibleItem.health = gameObj[otherPlayer].troops[troop].HealthPoints;
+          visibleItem.maxHealth = gameObj[otherPlayer].troops[troop].maxHealth;
+          console.log(JSON.stringify(visibleItem, null, 4));
+          makeKnown.push(visibleItem);
           }
-          //if visible this will show the other players base
-          if (visibleTileArray[k] == (gameObj[otherPlayer].base.loc)) {
-            console.log('BASE LOCATED!');
-            let visibleItem = {};
-            visibleItem.location = gameObj[otherPlayer].base.loc;
-            visibleItem.name = 'enemy base';
-            visibleItem.color = gameObj[otherPlayer].color;
-            visibleItem.health = gameObj[otherPlayer].base.health;
-            makeKnown.push(visibleItem);
-              } 
-          }
+        }            
+      }
+      //if visible this will show the other players base
+      if (visibleTileArray[k] == (gameObj[otherPlayer].base.loc)) {
+        console.log('BASE LOCATED!');
+        let visibleItem = {};
+        visibleItem.location = gameObj[otherPlayer].base.loc;
+        visibleItem.name = 'enemy base';
+        visibleItem.color = gameObj[otherPlayer].color;
+        visibleItem.health = gameObj[otherPlayer].base.health;
+        makeKnown.push(visibleItem);
+      } 
+  }
       // console.log('inside makeVisibleOtherPlayersUnits and makeKnkown length is...'+ makeKnown.length);
       //send the data to the client to render
       if (makeKnown.length > 0) {
-          io.emit('render-enemy-units', username, makeKnown);
-          }
+        io.emit('render-enemy-units', username, makeKnown);
+      }
 }
 
 function serverTriggerGameStart(gameObj) {
@@ -585,6 +614,48 @@ function convertIdToCoordinates(id) {
 }
 
 function returnArrayWithoutDuplicates(a) {
-  console.log(a);
+  //console.log(a);
   return Array.from(new Set(a));
+}
+
+function isUnitAtLocation(username, id){
+  let unitFound = false;
+  let troopObj = gameObj[username].troops;
+  let baseObj = gameObj[username].base;
+  Object.keys(troopObj).forEach(function(key) {
+    if (troopObj[key].Location == id) {
+      unitFound = true;
+    }
+    console.log(key, troopObj[key]);
+  });
+
+  if(baseObj.loc == id){
+    unitFound = true;
+  }
+  return unitFound;
+}
+
+function attackEnemyUnit(username, opponent, unitName, id){
+  let troopObj = gameObj[opponent].troops;
+  let baseObj = gameObj[opponent].base;
+  Object.keys(troopObj).forEach(function(key) {
+    if (troopObj[key].Location == id) {
+      troopObj[key].HealthPoints -= gameObj[username].troops[unitName].AttackDamage;
+      console.log(troopObj[key].HealthPoints + ' is hp and ' + gameObj[username].troops[unitName].AttackDamage + ' is attack dmg');
+    }
+  });
+    
+  if(gameObj[opponent].base.loc == id){
+    gameObj[opponent].base.HealthPoints -= gameObj[username].troops[unitName].AttackDamage;
+  }
+  //this finds and removes the killed unit from the playerObj
+  Object.keys(troopObj).forEach(function(key) {
+    if (troopObj[key].HealthPoints <= 0) {
+      console.log('removing '+ troopObj[key].Name + ' from gameObj. It\s been killed.');
+      io.emit('remove-unit-from-board', id);
+      delete troopObj[key];
+    }
+  });
+  
+  return gameObj[opponent];
 }
