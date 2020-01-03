@@ -206,7 +206,7 @@ function placeTroopDisplayData() {
             var name = playerObj.troops[i].Name;
             var color = playerObj.player.Color;
             var coords = convertIdToCoordinates(playerObj.troops[i].Location);
-            var title = name + ", " + playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth + " Health Points";
+            var title = ""+ name + ", " + playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth + " Health Points";
             // document.getElementById("troopDisplay").innerHTML = "";
             document.getElementById("troopDisplay").innerHTML +=
             "<span class='col-1-1 bottomSpacer'><h3>" + name +
@@ -590,13 +590,16 @@ function prepareGameAction(activeUnit, event) {
         populateTroopDetailModalInGame(activeUnit.Name);
     }
 
+    // clear tiles
     clearAvailableTilesForAction();
-    showAvailableTilesForAction(loc, distance);
+    
     if (event.id == "option3") {
         displayUniqueMoveTiles(activeUnit);
+    } else {
+        showAvailableTilesForAction(loc, distance);
     }
-    document.getElementById("currentState").innerHTML = "gameTime";
-    setStorage("gameState", "gameTime");
+    // document.getElementById("currentState").innerHTML = "gameTime";
+    // setStorage("gameState", "gameTime");
     setStorage("activeTroop", activeUnit);
     setStorage("moveType", event.id);
 }

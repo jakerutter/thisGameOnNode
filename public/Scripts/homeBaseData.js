@@ -10,6 +10,7 @@ function getHomeBaseObjects(player) {
     var HomeBase = {
         Location: location,
         HealthPoints: 200,
+        MaxHealth: 200,
         Name: "Base" 
     };
     return HomeBase;

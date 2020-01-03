@@ -406,11 +406,11 @@ function checkPlayerUnitLocation(id) {
             var name = playerObj.troops[troopsToPlace].Name;
             var color = playerObj.player.Color;
             var node = Number(id);
-            var title = name + ', '+health+' / '+health+' Health Points';
             playerObj.troops[troopsToPlace].Location = node;
             var health = getTroopMaxHealth(name);
+            var title = name + ", "+health+" / "+health+" Health Points";
             var pictureID = 'player1'+name;
-            document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+color+'.png title='+title+'></img>';
+            document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+color+'.png title="'+title+'"></img>';
             document.getElementById(pictureID).style.height = '100%';
             document.getElementById(pictureID).style.width = '100%';
             //send troop location to server
@@ -472,7 +472,7 @@ function hideinGameTroopDetailModal() {
 
 function updateActivePlayerTroopDisplayData(player) {
     var playerObj = getStorage('playerObj'+player);
-    if (playerObj == '') {
+    if (playerObj == '' || playerObj == undefined) {
         document.getElementById('troopDisplay').innerHTML = '';
     } else {
         document.getElementById('troopDisplay').innerHTML = '';
@@ -481,7 +481,7 @@ function updateActivePlayerTroopDisplayData(player) {
             var color = playerObj.player.Color;
             var id = playerObj.troops[i].Location;
             var coords = convertIdToCoordinates(id);
-            var title = name + " " + playerObj.troops[i].HealthPoints+ " / " + " " + getTroopMaxHealth(playerObj.troops[i].Name);
+            var title = name + " " + playerObj.troops[i].HealthPoints+ " / " + " " + getTroopMaxHealth(playerObj.troops[i].Name) + " Health Points";
         document.getElementById('troopDisplay').innerHTML +=
         "<span class='col-1-1 bottomSpacer'><h3>" + name +
         "<img name="+name+" class='troopPic' id="+player+'troopPic'+i+" title="+title+" src=Assets/"+name+color+".png></img></h3>" +

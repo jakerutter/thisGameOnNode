@@ -77,245 +77,212 @@ function populateTroopDetailModalInGame(name){
 }
 
 function populateScout(name, color, time) {
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Scout";
     var scoutStats = createScout();
 
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ scoutStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit: " + scoutStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + scoutStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + scoutStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + scoutStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + scoutStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + scoutStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + scoutStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ scoutStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit: " + scoutStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + scoutStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + scoutStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + scoutStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + scoutStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + scoutStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + scoutStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + scoutStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + scoutStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 }
 
 function populateDepthCharge(name, color, time) {
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Depth Charge";
     var depthChargeStats = createDepthCharge();
     
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px';   
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ depthChargeStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + depthChargeStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + depthChargeStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + depthChargeStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + depthChargeStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + depthChargeStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + depthChargeStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + depthChargeStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px';   
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ depthChargeStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + depthChargeStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + depthChargeStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + depthChargeStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + depthChargeStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + depthChargeStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + depthChargeStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + depthChargeStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + depthChargeStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + depthChargeStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 }
 
 function populateDestroyer(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Destroyer";
     var destroyerStats = createDestroyer();
        
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ destroyerStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + destroyerStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + destroyerStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + destroyerStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + destroyerStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + destroyerStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + destroyerStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + destroyerStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ destroyerStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + destroyerStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + destroyerStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + destroyerStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + destroyerStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + destroyerStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + destroyerStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + destroyerStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + destroyerStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + destroyerStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 }
 
 function populateSwarm(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Swarm";
     var swarmStats = createSwarm();
         
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ swarmStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + swarmStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + swarmStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + swarmStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + swarmStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + swarmStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + swarmStats.AttackDamage + ".</li>"+
-        "<li>Unique Range: " + swarmStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ swarmStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + swarmStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + swarmStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + swarmStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + swarmStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + swarmStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + swarmStats.AttackDamage + ".</li>"+
+    "<li>Unique Range: " + swarmStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + swarmStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + swarmStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 } 
 
 function populateScan(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Scan";
     var scanStats = createScan();
     
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ scanStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + scanStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + scanStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + scanStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + scanStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + scanStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + scanStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + scanStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ scanStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + scanStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + scanStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + scanStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + scanStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + scanStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + scanStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + scanStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + scanStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + scanStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 } 
 
 function populateRuskie(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Ruskie";
     var ruskieStats = createRuskie();
 
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ ruskieStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + ruskieStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + ruskieStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + ruskieStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + ruskieStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + ruskieStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + ruskieStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + ruskieStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ ruskieStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + ruskieStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + ruskieStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + ruskieStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + ruskieStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + ruskieStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + ruskieStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + ruskieStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + ruskieStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + ruskieStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 } 
 
 function populateGremlin(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Gremlin";
     var gremlinStats = createGremlin();
     
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ gremlinStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + gremlinStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + gremlinStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + gremlinStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + gremlinStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + gremlinStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + gremlinStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + gremlinStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ gremlinStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + gremlinStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + gremlinStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + gremlinStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + gremlinStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + gremlinStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + gremlinStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + gremlinStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + gremlinStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + gremlinStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 } 
 
+function getUnitPictureSrc(name, color){
+    return "Assets/"+name+color+".png";
+}
 function populatePirate(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var name = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(name.id, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Pirate";
     var pirateStats = createPirate();
         
-        document.getElementById('troopPic').src = pictureSrc;
-        document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
-        document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ pirateStats.PerceivedValue +"</li>" +
-        "<li>Visibility (tiles arware of around unit): " + pirateStats.Visibility + ".</li>" +
-        "<li>Movement Distance (tiles moved per turn): " + pirateStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + pirateStats.HealthPoints + ".</li>" + 
-        "<li>Area of Attack (number of tiles attack effects): " + pirateStats.AreaOfAttack + ".</li>" +
-        "<li>Attack Range: " + pirateStats.AttackRange + ".</li>" +
-        "<li>Attack Damage: " + pirateStats.AttackDamage + ".</li>" +
-        "<li>Unique Range: " + pirateStats.UniqueRange + ".</li>";
+    document.getElementById('troopPic').src = pictureSrc;
+    document.getElementById('troopPic').style.height = '60px';
+    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ pirateStats.PerceivedValue +"</li>" +
+    "<li>Visibility (tiles arware of around unit): " + pirateStats.Visibility + ".</li>" +
+    "<li>Movement Distance (tiles moved per turn): " + pirateStats.MovementDistance + ".</li>" +
+    "<li>Health Points: " + pirateStats.HealthPoints + ".</li>" + 
+    "<li>Area of Attack (number of tiles attack effects): " + pirateStats.AreaOfAttack + ".</li>" +
+    "<li>Attack Range: " + pirateStats.AttackRange + ".</li>" +
+    "<li>Attack Damage: " + pirateStats.AttackDamage + ".</li>" +
+    "<li>Unique Range: " + pirateStats.UniqueRange + ".</li>";
 
-        document.getElementById('troopMoveList').innerHTML = "Unique Move: " + pirateStats.Moves + ".</li>";
-        document.getElementById('troopDetailModal').classList.add('table');
-        document.getElementById('troopDetailModal').classList.remove('hidden');
-        $("#troopDetailModal").modal();
+    document.getElementById('troopMoveList').innerHTML = "Unique Move: " + pirateStats.Moves + ".</li>";
+    document.getElementById('troopDetailModal').classList.add('table');
+    document.getElementById('troopDetailModal').classList.remove('hidden');
+    $("#troopDetailModal").modal();
 } 
 
 function populateBombardier(name, color, time) { 
-    if (time == "troopModal"){
-        var pictureSrc = "Assets/"+name.id+color+".png"
-    } else if (time == "inGame") {
-        var pictureSrc = "Assets/"+name+color+".png"
-    } else {
-        alert("picture source provided to populate this modal was incorrect");
-    }
+    var picName = time === "inGame" ? name : name.id;
+    var pictureSrc = getUnitPictureSrc(picName, color);
+
     document.getElementById('troopNameHeader').innerHTML = "Bombardier";
     var bombardierStats = createBombardier();
     
@@ -343,7 +310,7 @@ function getTroopObjects(playerTroopSelection) {
     playerTroopSelection = playerTroopSelection.toString();
     var troopList = playerTroopSelection.split(",");
     
-    for(i=0; i<troopList.length; i++){
+    for(let i=0; i<troopList.length; i++){
         var troopObj = createTroopObject(troopList[i]);
         troopArray.push(troopObj);
     }

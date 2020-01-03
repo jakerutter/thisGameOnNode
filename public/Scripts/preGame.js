@@ -248,8 +248,8 @@ function savePlayerName() {
             isNameTaken = true; } 
         else {
             isNameTaken = false;
-            }
         }
+    }
     //set id value for this user to emit to the server
     id = Math.floor(Date.now() * Math.random());
     
@@ -272,7 +272,7 @@ function savePlayerName() {
         document.getElementById('chatFeature').classList.remove('hidden');
         document.getElementById('banner').classList.remove('hidden');
         document.getElementById('currentUsers').classList.remove('hidden');
-        document.getElementById('welcomeForm').classList.add('hidden');
+        document.getElementById('nameForm').classList.add('hidden');
         document.getElementById('chatWelcomeModal').classList.add('hidden');
         document.getElementById('confirmSettings').classList.add('hidden');
     }
@@ -478,8 +478,8 @@ function updateTroopLocation(unitName, node) {
 
 function drawEnemyUnitsToMap(username, makeKnown) {
     var name = getStorage('username');
-    //console.log('INSIDE drawEnemyUnitsToMap');
-    //console.log(JSON.stringify(makeKnown, null, 4));
+    console.log('drawEnemyUnitsToMap for '+ username + ' the objects to be drawn are in the following object: ');
+    console.log(JSON.stringify(makeKnown, null, 4));
     //need to clear the map and redraw this user and enemy user's units
     //account for Name, Location, Color, Health of units & base
     if (name === username) {
@@ -492,9 +492,7 @@ function drawEnemyUnitsToMap(username, makeKnown) {
             else {
                 document.getElementById(makeKnown[i].location).innerText = '';
                 var title = "Enemy "+ makeKnown[i].name + ", "+makeKnown[i].health+" / "+makeKnown[i].maxHealth+" Health Points";
-                document.getElementById(makeKnown[i].location).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].name+""+" src=/Assets/"+makeKnown[i].name+makeKnown[i].color+".png title="+title+"></img>";
-                // document.getElementById(pictureID).style.height = '100%';
-                // document.getElementById(pictureID).style.width = '100%';
+                document.getElementById(makeKnown[i].location).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].name+""+" src=/Assets/"+makeKnown[i].name+makeKnown[i].color+".png title='"+title+"'></img>";
                 
             }
         }
