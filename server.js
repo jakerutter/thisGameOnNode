@@ -493,21 +493,19 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
       for (var troop in gameObj[otherPlayer].troops) {
         if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
           var troopLocation = gameObj[otherPlayer].troops[troop].Location;
-          
-          // console.log('checking '+visibleTileArray[k] + " " + troop +' location is ---> '+ troopLocation);
 
           if (troopLocation == visibleTileArray[k]) {
             console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
-          //add the desired details into a visibleItem which will be placed in makeKnown array
-          //then returned and rendered on client side
-          let visibleItem = {};
-          visibleItem.location = troopLocation;
-          visibleItem.name = gameObj[otherPlayer].troops[troop].Name;
-          visibleItem.color = gameObj[otherPlayer].color;
-          visibleItem.health = gameObj[otherPlayer].troops[troop].HealthPoints;
-          visibleItem.maxHealth = gameObj[otherPlayer].troops[troop].maxHealth;
-          console.log(JSON.stringify(visibleItem, null, 4));
-          makeKnown.push(visibleItem);
+            //add the desired details into a visibleItem which will be placed in makeKnown array
+            //then returned and rendered on client side
+            let visibleItem = {};
+            visibleItem.location = troopLocation;
+            visibleItem.name = gameObj[otherPlayer].troops[troop].Name;
+            visibleItem.color = gameObj[otherPlayer].color;
+            visibleItem.health = gameObj[otherPlayer].troops[troop].HealthPoints;
+            visibleItem.maxHealth = gameObj[otherPlayer].troops[troop].MaxHealth;
+            console.log(JSON.stringify(visibleItem, null, 4));
+            makeKnown.push(visibleItem);
           }
         }            
       }
@@ -519,6 +517,7 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
         visibleItem.name = 'enemy base';
         visibleItem.color = gameObj[otherPlayer].color;
         visibleItem.health = gameObj[otherPlayer].base.health;
+        visibleItem.maxHealth = gameObj[otherPlayer].base.maxHealth;
         makeKnown.push(visibleItem);
       } 
   }
