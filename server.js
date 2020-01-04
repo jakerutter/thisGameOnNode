@@ -209,13 +209,17 @@ io.sockets.on('connection', function (socket) {
       console.log(username + ' has attacked location ' + id + ' with ' + unitName);
       let opponentArray = privateUsers.filter(function(x) { return x !== username});
       let opponent = opponentArray[0];
-      
+
       let unitPresent = isUnitAtLocation(opponent, id);
       console.log('unit is found to attack?' + unitPresent);
       //unit not at location. pass turn to other player
       if(unitPresent){
-        let playerObj = attackEnemyUnit(username, opponent, unitName, id);
-        io.emit('update-client-post-attack', opponent, playerObj, id);
+        let troopObj = attackEnemyUnit(username, opponent, unitName, id);
+
+        //var unitImage = createToolTip(username, opponent, id);
+        
+        io.emit('update-client-post-attack', opponent, troopObj);
+        //io.emit('update-tooltips-post-attack', username, unitImage);
       }
 
       console.log('attack over, calling set-current-player to '+ opponent);
@@ -234,7 +238,6 @@ io.sockets.on('connection', function (socket) {
     //end of socket.on section
   });
   
-
 
   //Server-Side Functions
 
@@ -301,17 +304,18 @@ function createDefaultGameObject(name, challenger, gameObj) {
     return gameObj;
 }
 
+//TEST - testing this out with troops as an array much like expected by the client side object
 function createDefaultUserObject(user) {
-    user = {'name': user};
-    user.troopsPlaced = 0;
-    user.PV = 0;
-    user.color = '';
-    user.visibleTiles = [];
-    user.base = {'health': 200, 'loc':'', 'xCoord':'', 'yCoord':'', 'xyCoord':''};
-    user.troops = {};
-    //Uncomment this to see the default user object generated when a challenge is accepted
-    // console.log(JSON.stringify(user, null, 4));         --uncomment to see gameObj
-    return user;
+  user = {'name': user};
+  user.troopsPlaced = 0;
+  user.PV = 0;
+  user.color = '';
+  user.visibleTiles = [];
+  user.base = {'health': 200, 'loc':'', 'xCoord':'', 'yCoord':'', 'xyCoord':''};
+  user.troops = [];
+  //Uncomment this to see the default user object generated when a challenge is accepted
+  // console.log(JSON.stringify(user, null, 4));         --uncomment to see gameObj
+  return user;
 }
 
 //add selected color to user object
@@ -372,11 +376,11 @@ function deleteFromGameObj(key, id) {
   return gameObj;
 }
 
+//TEST testing this with troops as an array like it was on the client side
 function addTroopsToGameObject(username, troopArray, gameObj) {
   //converting troopArray to an object of troop Objects
-  for (var i=0; i<troopArray.length; i++){
-    let troopName = troopArray[i].Name;
-    gameObj[username].troops[troopName] = troopArray[i];
+  for (let i=0; i<troopArray.length; i++){
+    gameObj[username].troops.push(troopArray[i]);
   }
   console.log('troops added to gameObj for '+username);
   //console.log(JSON.stringify(gameObj, null, 4));
@@ -386,7 +390,14 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
 
 function serverUpdateTroopLocation(username, name, node, gameObj) {
   //name is the name of the troop being updated
-  gameObj[username].troops[name].Location = node;
+  //TEST testing the troop in an array
+  for(let i=0; i<gameObj[username].troops.length; i++){
+    if(gameObj[username].troops[i].Name == name){
+      gameObj[username].troops[i].Location = node;
+    }
+  }
+  //gameObj[username].troops[name].Location = node;
+
   // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
   console.log(username + ' moved their '+ name + ' to '+ node);
   var visibleTileArray = updateVisibilityForTroops(username);
@@ -407,7 +418,8 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
       gameObj['stage'] = 'UnitsPlacedForTwoPlayers';
       console.log('game state updated to '+ gameObj['stage']);
       serverTriggerGameStart(gameObj);
-    } else alert('there is an error in serverUpdateTroopLocation. please troubleshoot');
+    } 
+    else alert('there is an error in serverUpdateTroopLocation. please troubleshoot');
   }
     
   return visibleTileArray;
@@ -439,12 +451,14 @@ function updateVisibilityForTroops(username) {
   } else {
       var visibleTileArray = visibleArray;
   }
-  for (var troop in gameObj[username].troops) {
-    if (gameObj[username].troops.hasOwnProperty(troop)) {
-      var troopLocation = gameObj[username].troops[troop].Location;
+  //TEST - testing this with array for troops
+  for (let i=0; i<gameObj[username].troops.length; i++) {
+
+      var troopLocation = gameObj[username].troops[i].Location;
+
       if (troopLocation != "tbd") {
         //console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
-        var visibility = gameObj[username].troops[troop].Visibility;
+        var visibility = gameObj[username].troops[i].Visibility;
         //console.log('visibility is ');
         //console.log(visibility);
         var tCoordsArray = convertIdToCoordinates(troopLocation);
@@ -455,11 +469,11 @@ function updateVisibilityForTroops(username) {
                 var id = convertCoordsToId(m,n);
                 
                 visibleTileArray.push(id);
-            }   
-          }
-        }
+        }   
       }
+    }
   }
+
   visibleTileArray = returnArrayWithoutDuplicates(visibleTileArray);
   
   return visibleTileArray;
@@ -490,42 +504,41 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
   // console.log(gameObj[otherPlayer]);
  
   for (var k=0; k<visibleTileArray.length; k++) {
-      for (var troop in gameObj[otherPlayer].troops) {
-        if (gameObj[otherPlayer].troops.hasOwnProperty(troop)) {
-          var troopLocation = gameObj[otherPlayer].troops[troop].Location;
+    for (let i=0; i<gameObj[otherPlayer].troops.length; i++) {
 
-          if (troopLocation == visibleTileArray[k]) {
-            console.log('EUREKA we have a match! -- '+troop+' spotted!!');  
-            //add the desired details into a visibleItem which will be placed in makeKnown array
-            //then returned and rendered on client side
-            let visibleItem = {};
-            visibleItem.location = troopLocation;
-            visibleItem.name = gameObj[otherPlayer].troops[troop].Name;
-            visibleItem.color = gameObj[otherPlayer].color;
-            visibleItem.health = gameObj[otherPlayer].troops[troop].HealthPoints;
-            visibleItem.maxHealth = gameObj[otherPlayer].troops[troop].MaxHealth;
-            console.log(JSON.stringify(visibleItem, null, 4));
-            makeKnown.push(visibleItem);
-          }
-        }            
-      }
-      //if visible this will show the other players base
-      if (visibleTileArray[k] == (gameObj[otherPlayer].base.loc)) {
-        console.log('BASE LOCATED!');
-        let visibleItem = {};
-        visibleItem.location = gameObj[otherPlayer].base.loc;
-        visibleItem.name = 'enemy base';
-        visibleItem.color = gameObj[otherPlayer].color;
-        visibleItem.health = gameObj[otherPlayer].base.health;
-        visibleItem.maxHealth = gameObj[otherPlayer].base.maxHealth;
-        makeKnown.push(visibleItem);
-      } 
+        var troopLocation = gameObj[otherPlayer].troops[i].Location;
+
+        if (troopLocation == visibleTileArray[k]) {
+          console.log('EUREKA we have a match! -- '+gameObj[otherPlayer].troops[i].Name+' spotted!!');  
+          //add the desired details into a visibleItem which will be placed in makeKnown array
+          //then returned and rendered on client side
+          let visibleItem = {};
+          visibleItem.location = troopLocation;
+          visibleItem.name = gameObj[otherPlayer].troops[i].Name;
+          visibleItem.color = gameObj[otherPlayer].color;
+          visibleItem.health = gameObj[otherPlayer].troops[i].HealthPoints;
+          visibleItem.maxHealth = gameObj[otherPlayer].troops[i].MaxHealth;
+          console.log(JSON.stringify(visibleItem, null, 4));
+          makeKnown.push(visibleItem);
+        }         
+    }
+    //if visible this will show the other players base
+    if (visibleTileArray[k] == (gameObj[otherPlayer].base.loc)) {
+      console.log('BASE LOCATED!');
+      let visibleItem = {};
+      visibleItem.location = gameObj[otherPlayer].base.loc;
+      visibleItem.name = 'enemy base';
+      visibleItem.color = gameObj[otherPlayer].color;
+      visibleItem.health = gameObj[otherPlayer].base.health;
+      visibleItem.maxHealth = gameObj[otherPlayer].base.maxHealth;
+      makeKnown.push(visibleItem);
+    } 
   }
-      // console.log('inside makeVisibleOtherPlayersUnits and makeKnkown length is...'+ makeKnown.length);
-      //send the data to the client to render
-      if (makeKnown.length > 0) {
-        io.emit('render-enemy-units', username, makeKnown);
-      }
+    // console.log('inside makeVisibleOtherPlayersUnits and makeKnkown length is...'+ makeKnown.length);
+    //send the data to the client to render
+    if (makeKnown.length > 0) {
+      io.emit('render-enemy-units', username, makeKnown);
+    }
 }
 
 function serverTriggerGameStart(gameObj) {
@@ -635,26 +648,63 @@ function isUnitAtLocation(username, id){
 }
 
 function attackEnemyUnit(username, opponent, unitName, id){
+  var troopHealthPostAttack;
   let troopObj = gameObj[opponent].troops;
-  let baseObj = gameObj[opponent].base;
-  Object.keys(troopObj).forEach(function(key) {
-    if (troopObj[key].Location == id) {
-      troopObj[key].HealthPoints -= gameObj[username].troops[unitName].AttackDamage;
-      console.log(troopObj[key].HealthPoints + ' is hp and ' + gameObj[username].troops[unitName].AttackDamage + ' is attack dmg');
-    }
+  let unit = gameObj[username].troops.filter(function (item) {
+    return item.Name == unitName;
   });
-    
+  unit = unit[0];
+
+  for (let i=0; i<troopObj.length; i++) {
+    if (troopObj[i].Location == id) {
+      troopObj[i].HealthPoints -= unit.AttackDamage;
+      troopHealthPostAttack = troopObj[i].HealthPoints;
+      
+      // delete killed unit
+      if (troopHealthPostAttack <= 0) {
+        console.log('removing '+ troopObj[i].Name + ' from gameObj. It\s been killed.');
+        io.emit('remove-unit-from-board', id);
+        delete troopObj[i];
+      }
+
+      console.log(troopObj[i].HealthPoints + ' is hp and ' + unit.AttackDamage + ' is attack dmg');
+    }
+  }
+    // subtract health frome base if base is hit
   if(gameObj[opponent].base.loc == id){
     gameObj[opponent].base.HealthPoints -= gameObj[username].troops[unitName].AttackDamage;
   }
-  //this finds and removes the killed unit from the playerObj
-  Object.keys(troopObj).forEach(function(key) {
-    if (troopObj[key].HealthPoints <= 0) {
-      console.log('removing '+ troopObj[key].Name + ' from gameObj. It\s been killed.');
-      io.emit('remove-unit-from-board', id);
-      delete troopObj[key];
-    }
-  });
-  
+  // TODO if base is killed end game
+
+  if (troopHealthPostAttack > 0){
+      var MyUnitImage = createFriendlyToolTip(opponent, id);
+      var EnemyUnitImage = createEnemyToolTip(opponent, id);
+      io.emit('update-tooltips-post-attack', username, MyUnitImage, EnemyUnitImage, id);
+  }  
   return gameObj[opponent];
 }
+
+function createFriendlyToolTip(opponent, id){
+  var unitImage;
+
+  for (let i=0; i<gameObj[opponent].troops.length; i++) {
+    if (gameObj[opponent].troops[i].Location == id) {
+      let title = gameObj[opponent].troops[i].Name + ", "+gameObj[opponent].troops[i].HealthPoints+" / "+gameObj[opponent].troops[i].MaxHealth+" Health Points";
+      unitImage = "<img style='height: 100%; width: 100%;' id='player1"+gameObj[opponent].troops[i].Name+"' src='/Assets/"+gameObj[opponent].troops[i].Name+gameObj[opponent].color+".png' title='"+title+"'></img>";
+    }
+  }
+  return unitImage;
+}
+
+function createEnemyToolTip(opponent, id){
+  var unitImage;
+
+  for (let i=0; i<gameObj[opponent].troops.length; i++) {
+    if (gameObj[opponent].troops[i].Location == id) {
+      let title = "Enemy "+gameObj[opponent].troops[i].Name + ", "+gameObj[opponent].troops[i].HealthPoints+" / "+gameObj[opponent].troops[i].MaxHealth+" Health Points";
+      unitImage = "<img style='height: 100%; width: 100%;' id='player1"+gameObj[opponent].troops[i].Name+"' src='/Assets/"+gameObj[opponent].troops[i].Name+gameObj[opponent].color+".png' title='"+title+"'></img>";
+    }
+  }
+  return unitImage;
+}
+
