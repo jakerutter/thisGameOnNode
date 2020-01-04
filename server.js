@@ -92,10 +92,15 @@ io.sockets.on('connection', function (socket) {
     // Send a message
     socket.on('send-message', function(data) {
       console.log(data);
-      // socket.broadcast.emit('message-received', data);
       io.emit('message-received', data);
     });
   
+    // Send a message
+    socket.on('mobile-send-message', function(data, color) {
+      console.log(data + " ...and color is "+ color);
+      io.emit('mobile-message-received', data, color);
+    });
+      
     // Send a 'like' to the user of your choice
     socket.on('send-like', function(data) {
       console.log(data);
@@ -215,11 +220,7 @@ io.sockets.on('connection', function (socket) {
       //unit not at location. pass turn to other player
       if(unitPresent){
         let troopObj = attackEnemyUnit(username, opponent, unitName, id);
-
-        //var unitImage = createToolTip(username, opponent, id);
-        
         io.emit('update-client-post-attack', opponent, troopObj);
-        //io.emit('update-tooltips-post-attack', username, unitImage);
       }
 
       console.log('attack over, calling set-current-player to '+ opponent);
