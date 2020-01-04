@@ -63,6 +63,10 @@ body {
 .mazehole:hover {
     background-color: lightslategray;
 }
+div.mazehole img {
+    height: 100%;
+    width: 100%;
+}
 .mazerow {
     font-size: .01px;
     text-align: center;
@@ -120,7 +124,6 @@ body {
     height: 330px;
     background-color: white;
     border: black 2px solid;
-    border-radius: 5px;
     color: black;
 }
 .largeModal {
@@ -128,7 +131,6 @@ body {
     height: 600px;
     background-color: white;
     border: black 2px solid;
-    border-radius: 5px;
     color: black;
 }
 .expandingModal {
@@ -213,6 +215,12 @@ button.link:hover {
 }
 .whiteBackground {
     background-color: white;
+}
+.greenBackground {
+    background-color: green;
+}
+.redBackground{
+    background-color: red;
 }
 .highlight {
     background-color: #ffffff;
@@ -311,9 +319,6 @@ button.link:hover {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
   }
-  [class*='col-'] {
-    /* padding-right: 20px; */
-  }
   [class*='col-']:last-of-type {
     padding-right: 0;
   }
@@ -360,3 +365,52 @@ button.link:hover {
     width: 90px;
     height: 90px;
 }
+
+.load {
+    opacity: 1;
+    -webkit-transition: opacity .01 ease-out;
+    -moz-transition: opacity .01 ease-out;
+    -o-transition: opacity .01 ease-out;
+    -ms-transition: opacity .01 ease-out;
+    transition: opacity .01 ease-out;
+}
+
+.unload {
+    opacity: 0;
+    -webkit-transition: opacity .01 ease-in;
+    -moz-transition: opacity .01 ease-in;
+    -o-transition: opacity .01 ease-in;
+    -ms-transition: opacity .01 ease-in;
+    transition: opacity .01 ease-in;
+}
+.round-5{
+    border-radius: 5px;
+}
+.round-10{
+    border-radius: 10px;
+}
+.round-15{
+    border-radius: 15px;
+}
+.round-20{
+    border-radius: 20px;
+}
+.round-25{
+    border-radius: 25px;
+}
+
+.mobileChat{
+    background-color: white;
+    border-radius: 25px;
+    height:400px;
+    width:400px;
+    z-index:1002;
+}
+#btnToggleChat { z-index: 1002;}
+#mo { background-color: lightgray; }
+#mobileChatForm { padding: 3px; }
+#mobileChatForm #mo { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
+#mobileChatSend { height:35px; }
+#mobileMessages { list-style-type: none; padding: 0; max-height:270px; height:270px; overflow-y: auto; }
+#mobileMessages li { padding: 5px 10px; }
+#mobileMessages { margin-bottom: 40px }
