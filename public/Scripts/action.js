@@ -52,7 +52,7 @@ function welcomeModal() {
     setStorage('numberOfPlayers', 2);
     document.getElementById('welcomeModal').classList.remove('hidden');
      
-    setDefaultStorage();
+    //setDefaultStorage();
  
     var chosenColor = document.getElementById('playerColorSelect');
     chosenColor.value = document.getElementById('playerColorSelection').innerHTML;
@@ -233,7 +233,6 @@ function functionSwitch(switchData, id) {
 }
 
 function placePlayerBase(id) {
-    var name = getStorage('username');
     var playerColor = document.getElementById('playerColorSelection').innerHTML;
     var homeBase = document.getElementById(id);
     var playerBaseCheck = document.getElementById('playerBaseLocation').innerHTML;
@@ -257,16 +256,13 @@ function placePlayerBase(id) {
 
 //this is where they will select the units that they have to start the game with
 function troopModal() {
-    // document.getElementById('currentState').innerHTML = "baseConfirmed";
-    // setStorage("state", "baseConfirmed");
     document.getElementById('troopModal').classList.add('table');
     document.getElementById('troopModal').classList.remove('hidden');
     $('#troopModal').modal();
-    // var playerObj = getStorage('playerObj');
-    // console.log(JSON.stringify(playerObj, null, 4));
+
     placeBaseDisplayData(0);
     var tempTroopArray = getStorage('tempTroopArray1');
-    if ((tempTroopArray != null) && (tempTroopArray.length > 0)) {
+    if ((tempTroopArray != null) && (tempTroopArray != '') && (tempTroopArray.length > 0)) {
     for (var i=0; i<tempTroopArray.length; i++) {
         var tname = tempTroopArray[i];
         document.getElementById(tname).checked = true;
@@ -367,8 +363,6 @@ function createRequirementsForPlayerObject(){
         Color : playerColor
     };
 
-    var playerBaseLocation = document.getElementById('playerBaseLocation').innerHTML;
-    var currentState = document.getElementById('currentState').innerHTML;
     var playerTroopSelection = document.getElementById('playerTroopSelection').innerHTML;
 
     var troopArray = getTroopObjects(playerTroopSelection);
@@ -417,9 +411,6 @@ function checkPlayerUnitLocation(id) {
             updateTroopLocation(name, node);
             setStorage('playerObj', playerObj);
             
-            //TODO:Following two lines need defined in node version --
-            // makeVisibleOtherPlayersUnits(1);
-            // makeVisibleOtherPlayersUnits(2);
             //Testing this: placing troop data again once unitLocation is updated:
             updateTroopDisplayData(); 
             var troopsToPlace = getStorage('troopsToPlace1');

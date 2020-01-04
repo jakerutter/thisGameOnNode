@@ -208,11 +208,27 @@ function setup() {
         }
     });
 
-    socket.on('update-client-post-attack', function(username, playerObj, id){
+    socket.on('update-client-post-attack', function(username, playerObj){
         //TODO determine best way to update tooltip displaying updated health for attacked unit
         let thisUser = getStorage('username');
         if (username == thisUser){
             setStorage('playerObj', playerObj);
+            // update date in troop display (right bar)
+            placeTroopDisplayData();
+        }
+    });
+
+    socket.on('update-tooltips-post-attack', function(username, MyUnitImage, EnemyUnitImage, id){
+        //update tooltip data
+        let thisUser = getStorage("username");
+        if(username == thisUser){
+            if(MyUnitImage != undefined){
+                updateToolTipData(username, MyUnitImage, id);
+            }     
+        } else {
+            if(MyUnitImage != undefined){
+                updateToolTipData(username, EnemyUnitImage, id);
+            }   
         }
     });
 
@@ -390,7 +406,7 @@ function claimSelectedBase(location, username) {
     var by = Number(baseCoords[1]);
 
     var otherPlayerBase = getStorage('playerBaseLocation2');
-    if ((otherPlayerBase == '') || (otherPlayerBase == null)) {
+    if ((otherPlayerBase == '') || (otherPlayerBase == null)  || (otherPlayerBase == undefined)) {
         socket.emit('first-base-selected', location, username, bx,by);
     } else {
         socket.emit('second-base-selected', location, username, bx,by);
