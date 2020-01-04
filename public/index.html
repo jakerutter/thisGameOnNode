@@ -21,6 +21,7 @@
     <script type ="text/javascript" src="Scripts/troopData.js"></script>
     <script type ="text/javascript" src="Scripts/homeBaseData.js"></script>
     <script type ="text/javascript" src="Scripts/localStorage.js"></script>
+    <script type ="text/javascript" src="Scripts/chat.js"></script>
     <script type ="text/javascript" src="Scripts/alertSystem.js"></script>
     <script type="text/javascript" src="Scripts/UtilityJS.js"></script>
     <script>$( document ).ready(function() {$( "#playerName" ).focus();});</script>
@@ -28,25 +29,25 @@
 
   <body onload="clearStorage(); generateBackground();">
     <div id="chatroom">
-        <div id="chatWelcomeModal" class="modal center"><br><h1 id="modalLargeHeader">Welcome</h1>
+        <div id="chatWelcomeModal" class="modal center round-10"><br><h1 id="modalLargeHeader">Welcome</h1>
           <div><h3 id="modalSmallHeader">Enter your player info.</h3></div><br>
     
-            <form id="welcomeForm">
+            <form id="nameForm">
                 <div onKeyPress="return checkforEnterKeyPress('name',event)">Your name:
                     <input id="playerName" class="textBox" type="text" required />
                 </div>
             </form><br>
             <div id="challengeForm" class="hidden">
               <h3 id="challengeHeader"></h3>
-              <button onclick="respondToChallenge('accept')">Accept Challenge</button>
-              <button onclick="respondToChallenge('refuse')">Deny Request</button>
+              <button class="round-5" onclick="respondToChallenge('accept')">Accept Challenge</button>
+              <button class="round-5" onclick="respondToChallenge('refuse')">Deny Request</button>
             </div><br>
             
              
               <span class="simplemodal-close"></span>
               <span id="nameFail" class="redText"></span><br>
              
-              <button id="confirmSettings" onclick="savePlayerName();">Continue</button>
+              <button id="confirmSettings" onclick="savePlayerName();" class="round-5">Continue</button>
               
         </div>
     
@@ -72,52 +73,60 @@
     <!--end of chat room html && start of game html -->
     
 
-
-
-    
       <canvas id="firstCanvas" class="firstCanvas"></canvas>
 
   
- 
-
   <div class="grid">
-          <div id="outterLeftDiv" class="col-2-10 whiteText">
-              <div id="leftSideBar">
-              <h3 id="leftSideBarH3" class="hidden"> ............... Additional Game Data ...............</h3>
-                  <div class="col-1-2">
-                      <span id="playerNameDisplay" class="bottomSpacer"></span>
-                      <span id="baseLocationDisplay" class="bottomSpacer"></span>
-                  </div>
-                  <div class="col-1-2">
-                      <span id="turnIndicator" class="bottomSpacer"></span>
-                      <span id="baseHealthDisplay" class="bottomSpacer"></span>
-                      <!-- <span id="baseHealthBar" class="healthBar bottomSpacer col-1-2"></span> -->
-                  </div>
-                  <div id="rightSideBar" class="col-1-1 whiteText hidden">
-                  <h3>Action Menu</h3>
-                  <span class="col-1-1"><span id="1actionMove" class="col-1-8"><button id="option1">1</button>
-                      </span><span class="col-7-8 left-gutter"> To see movement range.</span></span><br><br>
-                  <span class="col-1-1"><span id="1actionAttack" class="col-1-8"><button id="option2">2</button>
-                      </span><span class="col-7-8 left-gutter"> To see attack range.</span></span><br><br>
-                  <span class="col-1-1"><span id="1actionUnique" class="col-1-8"><button id="option3">3</button>
-                      </span><span class="col-7-8 left-gutter"> To see unique move range.</span></span><br><br>
-                  <span class="col-1-1"><span id="1actionDetails" class="col-1-8"><button id="option4">4</button>
-                      </span><span class="col-7-8 left-gutter"> To see unit details.</span></span><br><br>
-                      </div>
-                  </div>
-              </div>
+    <button id="btnToggleChat" onclick="toggleChat();" class="round-5 greenBackground whiteText hidden">Chat</button>
+
+    <div id="outterLeftDiv" class="col-2-10 whiteText">
+        <div id="leftSideBar">
+        <h3 id="leftSideBarH3" class="hidden"> ............... Additional Game Data ...............</h3>
+            <div class="col-1-2">
+                <span id="playerNameDisplay" class="bottomSpacer"></span>
+                <span id="baseLocationDisplay" class="bottomSpacer"></span>
+            </div>
+            <div class="col-1-2">
+                <span id="turnIndicator" class="bottomSpacer"></span>
+                <span id="baseHealthDisplay" class="bottomSpacer"></span>
+                <!-- <span id="baseHealthBar" class="healthBar bottomSpacer col-1-2"></span> -->
+            </div>
+            <div id="rightSideBar" class="col-1-1 whiteText hidden">
+            <h3>Action Menu</h3>
+            <span class="col-1-1"><span id="1actionMove" class="col-1-8"><button id="option1" class="round-5">1</button>
+                </span><span class="col-7-8 left-gutter"> To see movement range.</span></span><br><br>
+            <span class="col-1-1"><span id="1actionAttack" class="col-1-8"><button id="option2" class="round-5">2</button>
+                </span><span class="col-7-8 left-gutter"> To see attack range.</span></span><br><br>
+            <span class="col-1-1"><span id="1actionUnique" class="col-1-8"><button id="option3" class="round-5">3</button>
+                </span><span class="col-7-8 left-gutter"> To see unique move range.</span></span><br><br>
+            <span class="col-1-1"><span id="1actionDetails" class="col-1-8"><button id="option4" class="round-5">4</button>
+                </span><span class="col-7-8 left-gutter"> To see unit details.</span></span><br><br>
+            </div>
+        </div>
+    </div>
  
          
       <div id="mainContent" class="col-5-10 whiteText">
-              <div class="maze-wrapper" id="mazeWrapper"></div>
-              <div><h3 id="gameAlertsSmall" class="gameAlerts"></h3></div>
-              <div><h2 id="gameAlertsLarge" class="gameAlerts"></h2>
-                <button id="openTroopModalButton" class="hidden" onclick="troopModal()">Select Troops</button>
-            </div>
+        <div class="maze-wrapper" id="mazeWrapper"></div>
+        <div><h3 id="gameAlertsSmall" class="gameAlerts"></h3></div>
+        <div><h2 id="gameAlertsLarge" class="gameAlerts"></h2>
+            <button id="openTroopModalButton" class="hidden round-5" onclick="troopModal()">Select Troops</button>
+        </div>
+
+        <div id="mobileChat" class="hidden center">
+            <ul id="mobileMessages"></ul>
+            <form id="mobileChatForm" action="">
+              <div onKeyPress="return mobileCheckForEnterKeyPress('chat',event)">
+                <input id="mo" autocomplete="off" class="round-10" />
+                <button id="mobileChatSend" type="button" class="round-5" onclick="mobileSendChatMessage(event);">Send</button>
+              </div>
+               
+            </form>
+          </div>
       </div>
       
       <div id="troopData" class="col-3-10 whiteText">
-              <div id="troopDisplay" class="col-1-1 whiteText hidden"></div>
+        <div id="troopDisplay" class="col-1-1 whiteText hidden"></div>
       </div> 
     </div>
 
@@ -126,7 +135,7 @@
 
 
          <!-- RIP THIS DIV OUT WHEN YOU CAN. IT IS NOT NEEDED IN THIS VERSION -->
-      <div id="numberOfPlayersModal" class="modal center hidden"><h1>Welcome to This Game</h1><br><br>
+      <div id="numberOfPlayersModal" class="modal center hidden round-10"><h1>Welcome to This Game</h1><br><br>
           <div><h3 class="blueText">How many players?</h3></div>
           <form id="playersForm">
               <div>Choose:
@@ -138,10 +147,10 @@
           </form><br><br>
           <div><h4 id="playersAlert">There will be 1 browser open per player.</h4></div>
           <span class="simplemodal-close"></span>
-          <button onclick="numberOfPlayersPlaying(playerCount)" >Continue</button>
+          <button onclick="numberOfPlayersPlaying(playerCount)" class="round-5">Continue</button>
       </div>
 
-  <div id="welcomeModal" class="modal center hidden"><h1>Welcome to This Game</h1>
+  <div id="welcomeModal" class="modal center round-10 hidden"><h1>Welcome to This Game</h1>
       <div><h3 id="welcomeModalTopH3">Select a color</Select></h3></div>
       <form id="welcomeForm">
       
@@ -160,24 +169,24 @@
       </form>
           <div><h4 id="welcomeAlert">The goal is to find and eliminate the other players.</h4></div>
           <span class="simplemodal-close"></span>
-          <button id="btnSettingsModal" onclick="settingsModal()" >Settings and Info</button>
-          <button id="confirmColorSettings" onclick="hideWelcomeModal()" >Continue to Game</button>
+          <button id="btnSettingsModal" class="round-5" onclick="settingsModal()" >Settings and Info</button>
+          <button id="confirmColorSettings" class="round-5" onclick="hideWelcomeModal()" >Continue to Game</button>
     
   </div>
 
 
-  <div id="settingsModal" class="modal center hidden"><h1>About this Game</h1>
+  <div id="settingsModal" class="modal center round-10 hidden"><h1>About this Game</h1>
       <div><h3>Find the opposing base and destroy it.</h3></div>
           <div><h4>Cooldowns are triggered for units with unique moves, when that unique move is used.</h4></div>
           <div><h5>Each unit has a "perceived value" (PV) assigned to them. When both players choose their units, the player with the lowest
               PV gets to go first.
           </h5></div>
           <span class="simplemodal-close">A Rutter Production. 2018.</span>
-          <button id="btnHideSettingsModal" onclick="hideSettingsModal()">Continue</button>
+          <button id="btnHideSettingsModal" class="round-5" onclick="hideSettingsModal()">Continue</button>
    
   </div>
  
-  <div id="troopModal" class="expandingModal center hidden">
+  <div id="troopModal" class="expandingModal center hidden round-10">
       <h1>Game Setup</h1>
       <div>
       <div><h3>Choose 3 troops to begin with</h3></div>
@@ -187,7 +196,7 @@
                       <button class="link" onclick="populateTroopDetailModal(scout)">Scout</button></span><br>
 
               <input id="depthCharge" type="checkbox" name="troops" value="depthCharge" class="checkboxes" >
-                  <span title="powerful explosive that disables a 3x3 area for 1 turn and returns info on any opponent units within. slight cooldown. 2PV">
+                  <span title="powerful explosive that disables a 3x3 area for 1 turn and reveals opponent units within. slight cooldown. 2PV">
                           <button class="link" onclick="populateTroopDetailModal(depthCharge)">Depth Charge</button></span><br>
 
               <input id="destroyer" type="checkbox" name="troops" value="destroyer" class="checkboxes" >
@@ -195,7 +204,7 @@
                       <button class="link" onclick="populateTroopDetailModal(destroyer)">Destroyer</button></span><br>
 
               <input id="swarm" type="checkbox" name="troops" value="swarm" class="checkboxes" >
-                  <span title="a unique unit searches and attacks in a binary method. 5PV">
+                  <span title="a unique unit searches and attacks in a 45 degree angle. 5PV">
                       <button class="link" onclick="populateTroopDetailModal(swarm)">Swarm</button></span><br>
 
               <input id="scan" type="checkbox" name="troops" value="scan" class="checkboxes" >
@@ -221,22 +230,22 @@
           </form>
             <div id="troopModalAlert">...................</div>
           <div><h4>Click on a troop's name to see details.</h4></div>
-          <button id="confirmMenu" onclick="checkTroopSelection()">Advance</button>
+          <button id="confirmMenu" class="round-5" onclick="checkTroopSelection()">Advance</button>
           </div> <br>
   </div>
 
-  <div id="troopDetailModal" class="expandingModal center hidden"><h1 id="troopNameHeader" class="blueText" ></h1>
+  <div id="troopDetailModal" class="expandingModal center hidden round-10"><h1 id="troopNameHeader" class="blueText" ></h1>
       <div><img id="troopPic" class="top-right"/></div><div class="left-side"><h3>Stats for this troop:</h3></div>
 
       <div id="troopStatList" class="left-side-bullets"></div>
         
           <div><h4 id="troopMoveList" class="blueText"></h4></div>
           <span class="simplemodal-close"></span>
-          <button id="inGameTroopDetailButton" class="hidden" onclick="hideinGameTroopDetailModal()">Back to Game</button>
-          <button id="preGameTroopDetailButton" onclick="hideTroopDetailModal()">Back to Selection</button><br><br>
+          <button id="inGameTroopDetailButton" class="hidden round-5" onclick="hideinGameTroopDetailModal()">Back to Game</button>
+          <button id="preGameTroopDetailButton" class="round-5" onclick="hideTroopDetailModal()">Back to Selection</button><br><br>
   </div>
 
-  <div id="alertModal" class="modal bottom-left hidden front"><h1>Game Alert</h1>
+  <div id="alertModal" class="modal bottom-left round-10 hidden front"><h1>Game Alert</h1>
       <div><img src="/Assets/rocket.png" class="alertPic"></div>
       <div><h3 id="currentAlert"></h3></div>
       <div id="currentAlertSmall">This alert will go away when both players are in sync. If taking too long, 
@@ -244,7 +253,8 @@
       </div>
   </div>
 
-  <div id="finishedModal" class="largeModal center hidden"><h1>Game Over</h1>
+
+  <div id="finishedModal" class="largeModal center round-10 hidden"><h1>Game Over</h1>
       <div><h3 id="finishedAlert"></h3></div>
       <div id="finishedVideo">
           <video id="victoryVideo" width="480" height="320" loop="loop" autoplay="autoplay" class="hidden">
@@ -257,9 +267,6 @@
       <div id="finishedAlertSmall"></div>
       
   </div>
-
-
-
 
 
 <div id="currentState" class="hidden">0</div>
@@ -278,14 +285,6 @@
 <audio type="audio" id="swarmSound" src="/Sounds/swarm.wav"></audio>
 <audio type="audio" id="depthChargeSound" src="/Sounds/depthCharge.wav"></audio>
 <audio type="audio" id="bombSound" src="/Sounds/bombSound.wav"></audio>
-
-
-
-
-
-
-
-
 
   </body>
 </html>
