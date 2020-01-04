@@ -31,10 +31,21 @@ function setup() {
 
   //send and display chat messages
   socket.on('message-received', function(msg){
-        $('#messages').append($('<li>').text(msg));
-        // window.scrollTo(0, document.body.scrollHeight);
-        window.scrollTo(0, 0);
-    });
+    $('#messages').append($('<li>').text(msg));
+    // window.scrollTo(0, document.body.scrollHeight);
+    window.scrollTo(0, 0);
+  });
+
+  //send and display in-game "mobile" messages
+  socket.on('mobile-message-received', function(msg, color){
+    var color = color;
+    var bg = color == "yellow" ? "grey" : "white";
+    var message = "<li style='color:"+color+"; background-color:"+bg+";'>"+msg+"</li>";
+
+    $('#mobileMessages').append(message);
+    chatNotifications();
+    //$('#mobileMessages').scrollTo(0, 0);
+  });
 
     //challenge a player to a game
     socket.on('challenge', function(data) {
@@ -117,23 +128,33 @@ function setup() {
         
         setChosenColorInLocalStorage(name, chosenColor, privateUsers);
         if (username === name) {
-            var message = 'You have chosen '+ chosenColor+'. Please wait for your opponent to select their color.';
+            var message = 'You have chosen '+ chosenColor+'. Wait for your opponent to select their color.';
             showAlertModal(message);
+            let moColor = chosenColor + "Text";
+            $('#mo').addClass(moColor);
         }
     });
 
     socket.on('second-color-has-been-selected', function(name, chosenColor, privateUsers) {
         console.log('second color ' +chosenColor +' has been selected by '+ name+'. showing alert modal.');
+        var username = getStorage('username');
         setChosenColorInLocalStorage(name, chosenColor, privateUsers);
-        hideAlertModal();    
+        hideAlertModal();  
+        // set up mobile Chat stuff  
+        $('#btnToggleChat').removeClass('hidden');
+
+        if (username === name){
+            let moColor = chosenColor + "Text";
+            $('#mo').addClass(moColor);
+        }
     });
 
     socket.on('first-base-has-been-selected', function(name, privateUsers, tiles) {
         var username = getStorage('username');
         if (name === username) {
-            var message = 'You placed your base. Please wait for your opponent to place their base.'
+            var message = 'You placed your base. Wait for your opponent to place their base.'
             showAlertModal(message);
-            document.getElementById('gameAlertsLarge').innerHTML = 'Base location submitted. Please wait for other player.';
+            document.getElementById('gameAlertsLarge').innerHTML = 'Base location submitted. Wait for other player.';
             renderVisibilityForBase(tiles);
         } else {
             let playerInGame = checkPrivateUsers(privateUsers);
@@ -222,12 +243,12 @@ function setup() {
         //update tooltip data
         let thisUser = getStorage("username");
         if(username == thisUser){
-            if(MyUnitImage != undefined){
-                updateToolTipData(username, MyUnitImage, id);
+            if(EnemyUnitImage != undefined){
+                updateToolTipData(username, EnemyUnitImage, id);
             }     
         } else {
             if(MyUnitImage != undefined){
-                updateToolTipData(username, EnemyUnitImage, id);
+                updateToolTipData(username, MyUnitImage, id);
             }   
         }
     });
@@ -270,9 +291,9 @@ function savePlayerName() {
     id = Math.floor(Date.now() * Math.random());
     
     if (name == "" || name == undefined || name == null) {
-        document.getElementById('nameFail').innerHTML = 'That is not an acceptable name. Please enter a name.';
+        document.getElementById('nameFail').innerHTML = 'That is not an acceptable name. Enter a name.';
     } else if (isNameTaken === true) {
-        document.getElementById('nameFail').innerHTML = 'That is taken by another user. Please enter a different name.';
+        document.getElementById('nameFail').innerHTML = 'That is taken by another user. Enter a different name.';
     } else {
         setStorage('username', name);
         console.log('saving new username: ' + name);
@@ -294,40 +315,6 @@ function savePlayerName() {
     }
 }
 
-//this will check the entry screen so that the enter button can be pressed or 'enter' key used
-function checkforEnterKeyPress(identifier,e) {
-   
-    if (e && e.keyCode === 13) {
-        if (identifier === 'name'){
-            savePlayerName();
-            return false;
-        } else if (identifier === 'chat') {
-            sendChatMessage();
-            return false;
-        }
-        //the key pressed was not enter, exit
-        } else {
-            return;
-        }
-}
-
-// This one is for chat feature
-function sendChatMessage() {
-
-   var username = getStorage('username');
-   var chatmessage = $('#m').val();
-   if (chatmessage.replace(' ', '') == '') {
-        document.getElementById('noMessage').innerHTML = 'Please type a message you\'d like to send.';
-   } else {
-       
-        document.getElementById('noMessage').innerHTML = '';
-        console.log(username +' is sending message: ' + chatmessage);
-        var data = username+' said: '+ chatmessage;
-        socket.emit('send-message', data);
-    }
-    $('#m').val('');
-    
-}
 
 function hideModalOverlays() {
     var modalContainer = document.getElementById('simplemodal-container');

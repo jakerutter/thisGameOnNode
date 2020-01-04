@@ -215,7 +215,7 @@ function placeTroopDisplayData() {
         console.log('placeTroopDisplayData amd playerObj.troops has this many units ' + playerObj.troops.length);
         for (var i=0; i<playerObj.troops.length; i++) {
             var name = playerObj.troops[i].Name;
-            var color = playerObj.player.Color;
+            var color = getStorage('playerColor');
             var coords = convertIdToCoordinates(playerObj.troops[i].Location);
             var title = ""+ name + ", " + playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth + " Health Points";
             // document.getElementById("troopDisplay").innerHTML = "";
@@ -397,8 +397,11 @@ function removeStylingFromOwnUnitLocationsAndBase(id, goodTileArray) {
         }
     }
     //remove the styling from the base
-    document.getElementById(playerObj.base.Location).classList.remove("availableToMove");
-    removeValueFromArray(goodTileArray, playerObj.base.Location);
+    let baseLoc = playerObj.base.Location;
+    if (baseLoc == undefined) { alert('base.Location is undefined localStoarge line 400'); }
+
+    document.getElementById(baseLoc).classList.remove("availableToMove");
+    removeValueFromArray(goodTileArray, baseLoc);
 }
 
 function removeValueFromArray(array, value) {
