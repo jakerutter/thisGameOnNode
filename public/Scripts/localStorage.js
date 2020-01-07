@@ -11,36 +11,36 @@ function setStorage(key,info) {
 function getStorage(key) {
     var item = localStorage.getItem(key);
     if(item == undefined){
-        alert(key + ' was undefined in local storage');
+        alert(key + ' was undefined in Local storage');
     }
     return JSON.parse(item);
 }
 
 function setDefaultStorage() {
-    //Set local storage maxRow to 20
+    //Set Local storage maxRow to 20
     setStorage('maxRow', 20);
-    //Set local storage defaults for playerObj
+    //Set Local storage defaults for playerObj
     setStorage('playerObj', '');
-    //Set local storage Name & Color defaults for player
+    //Set Local storage Name & Color defaults for player
     setStorage('playerName', '');
     setStorage('playerColor', '');
-    //Set local storage  Name & Color defaults 
+    //Set Local storage  Name & Color defaults 
     setStorage('playerName2', '');
     setStorage('playerColor2', '');
-    //Set local storage defaults for player
-    setStorage('playerBaseLocation', '');
-    setStorage('playerBaseLocation2', '');
-    //Set local storage defaults for bases confirmed (placement)
+    //Set Local storage defaults for player
+    setStorage('playerBaseLoc', '');
+    setStorage('playerBaseLoc2', '');
+    //Set Local storage defaults for bases confirmed (placement)
     setStorage('confirmedValue', '0');
-    //Set local storage defaults for turn indicator
+    //Set Local storage defaults for turn indicator
     setStorage('turnIndicator', 'Game Setup...');
-    //Set local storage defaults for visibleTiles player1 & player2
+    //Set Local storage defaults for visibleTiles player1 & player2
     setStorage('visibleTiles', '');
-    //Set local storage defaults for gameState player1 & player2
+    //Set Local storage defaults for gameState player1 & player2
     setStorage('gameState', '');
-    //Set local storage defaults for alertMessage as used on AlertModal
+    //Set Local storage defaults for alertMessage as used on AlertModal
     setStorage('alertMessage', '');
-    //Set local default storage for username
+    //Set Local default storage for username
     setStorage('username', '');
     setStorage('opponent', '');
     setStorage('tempTroopArray1', '');
@@ -64,20 +64,20 @@ function  setChosenColorInLocalStorage(name, chosenColor, privateUsers) {
 function setStorageNamesAndColorsForPlayerDisplay() {
     var name1 = getStorage('username');
     var name2 = getStorage('opponent');
-    var color1 = getStorage('playerColor');
-    var color2 = getStorage('playerColor2');
+    var Color1 = getStorage('playerColor');
+    var Color2 = getStorage('playerColor2');
     //Don't need compareNames any longer since it is handled earlier in the program -- leaving it for now
     var nameSuccess = compareNames(name1,name2);
     //Don't need compareColors any longer. It is handled earlier in the program -- leaving it for now
-    var colorSuccess = compareColors(color1,color2);
+    var ColorSuccess = compareColors(Color1,Color2);
 
-    if ((nameSuccess === true) && (colorSuccess === true)){
+    if ((nameSuccess === true) && (ColorSuccess === true)){
         setStorage('nameDisplaysForPlayer', name1+' Vs '+name2);
         return true;
     }
     else {
         if (nameSuccess === true) {
-            return colorSuccess;
+            return ColorSuccess;
         }
         else {
             return nameSuccess;
@@ -101,12 +101,12 @@ function compareNames(name1,name2) {
     }
 }   
 
-function compareColors(color1,color2) {
-    if ((color1 != '') && (color2 != '')) { 
-    if (color1 == color2) {
+function compareColors(Color1,Color2) {
+    if ((Color1 != '') && (Color2 != '')) { 
+    if (Color1 == Color2) {
         playSound('validation');
-        var colorConflict = 'You have selected the same color as the other player. Please select another color.';
-        return colorConflict;
+        var ColorConflict = 'You have selected the same Color as the other player. Please select another Color.';
+        return ColorConflict;
     }
     else {
         return true;
@@ -167,11 +167,11 @@ function checkForCorner(top,left,right,bottom) {
 }
 
 function placeNameDisplayData() {
-    var color = getStorage('playerColor');
-    document.getElementById('playerNameDisplay').classList.add(color+'Text');
+    var Color = getStorage('playerColor');
+    document.getElementById('playerNameDisplay').classList.add(Color+'Text');
     document.getElementById('playerNameDisplay').innerHTML = 'Player: '+getStorage('username');
-    //add highlight to the name label background if a dark color was chosen
-    if ((color == 'green') || (color == 'blue') || (color == 'indigo')) {
+    //add highlight to the name label background if a dark Color was chosen
+    if ((Color == 'green') || (Color == 'blue') || (Color == 'indigo')) {
         document.getElementById('playerNameDisplay').classList.add('highlight');
     }
 }
@@ -188,20 +188,21 @@ function placeTurnIndicatorData(username) {
     }
 }
 
-function placeBaseDisplayData(signal) {
-        var playerObj = getStorage('playerObj');
-        var base = document.getElementById("playerBaseLocation").innerHTML;
+function placeBaseDisplayData(signal, health) {
+        var base = document.getElementById("playerBaseLoc").innerHTML;
         var coords = document.getElementById(base).dataset.coords;
-        document.getElementById("baseLocationDisplay").innerHTML = "Your base is located at "+coords;
-        document.getElementById("baseHealthDisplay").innerHTML = "Base Health: 200 / 200";
+        
         if (signal > 0) {
-        document.getElementById("baseLocationDisplay").innerHTML = "Your base is located at "+coords;
-        document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+playerObj.base.HealthPoints+ " / 200"; 
+        document.getElementById("baseLocDisplay").innerHTML = "Your base is Located at "+coords;
+        document.getElementById("baseHealthDisplay").innerHTML = "Base Health: "+health+ " / 200"; 
+    } else {
+        document.getElementById("baseLocDisplay").innerHTML = "Your base is Located at "+coords;
+        document.getElementById("baseHealthDisplay").innerHTML = "Base Health: 200 / 200";
     }
 }
 
 function clearBaseDisplayData() {
-    document.getElementById("baseLocationDisplay").innerHTML = "";
+    document.getElementById("baseLocDisplay").innerHTML = "";
     document.getElementById("baseHealthDisplay").innerHTML = "";
 }
  
@@ -215,18 +216,18 @@ function placeTroopDisplayData() {
         console.log('placeTroopDisplayData amd playerObj.troops has this many units ' + playerObj.troops.length);
         for (var i=0; i<playerObj.troops.length; i++) {
             var name = playerObj.troops[i].Name;
-            var color = getStorage('playerColor');
-            var coords = convertIdToCoordinates(playerObj.troops[i].Location);
+            var Color = getStorage('playerColor');
+            var coords = convertIdToCoordinates(playerObj.troops[i].Loc);
             var title = ""+ name + ", " + playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth + " Health Points";
             // document.getElementById("troopDisplay").innerHTML = "";
             document.getElementById("troopDisplay").innerHTML +=
             "<span class='col-1-1 bottomSpacer'><h3>" + name +
-            "<img name="+name+" class='troopPic' id="+'1troopPic'+i+" src=Assets/"+name+color+".png title="+title+"></img></h3>" +
+            "<img name="+name+" class='troopPic' id="+'1troopPic'+i+" src=Assets/"+name+Color+".png title="+title+"></img></h3>" +
             "<span class='col-1-2'><span> Health Points: "+ playerObj.troops[i].HealthPoints +" / "+playerObj.troops[i].MaxHealth+ "</span><br>"+
             "<span> Attack Damage: "+ playerObj.troops[i].AttackDamage + "</span><br>"+
             "<span> Attack Range: "+ playerObj.troops[i].AttackRange + "</span><br>"+
             "<span> Area of Attack: "+ playerObj.troops[i].AreaOfAttack + "</span></span>"+
-            "<span class='col-1-2'><span id='"+i+"location'> Location: "+ coords + "</span><br>"+
+            "<span class='col-1-2'><span id='"+i+"Loc'> Loc: "+ coords + "</span><br>"+
             "<span> Visibility: "+ playerObj.troops[i].Visibility + "</span><br>"+
             "<span> Movement Distance: "+ playerObj.troops[i].MovementDistance + "</span><br>"+
             "<span> Unique Move Range: "+ playerObj.troops[i].UniqueRange + "</span></span><br>"+
@@ -244,10 +245,10 @@ function updateTroopDisplayData() {
     } else {
         document.getElementById("troopDisplay").classList.remove("hidden");
         for (var i=0; i<playerObj.troops.length; i++) {
-            var id = playerObj.troops[i].Location;
+            var id = playerObj.troops[i].Loc;
             var coords = convertIdToCoordinates(id);
-            document.getElementById(i+"location").innerHTML =
-            "Location: "+ coords;
+            document.getElementById(i+"Loc").innerHTML =
+            "Loc: "+ coords;
         }
     }
 }
@@ -280,6 +281,8 @@ function resetVisibiilityToNone(){
 
 function renderVisibilityForBase(tiles) {
     resetVisibiilityToNone();
+    console.log('inside renderVisibilityForBase tiles is '+ tiles);
+
     if (tiles != "empty") {
         for (var i=0; i<tiles.length; i++) {
             document.getElementById(tiles[i]).classList.add('visible');
@@ -382,23 +385,23 @@ function showAvailableTilesForAction(id, distance) {
         }
         returnArrayWithoutDuplicates(goodTileArray);
         //remove the styling that indicates units are available from move from tiles with units or bases
-        removeStylingFromOwnUnitLocationsAndBase(id, goodTileArray);
+        removeStylingFromOwnUnitLocsAndBase(id, goodTileArray);
         setStorage("tilesForMove", goodTileArray);
 }
 
-function removeStylingFromOwnUnitLocationsAndBase(id, goodTileArray) {
+function removeStylingFromOwnUnitLocsAndBase(id, goodTileArray) {
     var playerObj = getStorage("playerObj");
-    //first remove styling from the unit's current location
-    //get the locations of the units and remove those as well
+    //first remove styling from the unit's current Loc
+    //get the Locs of the units and remove those as well
     for (var x=0; x<playerObj.troops.length; x++) {
-        if (playerObj.troops[x].Location != "tbd") {
-        document.getElementById(playerObj.troops[x].Location).classList.remove("availableToMove");
-        removeValueFromArray(goodTileArray, playerObj.troops[x].Location);
+        if (playerObj.troops[x].Loc != "tbd") {
+        document.getElementById(playerObj.troops[x].Loc).classList.remove("availableToMove");
+        removeValueFromArray(goodTileArray, playerObj.troops[x].Loc);
         }
     }
     //remove the styling from the base
-    let baseLoc = playerObj.base.Location;
-    if (baseLoc == undefined) { alert('base.Location is undefined localStoarge line 400'); }
+    let baseLoc = document.getElementById('playerBaseLoc').innerHTML;
+    if (baseLoc == undefined) { alert('base.Loc is undefined localStorage line 405'); }
 
     document.getElementById(baseLoc).classList.remove("availableToMove");
     removeValueFromArray(goodTileArray, baseLoc);
@@ -424,7 +427,7 @@ function clearAvailableTilesForAction() {
             document.getElementById(tileArray[i]).classList.remove("availableToMove");
         }
     }
-    //clear this array to free up local storage between each move
+    //clear this array to free up Local storage between each move
     setStorage("tilesForMove", "");
 }
 
@@ -436,10 +439,10 @@ function clearAllTilesForAction(){
 }
 
 function verifyLocationForPlacement(id) {
-    //this function needs tested thoroughly
-  
-    var playerLoc = getStorage("playerObj");
-    var item = Number(playerLoc.base.Location);
+
+    var item = document.getElementById("playerBaseLoc").innerHTML;
+    item = Number(item);
+
     var top = isOnTopOfGrid(item);
     var left = isOnLeftOfGrid(item);
     var right = isOnRightOfGrid(item);
@@ -506,53 +509,77 @@ function verifyLocationForPlacement(id) {
 }
 
 function progressToFirstMoveOrPause() {
+    document.getElementById("gameAlertsSmall").innerHTML = "";
     // set this to false before game kicks off. it will be set True/False later as required
     setStorage("allCoolDowns", "false");
-
-    var username = getStorage("username");
     var gameState = getStorage("gameState");
     var gameState2 = getStorage("gameState2");
-    //CHANGE NEXT LINE AND USE CALCULATED STARTING PLAYER
-    var activePlayer = getStorage("turnIndicator");
+
     if ((gameState == "troopsPlaced") && (gameState2 == "troopsPlaced")) {
         //hide alertModal once both players are ready to play if it was used to sync
-        triggerHideAlertModal(player);
-        //process ActivePlayer Turn, show other player alertModal
-        if (activePlayer === username) {    
-            triggerAlertModalForPlayerTwo();
-        } else if (activePlayer == "player2") {
-            triggerAlertModalForPlayerOne();
-        }
+        // TEST - testing the removal of alert modal in-game
+        //triggerHideAlertModal(player);
+
+        //removeClickEventsForNodes();
+        removeClickEventsTroopPics();
+
     } else {
         //if one of the gameStates are not "troopsPlaced" show the one that is the alertModal to sync the game
         var message = "Great job! You are prepared to play. Paused for other player.";
-        showAlertModal(message);
+        // TEST - testing not using alert modal
+        //showAlertModal(message);
+        document.getElementById('gameAlertsLarge').innerHTML = message;
+        //removeClickEventsForNodes();
+        removeClickEventsTroopPics();
         }
+}
+
+// Add the onclick events for each node
+function addClickEventsForNodes(){
+    for (let i=0; i<400; i++){
+        document.getElementById(i).addEventListener('click', function(){
+            functionSwitch(switchData, this.id);
+        });
+    }
+}
+
+// Remove the onclick event from each node
+function removeClickEventsForNodes(){
+    for (let i=0; i<400; i++){
+        //document.getElementById(i).onclick = null;
+        $("#"+i).removeAttr("onclick");
+    }
+}
+
+// Remove the onclick event from each troop pic
+function removeClickEventsTroopPics(){
+    for(let i=0; i<3; i++){
+        //document.getElementById("1troopPic"+i).onclick = null;
+        $("#1troopPic"+i).removeAttr("onclick");
+    }
 }
 
 function addClickEventsTroopPics() {
 
     if (document.getElementById("1troopPic0") !== null) {
-            document.getElementById("1troopPic0").onclick = function() { 
+        document.getElementById("1troopPic0").onclick = function() { 
             setActiveUnit(this);
         }
     }
-        if (document.getElementById("1troopPic1") !== null) {
-            document.getElementById("1troopPic1").onclick = function() { 
-            setActiveUnit(this);
+    if (document.getElementById("1troopPic1") !== null) {
+        document.getElementById("1troopPic1").onclick = function() { 
+        setActiveUnit(this);
         }
     }
-        if (document.getElementById("1troopPic2") !== null) {
-            document.getElementById("1troopPic2").onclick = function() { 
-            setActiveUnit(this);
-
-            }
+    if (document.getElementById("1troopPic2") !== null) {
+        document.getElementById("1troopPic2").onclick = function() { 
+        setActiveUnit(this);
+        }
     }
 }
 
 function setActiveUnit(event) {
     clearAllTilesForAction();
-    //clearAvailableTilesForAction();
     clearPlayerColorFromMap();
     clearUniqueEventHandlers(activeUnit);
     
@@ -560,6 +587,7 @@ function setActiveUnit(event) {
     var name = event.name;
     document.getElementById("gameAlertsLarge").innerHTML = "Active troop is "+ name+". See menu for options.";
 
+    //select active unit from playerObj
     for (var i=0; i<playerObj.troops.length; i++) {
         if (playerObj.troops[i].Name == name) {
            
@@ -610,7 +638,7 @@ function prepareGameAction(activeUnit, event) {
     //TODO -this next function may need improved
     clearUniqueEventHandlers();
     var alertLoc = "gameAlertsSmall";
-    var loc = activeUnit.Location;
+    var Loc = activeUnit.Loc;
 
     if (event.id == "option1") {
         var distance = activeUnit.MovementDistance;
@@ -631,7 +659,7 @@ function prepareGameAction(activeUnit, event) {
     if (event.id == "option3") {
         displayUniqueMoveTiles(activeUnit);
     } else {
-        showAvailableTilesForAction(loc, distance);
+        showAvailableTilesForAction(Loc, distance);
     }
     // document.getElementById("currentState").innerHTML = "gameTime";
     // setStorage("gameState", "gameTime");
@@ -667,12 +695,12 @@ function sendTurnActionInfo(moveType, id) {
     //send each moveType down its own path
     //handle move
     if (moveType == "option1") {
-        //get new location/old location and their coord values
-        var loc = activeUnit.Location;
-        loc = document.getElementById(loc).dataset.coords;
+        //get new Loc/old Loc and their coord values
+        var Loc = activeUnit.Loc;
+        Loc = document.getElementById(Loc).dataset.coords;
         var oldLoc = getStorage("oldLoc");
         oldLoc = document.getElementById(oldLoc).dataset.coords;
-        actionInfo = "You moved your "+name+" from "+oldLoc+" to "+loc+".";
+        actionInfo = "You moved your "+name+" from "+oldLoc+" to "+Loc+".";
     }
     //handle attack
     else if (moveType == "option2") {
@@ -681,7 +709,7 @@ function sendTurnActionInfo(moveType, id) {
         if (target.innerHTML != ""){
             actionInfo = "You attacked the enemy with your "+name+" and inflicted "+activeUnit.AttackDamage+" damage.";
         } else {
-            actionInfo = "You attacked an empty location dealing no damage.";
+            actionInfo = "You attacked an empty Loc dealing no damage.";
         }
     }
     //handle unique action
@@ -700,8 +728,8 @@ function handlePlayerMove(id) {
     }
 
     var validTile;
-    var loc = activeUnit.Location;
-    setStorage("oldLoc", loc);
+    var Loc = activeUnit.Loc;
+    setStorage("oldLoc", Loc);
 
     var inRange = getStorage("tilesForMove");
     //first check that "id" tile is included in the array of available tiles
@@ -730,13 +758,13 @@ function handlePlayerMove(id) {
         //play move sound
         playSound("move");
         //get image from current tile
-        var pic = document.getElementById(loc).innerHTML;
+        var pic = document.getElementById(Loc).innerHTML;
         //clear image from current tile
-        document.getElementById(loc).innerHTML = "";
+        document.getElementById(Loc).innerHTML = "";
         //place image in new tile
         document.getElementById(validTile).innerHTML = pic;
-        //update troopObj location
-        activeUnit.Location = parseInt(validTile);
+        //update troopObj Loc
+        activeUnit.Loc = parseInt(validTile);
         var unitName = activeUnit.Name;
         //save the new info for the activeUnit into the playerObj
         for (var i=0; i<playerObj.troops.length; i++) {
@@ -746,10 +774,10 @@ function handlePlayerMove(id) {
         }
         
        setStorage("playerObj", playerObj);
-       //this is to save ActiveUnit after the changes have been made to location
+       //this is to save ActiveUnit after the changes have been made to Loc
         setStorage("activeTroop", activeUnit);
         
-        removeUnitImageFromOpponent(username, loc);
+        removeUnitImageFromOpponent(username, Loc);
         updateTroopLocation(unitName, id);
         
         //get rid of availableMove styling
@@ -759,14 +787,19 @@ function handlePlayerMove(id) {
 }
 
 function processTurn() {
+    let username = getStorage('username');
+    let playerObj = getStorage('playerObj');
     //clear gameAlertsSmall if it had retext and a message
     document.getElementById("gameAlertsSmall").classList.remove("redText");
     document.getElementById("gameAlertsSmall").innerHTML = "";
 
-    placeBaseDisplayData(1);
+    let baseHealth = getBaseHealth();
+
+    placeBaseDisplayData(1, baseHealth);
     updateTroopDisplayData();
     resetCoolDowns();
-   
+
+    // TODO - implement below function? (not sure its needed, the server can end game if all units are killed)
     //var enemyUnitsAllKilled = areEnemyUnitsAllKilled();
     let enemyUnitsAllKilled = false;
     if (enemyUnitsAllKilled === true) {
@@ -774,9 +807,12 @@ function processTurn() {
     }
 
     let otherPlayerAllUnitsOnCooldown = false;
+    //TODO implement below function
     // var otherPlayerAllUnitsOnCooldown = checkOpponentUnitsForAllCooldowns();
     if (otherPlayerAllUnitsOnCooldown == false) {
-        let username = getStorage('username');
+        // set state to disabled so this user cannot perform any out-of-turn actions
+        document.getElementById('currentState').innerHTML = "disabled";
+
         // updateTurnIndicator(opponent);
         signalTurnOver(username);
         setStorage("allCoolDowns", "false");
@@ -803,6 +839,7 @@ function handlePlayerAttack(id) {
         //play attack sound
         playSound("attack");
         clearAvailableTilesForAction();
+
         processTurn();
     }
 }
@@ -825,8 +862,8 @@ function clientSideCheckAttackRange(id){
 
 function checkTileForEnemyUnit(base, id, otherPlayerObj) {
     for (var z=0; z<otherPlayerObj.troops.length; z++) {
-        var loc = otherPlayerObj.troops[z].Location;
-            if (id == loc) {
+        var Loc = otherPlayerObj.troops[z].Loc;
+            if (id == Loc) {
                 return true;
         }
     }
@@ -863,10 +900,10 @@ function checkActiveUnitForUniqueMove(activeUnit) {
     
 }
 
-function updateAttackedBaseHealth(healthAfterAttack) {
+function updateAttackedBaseHealth(HealthAfterAttack) {
     //TODO consolidate the two versions of this into one
-        triggerPlayerOneBaseHealth(healthAfterAttack);
-        triggerPlayerTwoBaseHealth(healthAfterAttack);
+        triggerPlayerOneBaseHealth(HealthAfterAttack);
+        triggerPlayerTwoBaseHealth(HealthAfterAttack);
 }
 
 //this needs to be moved server side
@@ -901,8 +938,8 @@ function resetCoolDowns() {
 //     return false;
 // }
 
-function clearTileInnerHtml(loc) {
-    document.getElementById(loc).innerHTML = "";
+function clearTileInnerHtml(Loc) {
+    document.getElementById(Loc).innerHTML = "";
 }
 
 function signalGameOver(player) {
@@ -936,4 +973,13 @@ function checkPrivateUsers(privateUsers) {
         //true, players are in privateUsers - are in game
         return true;
     }
+}
+
+function getBaseHealth(){
+    let playerObj = getStorage('playerObj');
+
+    if(playerObj.base.HealthPoints == "" || playerObj.base.HealthPoints == undefined){
+        alert('base health is undefined or empty string in getBaseHealth');
+    }
+    return playerObj.base.HealthPoints;
 }

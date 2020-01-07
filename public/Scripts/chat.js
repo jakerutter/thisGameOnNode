@@ -27,7 +27,7 @@ function sendChatMessage() {
     document.getElementById('noMessage').innerHTML = '';
     console.log(username +' is sending message: ' + chatmessage);
     var data = username+': '+ chatmessage;
-    socket.emit('send-message', data);
+    socket.emit('send-message', data, username);
   }
   
   $('#m').val('');
@@ -36,14 +36,15 @@ function sendChatMessage() {
 //this will check the entry screen so that the enter button can be pressed or 'enter' key used
 function mobileCheckForEnterKeyPress(identifier,e) {
    
-  // if (e && e.keyCode === 13) {
-  //     } if (identifier === 'chat') {
-  //         mobileSendChatMessage();
-  //         return false;
-  //     //the key pressed was not enter, exit
-  //     } else {
-  //         return;
-  //     }
+  if (e && e.keyCode === 13) {
+    if (identifier === 'chat') {
+      mobileSendChatMessage();
+      return false;
+    }
+      //the key pressed was not enter, exit
+  } else {
+        return;
+  }
 }
 
 // In game "mobile" chat feature
@@ -86,7 +87,7 @@ function toggleChat(){
     setTimeout(function(){
       chatFeature.classList.remove('mobileChat');
       chatFeature.classList.add('hidden');
-    }, 1000);
+    }, 500);
 
   } else {
     chatFeature.classList.remove('hidden');

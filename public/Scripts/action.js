@@ -84,7 +84,7 @@ function hideWelcomeModal(username) {
     placeTurnIndicatorData(stage);
     $.modal.close();
     hideModalOverlays();
-    //color the action buttons the player's color
+    //Color the action buttons the player's Color
     document.getElementById('option1').style.backgroundColor = chosenColor;
     document.getElementById('option2').style.backgroundColor = chosenColor;
     document.getElementById('option3').style.backgroundColor = chosenColor;
@@ -214,41 +214,44 @@ function functionSwitch(switchData, id) {
     }
     var id = Number(id);
 
-        if (switchData == 'selectBase') {
+        if (switchData === 'selectBase') {
             placePlayerBase(id);
             claimSelectedBase(id, username);
+            //removeClickEventsForNodes();
         }
-        else if (switchData == 'baseConfirmed') { 
+        else if (switchData === 'baseConfirmed') { 
             checkPlayerUnitLocation(id);
         }
-        else if (switchData == 'troopsPlaced') {
+        else if (switchData === 'troopsPlaced') {
             progressToFirstMoveOrPause();
         }
-        else if (switchData == 'gameTime') {
+        else if (switchData === 'gameTime') {
             performGameAction(id);
         }
-        else if (switchData == 'noClick') {
+        else if (switchData === 'disabled'){
             return;
+        }else {
+            alert('Function switch fell into unexpected state. switchData is ' + switchData);
         }
 }
 
 function placePlayerBase(id) {
     var playerColor = document.getElementById('playerColorSelection').innerHTML;
     var homeBase = document.getElementById(id);
-    var playerBaseCheck = document.getElementById('playerBaseLocation').innerHTML;
+    var playerBaseCheck = document.getElementById('playerBaseLoc').innerHTML;
     if (playerBaseCheck == ''){
-        document.getElementById('playerBaseLocation').innerHTML = id;
+        document.getElementById('playerBaseLoc').innerHTML = id;
         homeBase.style.backgroundColor = playerColor;
         document.getElementById(id).title = 'Base, 200 / 200 Health Points';
-        setStorage('playerBaseLocation', id); 
+        setStorage('playerBaseLoc', id); 
     } else {
-        var oldBase = document.getElementById('playerBaseLocation').innerHTML;
+        var oldBase = document.getElementById('playerBaseLoc').innerHTML;
         document.getElementById(oldBase).classList.add('not-visible');
         document.getElementById(oldBase).style.backgroundColor = '';
-        document.getElementById('playerBaseLocation').innerHTML = id;
+        document.getElementById('playerBaseLoc').innerHTML = id;
         document.getElementById(oldBase).title = '';
         homeBase.style.backgroundColor = playerColor;
-        setStorage('playerBaseLocation', id);
+        setStorage('playerBaseLoc', id);
         }
         
     document.getElementById('gameAlertsSmall').innerHTML = '';
@@ -260,7 +263,7 @@ function troopModal() {
     document.getElementById('troopModal').classList.remove('hidden');
     $('#troopModal').modal();
 
-    placeBaseDisplayData(0);
+    placeBaseDisplayData(0, 200);
     var tempTroopArray = getStorage('tempTroopArray1');
     if ((tempTroopArray != null) && (tempTroopArray != '') && (tempTroopArray.length > 0)) {
     for (var i=0; i<tempTroopArray.length; i++) {
@@ -278,7 +281,7 @@ function checkTroopSelection() {
     if (troops.length == 3) {
         playerTroopSelection.innerHTML = troops;
         hideTroopModal(true);
-        //set current state to "baseConfirmed" back from "noClick" so users can place their units
+        //set current state to "baseConfirmed" back from "disabled" so users can place their units
         document.getElementById('currentState').innerHTML = 'baseConfirmed';
         setStorage('state', 'baseConfirmed');
     }
@@ -376,7 +379,7 @@ function createRequirementsForPlayerObject(){
 
 function placePlayerUnits(playerObj) {
     //this function handles the initial placement of units at game
-    var id = getStorage('playerBaseLocation');
+    var id = getStorage('playerBaseLoc');
     var distance = 1;
     var player = 1;
     showAvailableTilesForAction(id, distance, player);  
@@ -398,13 +401,13 @@ function checkPlayerUnitLocation(id) {
 
             var playerObj = getStorage('playerObj');
             var name = playerObj.troops[troopsToPlace].Name;
-            var color = playerObj.player.Color;
+            var Color = playerObj.player.Color;
             var node = Number(id);
-            playerObj.troops[troopsToPlace].Location = node;
-            var health = getTroopMaxHealth(name);
-            var title = name + ", "+health+" / "+health+" Health Points";
+            playerObj.troops[troopsToPlace].Loc = node;
+            var Health = getTroopMaxHealth(name);
+            var title = name + ", "+Health+" / "+Health+" Health Points";
             var pictureID = 'player1'+name;
-            document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+color+'.png title="'+title+'"></img>';
+            document.getElementById(node).innerHTML = '<img id=player1'+''+name+''+' src=Assets/'+name+Color+'.png title="'+title+'"></img>';
             document.getElementById(pictureID).style.height = '100%';
             document.getElementById(pictureID).style.width = '100%';
             //send troop location to server
@@ -438,20 +441,26 @@ function checkPlayerUnitLocation(id) {
 
 function updateTurnIndicator(name) {
     let username = getStorage('username');
-    document.getElementById('currentState').innerHTML = 'gameTime';
+
     placeTurnIndicatorData(name);
-    if (name === username){
+
+    if (name === username){   
+        // only update currentState for current player, otherwise it should be "disabled"
+         document.getElementById('currentState').innerHTML = 'gameTime';
         console.log('it should be my turn! my name is ' + username);
-        hideModalOverlays();
-        hideAlertModal();
+        // TEST - testing not using alert modals
+        //hideModalOverlays();
+        //hideAlertModal();
+        //addClickEventsForNodes();
         addClickEventsTroopPics();
         document.getElementById('gameAlertsLarge').innerHTML = 'Click on the picture [right menu] of the unit you\'d like to activate.';
     } else {
-        let message = 'Other player is taking their turn.';
-        showAlertModal(message);
+        //removeClickEventsForNodes();
+        removeClickEventsTroopPics();
+        // TEST - testing not using alert modals
+        //showAlertModal(message);
         document.getElementById('gameAlertsLarge').innerHTML = 'Other player is taking their turn.';
     }
-    
 }
 
 function hideinGameTroopDetailModal() {
@@ -469,18 +478,18 @@ function updateActivePlayerTroopDisplayData(player) {
         document.getElementById('troopDisplay').innerHTML = '';
         for (var i=0; i<playerObj.troops.length; i++) {
             var name = playerObj.troops[i].Name;
-            var color = playerObj.player.Color;
-            var id = playerObj.troops[i].Location;
+            var Color = playerObj.player.Color;
+            var id = playerObj.troops[i].Loc;
             var coords = convertIdToCoordinates(id);
             var title = name + " " + playerObj.troops[i].HealthPoints+ " / " + " " + getTroopMaxHealth(playerObj.troops[i].Name) + " Health Points";
         document.getElementById('troopDisplay').innerHTML +=
         "<span class='col-1-1 bottomSpacer'><h3>" + name +
-        "<img name="+name+" class='troopPic' id="+player+'troopPic'+i+" title="+title+" src=Assets/"+name+color+".png></img></h3>" +
+        "<img name="+name+" class='troopPic' id="+player+'troopPic'+i+" title="+title+" src=Assets/"+name+Color+".png></img></h3>" +
         "<span class='col-1-2'><span> Health Points: "+ playerObj.troops[i].HealthPoints + " / "+playerObj.troops[i].MaxHealth +"</span><br>"+
         "<span> Attack Damage: "+ playerObj.troops[i].AttackDamage + "</span><br>"+
         "<span> Attack Range: "+ playerObj.troops[i].AttackRange + "</span><br>"+
         "<span> Area of Attack: "+ playerObj.troops[i].AreaOfAttack + "</span></span>"+
-        "<span class='col-1-2'><span id='"+i+"location'> Location: "+ coords + "</span><br>"+
+        "<span class='col-1-2'><span id='"+i+"Loc'> Location: "+ coords + "</span><br>"+
         "<span> Visibility: "+ playerObj.troops[i].Visibility + "</span><br>"+
         "<span> Movement Distance: "+ playerObj.troops[i].MovementDistance + "</span><br>"+
         "<span> Unique Move Range: "+ playerObj.troops[i].UniqueRange + "</span></span><br>"+
@@ -489,13 +498,13 @@ function updateActivePlayerTroopDisplayData(player) {
     }
 }
 
-function clearSingleTileInnerHtml(loc) {
-    document.getElementById(loc).innerHTML = '';
+function clearSingleTileInnerHtml(Loc) {
+    document.getElementById(Loc).innerHTML = '';
 }
 
 function informPlayerAllUnitsOnCooldownCausedTurnToPass(activeInfo) {
 
-        document.getElementById('currentAlertSmall').innerHTML = activeInfo;
+        document.getElementById('gameAlertsSmall').innerHTML = activeInfo;
 }
 
 function signalGameLoss(player) {

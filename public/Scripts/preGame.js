@@ -2,13 +2,13 @@
 
 // Keep track of our socket connection
 var socket;
-socket = io.connect('http://localhost:8181');
+socket = io.connect('http://Localhost:8181');
 
 function setup() {
 
   // Start a socket connection to the server
   // Some day we would run this server somewhere else
-  socket = io.connect('http://localhost:8181');
+  socket = io.connect('http://Localhost:8181');
   // We make a named event called 'join' and write an
   // anonymous callback function
   socket.on('join', function(name) {
@@ -30,17 +30,24 @@ function setup() {
     });
 
   //send and display chat messages
-  socket.on('message-received', function(msg){
-    $('#messages').append($('<li>').text(msg));
-    // window.scrollTo(0, document.body.scrollHeight);
+  socket.on('message-received', function(msg, sender){
+    let message;
+    let username = getStorage('username');
+    if (username === sender){
+        message = "<li style='Color:white;'>"+msg+"</li>";
+    } else {
+        message = "<li style='Color:black; background-Color:#eee;'>"+msg+"</li>";
+    }
+
+    $('#messages').append(message);
     window.scrollTo(0, 0);
   });
 
   //send and display in-game "mobile" messages
-  socket.on('mobile-message-received', function(msg, color){
-    var color = color;
-    var bg = color == "yellow" ? "grey" : "white";
-    var message = "<li style='color:"+color+"; background-color:"+bg+";'>"+msg+"</li>";
+  socket.on('mobile-message-received', function(msg, Color){
+    var Color = Color;
+    var bg = Color == "yellow" ? "grey" : "white";
+    var message = "<li style='Color:"+Color+"; background-Color:"+bg+";'>"+msg+"</li>";
 
     $('#mobileMessages').append(message);
     chatNotifications();
@@ -62,7 +69,7 @@ function setup() {
 
      socket.on('check-challenge-response', function(name, challenged) {
         var username = getStorage('username');
-        //save challenger to local storage for the challenger and challenged parties
+        //save challenger to Local storage for the challenger and challenged parties
         if ((username === challenged) || (username === name)) {
             setStorage('challenger', name);
         }
@@ -92,11 +99,10 @@ function setup() {
                 modal.classList.add('hidden');
             }
         }
-
     });
 
      socket.on('update-users-challenge-refused', function(name, challenger) {
-        //clear challenger from localstorage since the challenge was denied
+        //clear challenger from Localstorage since the challenge was denied
         var challengerStored = getStorage('challenger');
         if (challengerStored != '') {
             setStorage('challenger', '');
@@ -120,26 +126,29 @@ function setup() {
     });
 
     socket.on('first-color-has-been-selected', function(name, chosenColor, privateUsers) {
-        console.log('first color ' + chosenColor +' has been selected by '+name+'. showing alert modal.');
+        console.log('first Color ' + chosenColor +' has been selected by '+name+'. removing onclick events for nodes.');
         var username = getStorage('username');
         document.getElementById('welcomeModalTopH3').classList.add(chosenColor+'Text');
-        document.getElementById('welcomeModalTopH3').innerHTML = name + ' has selected ' + chosenColor + ' as their color.';
+        document.getElementById('welcomeModalTopH3').innerHTML = name + ' has selected ' + chosenColor + ' as their Color.';
         $('#playerColorSelect option[value='+chosenColor+']').remove();
         
         setChosenColorInLocalStorage(name, chosenColor, privateUsers);
         if (username === name) {
-            var message = 'You have chosen '+ chosenColor+'. Wait for your opponent to select their color.';
-            showAlertModal(message);
+            var message = 'You have chosen '+ chosenColor+'. Wait for your opponent to select their Color.';
+            // TEST - testing not using alert modals
+            //showAlertModal(message);
+            document.getElementById('gameAlertsLarge').innerHTML = message;
             let moColor = chosenColor + "Text";
             $('#mo').addClass(moColor);
         }
     });
 
     socket.on('second-color-has-been-selected', function(name, chosenColor, privateUsers) {
-        console.log('second color ' +chosenColor +' has been selected by '+ name+'. showing alert modal.');
+        console.log('second Color ' +chosenColor +' has been selected by '+ name+'. showing alert modal.');
         var username = getStorage('username');
         setChosenColorInLocalStorage(name, chosenColor, privateUsers);
-        hideAlertModal();  
+        //TEST - testing not using alert modals
+        //hideAlertModal();  
         // set up mobile Chat stuff  
         $('#btnToggleChat').removeClass('hidden');
 
@@ -152,29 +161,32 @@ function setup() {
     socket.on('first-base-has-been-selected', function(name, privateUsers, tiles) {
         var username = getStorage('username');
         if (name === username) {
-            var message = 'You placed your base. Wait for your opponent to place their base.'
-            showAlertModal(message);
-            document.getElementById('gameAlertsLarge').innerHTML = 'Base location submitted. Wait for other player.';
+            //TEST testing not using alert modal
+            //showAlertModal(message);
+            //removeClickEventsForNodes();
+            document.getElementById('currentState').innerHTML = 'disabled';
+
+            document.getElementById('gameAlertsLarge').innerHTML = 'Base Location submitted. Wait for other player.';
             renderVisibilityForBase(tiles);
         } else {
             let playerInGame = checkPrivateUsers(privateUsers);
             if (playerInGame === true) {
-            setStorage('playerBaseLocation2', 'true');
+                setStorage('playerBaseLoc2', 'true');
             }
         }
     });
 
     socket.on('second-base-has-been-selected-fail', function(privateUsers) {
-        var name = getStorage('username');
-        var users = getStorage('users');
-        //clear base location in local storage
-        
+
+        document.getElementById('currentState').innerHTML = 'selectBase';
         //clear selected base, remove alert modal, and inform them that they need to try again
-        hideAlertModal();
+        //TEST - testing not using alert modals
+        //hideAlertModal();
+
         let playerInGame = checkPrivateUsers(privateUsers);
         if (playerInGame === true) {
             document.getElementById('gameAlertsLarge').innerHTML = 'Your bases were too close. Choose again.';
-            //reset all mazeholes to default background color of ghostwhite
+            //reset all mazeholes to default background Color of ghostwhite
             var tiles = 'empty';
             renderVisibilityForBase(tiles);
         }
@@ -184,10 +196,12 @@ function setup() {
         username = getStorage('username');
         if (name === username) {
             renderVisibilityForBase(tiles);
+            document.getElementById('currentState').innerHTML = 'disabled';
         }
         
         console.log('2 bases chosen and locations PASS validation.');
-        hideAlertModal();
+        // TEST - testing not using alert modals
+        //hideAlertModal();
         document.getElementById('gameAlertsLarge').innerHTML = '';
         revealOpenTroopModalButton(privateUsers);
     });
@@ -207,7 +221,8 @@ function setup() {
         var username = getStorage('username');
         if (name === username) {
         console.log('I am the starting player. My name is ' + username);
-        hideAlertModal();
+        //TEST - testing not using alert modals
+        //hideAlertModal();
         }
         let playerInGame = checkPrivateUsers(privateUsers);
         if (playerInGame === true) {
@@ -230,7 +245,7 @@ function setup() {
     });
 
     socket.on('update-client-post-attack', function(username, playerObj){
-        //TODO determine best way to update tooltip displaying updated health for attacked unit
+        //TODO determine best way to update tooltip displaying updated Health for attacked unit
         let thisUser = getStorage('username');
         if (username == thisUser){
             setStorage('playerObj', playerObj);
@@ -290,7 +305,7 @@ function savePlayerName() {
     //set id value for this user to emit to the server
     id = Math.floor(Date.now() * Math.random());
     
-    if (name == "" || name == undefined || name == null) {
+    if (name == "" || name == " " || name == undefined || name == null) {
         document.getElementById('nameFail').innerHTML = 'That is not an acceptable name. Enter a name.';
     } else if (isNameTaken === true) {
         document.getElementById('nameFail').innerHTML = 'That is taken by another user. Enter a different name.';
@@ -332,16 +347,7 @@ function hideModalOverlays() {
     }
 }
 
-function setStorage(key,info) {
-    localStorage.setItem(key, JSON.stringify(info));
-}
-
-function getStorage(key) {
-    var item = localStorage.getItem(key);
-    return JSON.parse(item);
-}
-
-//this is triggered when a player clicks to accept or refuse a challenge
+// a player clicks to accept or refuse a challenge
 function respondToChallenge(response, name, challenger) {
     //load up the name name and challenger name if they're not provided
     if (challenger == undefined){
@@ -365,7 +371,8 @@ function respondToChallenge(response, name, challenger) {
         document.getElementById('chatWelcomeModal').classList.add('hidden');
     }
 }
-//a player selects a their color, send the selection to the server
+
+// player selects a their Color, send the selection to the server
 function claimSelectedColor(chosenColor, name) {
     if (name == undefined){
         var name = getStorage('username');
@@ -376,29 +383,28 @@ function claimSelectedColor(chosenColor, name) {
     }
     //End CYPRESS
     var otherPlayerColor = getStorage('playerColor2');
-    if ((otherPlayerColor == '')) {
+    if ((otherPlayerColor == '') || (otherPlayerColor == undefined)) {
         socket.emit('first-color-selected', name, chosenColor);
     } else {
         socket.emit('second-color-selected', name, chosenColor);
     }
 }
 
-function claimSelectedBase(location, username) {
-    console.log(username + ' has selected this location for their base '+ location);
+function claimSelectedBase(loc, username) {
+    console.log(username + ' has selected this location for their base '+ loc);
     console.log('NOT COMPARED / VERIFIED');
 
-    var baseDataCoords = document.getElementById(location).dataset.coords;
+    var baseDataCoords = document.getElementById(loc).dataset.coords;
     var baseCoords = baseDataCoords.split(',');
     var bx = Number(baseCoords[0]);
     var by = Number(baseCoords[1]);
 
-    var otherPlayerBase = getStorage('playerBaseLocation2');
+    var otherPlayerBase = getStorage('playerBaseLoc2');
     if ((otherPlayerBase == '') || (otherPlayerBase == null)  || (otherPlayerBase == undefined)) {
-        socket.emit('first-base-selected', location, username, bx,by);
+        socket.emit('first-base-selected', loc, username, bx,by);
     } else {
-        socket.emit('second-base-selected', location, username, bx,by);
+        socket.emit('second-base-selected', loc, username, bx,by);
     }
-   
 }
 
 //This forces scroll to top on refresh
@@ -430,7 +436,7 @@ function createPlayerButtons(users) {
                 var challenged = button.innerHTML;
                 
                 let msg = username + ' clicked on ' + challenged + '. They must be considering a challenge.';
-                socket.emit('send-message', msg);
+                socket.emit('send-message', msg, username);
 
                 if (confirm('Are you sure you want to challenge ' + challenged + '?')) {
                     socket.emit('extend-challenge', username, challenged);
@@ -438,24 +444,17 @@ function createPlayerButtons(users) {
                 } else {
 
                     let noChallengeMsg = username + ' decided not to challenge ' + challenged +' at this time.';
-                    socket.emit('send-message', noChallengeMsg);
+                    socket.emit('send-message', noChallengeMsg, username);
                     
                 }
                 });
             }
         }
-            //saving this in local storage. will use this array to update buttons visible
+            //saving this in Local storage. will use this array to update buttons visible
             setStorage('users', userArray);
         } else {
            return;
         }
-}
-
-function renderVisibilityForBase(tiles){
-    console.log('inside renderVisibilityForBase tiles is '+ tiles);
-    if (tiles == 'empty'){
-        $('.mazehole').removeClass('not-visible');
-    }
 }
 
 function addPlayerTroopsToGameObject(name, troopArray) {
@@ -470,13 +469,13 @@ function revealOpenTroopModalButton() {
     let playerNames = getStorage('users');
     if (playerNames.includes(name) == true) {
         document.getElementById('openTroopModalButton').classList.remove('hidden');
-        document.getElementById('currentState').innerHTML = 'noCLick';
+        document.getElementById('currentState').innerHTML = 'disabled';
     }
 }
 
 function updateTroopLocation(unitName, node) {
     var username = getStorage('username');
-    socket.emit('update-troop-location', username, unitName, node);
+    socket.emit('update-troop-loc', username, unitName, node);
 }
 
 function drawEnemyUnitsToMap(username, makeKnown) {
@@ -488,14 +487,14 @@ function drawEnemyUnitsToMap(username, makeKnown) {
     if (name === username) {
         for (var i=0; i<makeKnown.length; i++) {
             //handle base first
-            if(makeKnown[i].name === 'enemy base'){
-                document.getElementById(makeKnown[i].location).style.backgroundColor = makeKnown[i].color;
-                document.getElementById(makeKnown[i].location).title = 'Enemy Base '+ makeKnown[i].health+' / 200 health';   
+            if(makeKnown[i].Name === 'enemy base'){
+                document.getElementById(makeKnown[i].Loc).style.backgroundColor = makeKnown[i].Color;
+                document.getElementById(makeKnown[i].Loc).title = 'Enemy Base '+ makeKnown[i].Health+' / 200 Health';   
             } 
             else {
-                document.getElementById(makeKnown[i].location).innerText = '';
-                var title = "Enemy "+ makeKnown[i].name + ", "+makeKnown[i].health+" / "+makeKnown[i].maxHealth+" Health Points";
-                document.getElementById(makeKnown[i].location).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].name+""+" src=/Assets/"+makeKnown[i].name+makeKnown[i].color+".png title='"+title+"'></img>";
+                document.getElementById(makeKnown[i].Loc).innerText = '';
+                var title = "Enemy "+ makeKnown[i].Name + ", "+makeKnown[i].Health+" / "+makeKnown[i].MaxHealth+" Health Points";
+                document.getElementById(makeKnown[i].Loc).innerHTML = "<img height='20px'; width='20px'; id=player1"+""+makeKnown[i].Name+""+" src=/Assets/"+makeKnown[i].Name+makeKnown[i].Color+".png title='"+title+"'></img>";
                 
             }
         }
@@ -507,7 +506,7 @@ function checkOpponentUnitsForAllCooldowns() {
     var opponent = getStorage('opponent');
     var allOnCooldown = false;
     
-    socket.emit('check-', location, username, bx,by);
+    socket.emit('check-', loc, username, bx,by);
 }
 
 function signalTurnOver(username){

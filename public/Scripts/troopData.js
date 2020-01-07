@@ -359,7 +359,7 @@ function createTroopObject(name) {
 function createScout() {
     var Scout = {
         Name: "Scout",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  5,
         MovementDistance:  5,	
         HealthPoints: 35,
@@ -379,7 +379,7 @@ function createScout() {
 function createDepthCharge() {
     var DepthCharge = {
         Name: "DepthCharge",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  1,
         MovementDistance:  1,	
         HealthPoints: 15,
@@ -400,7 +400,7 @@ function createDepthCharge() {
 function createDestroyer() { 
     var Destroyer = {
         Name: "Destroyer",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  2,
         MovementDistance:  2,	
         HealthPoints: 100,
@@ -420,12 +420,12 @@ function createDestroyer() {
 function createSwarm() { 
     var Swarm = {
         Name: "Swarm",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  2,
         MovementDistance:  2,	
         HealthPoints: 128,
         MaxHealth: 128,
-        Moves: "Swarm: splits itself (and its health) each move in order to fan out and search. Does 20 damage to any unit hit and reveals the tiles covered.",
+        Moves: "Swarm: splits itself (and its Health) each move in order to fan out and search. Does 20 damage to any unit hit and reveals the tiles covered.",
         Cooldown: 0,
         AreaOfAttack: 0,
         AttackDamage: 20,
@@ -441,7 +441,7 @@ function createSwarm() {
 function createScan() { 
     var Scan = {
         Name: "Scan",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  1,
         MovementDistance:  1,	
         HealthPoints: 15,
@@ -462,7 +462,7 @@ function createScan() {
 function createRuskie() { 
     var Ruskie = {
         Name: "Ruskie",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  4,
         MovementDistance:  3,	
         HealthPoints: 70,
@@ -482,7 +482,7 @@ function createRuskie() {
 function createGremlin() { 
     var Gremlin = {
         Name: "Gremlin",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  3,
         MovementDistance:  3,	
         HealthPoints: 90,
@@ -502,7 +502,7 @@ function createGremlin() {
 function createPirate() { 
     var Pirate = {
         Name: "Pirate",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  4,
         MovementDistance:  4,	
         HealthPoints: 60,
@@ -523,7 +523,7 @@ function createPirate() {
 function createBombardier() { 
     var Bombardier = {
         Name: "Bombardier",
-        Location: "tbd",
+        Loc: "tbd",
         Visibility:  4,
         MovementDistance:  2,	
         HealthPoints: 60,
@@ -803,7 +803,7 @@ function showSwarmUnique(activeUnit, player) {
 
 function prepareUniqueForSwarm(activeUnit, player) {
         var activeArray = [];
-        var activeUnitXYValues = document.getElementById(activeUnit.Location).dataset.coords.split(",");
+        var activeUnitXYValues = document.getElementById(activeUnit.Loc).dataset.coords.split(",");
         var activeUnitX = parseInt(activeUnitXYValues[0]);
         var activeUnitY = parseInt(activeUnitXYValues[1]);
 
@@ -862,7 +862,7 @@ function addColorSwarmUniqueTiles(activeUnit, player) {
 
 function determinePositionRelativeToSwarmUnit(activeUnit, eventXValue, eventYValue) {
     var position;
-    var activeUnitXYValues = document.getElementById(activeUnit.Location).dataset.coords.split(",");
+    var activeUnitXYValues = document.getElementById(activeUnit.Loc).dataset.coords.split(",");
     var activeUnitX = parseInt(activeUnitXYValues[0]);
     var activeUnitY = parseInt(activeUnitXYValues[1]);
     if ((eventYValue==activeUnitY) && (eventXValue==(activeUnitX+1))) {
@@ -898,11 +898,11 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
     var playerObj = getStorage("playerObj");
     var color = playerObj.player.Color;
     //I like the idea of showing this unique move in steps as they move away from swarm but I'll add that as a feature request
-    var activeUnitXYValues = document.getElementById(activeUnit.Location).dataset.coords.split(",");
+    var activeUnitXYValues = document.getElementById(activeUnit.Loc).dataset.coords.split(",");
     var activeUnitX = parseInt(activeUnitXYValues[0]);
     var activeUnitY = parseInt(activeUnitXYValues[1]);
     var validUniqueTileArray = [];
-    var loc = parseInt(activeUnit.Location);
+    var Loc = parseInt(activeUnit.Loc);
     var inRange = [];
   
     for (var i=0; i<400; i++) {
@@ -1095,19 +1095,19 @@ function applySwarmDamage(player, damagedArray) {
 
     for (var i=0; i<damagedArray.length; i++) {
         for (var k=0; k<otherPlayerObj.troops.length; k++) {
-            if (damagedArray[i] == otherPlayerObj.troops[k].Location) {
+            if (damagedArray[i] == otherPlayerObj.troops[k].Loc) {
                 var targetedEnemy = otherPlayerObj.troops[k];
-                var health = parseInt(otherPlayerObj.troops[k].HealthPoints);
-                health -= 20;
-                otherPlayerObj.troops[k].HealthPoints = health;
-                if (health <= 0) {
+                var Health = parseInt(otherPlayerObj.troops[k].HealthPoints);
+                Health -= 20;
+                otherPlayerObj.troops[k].HealthPoints = Health;
+                if (Health <= 0) {
                     determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player);
-                    clearTileInnerHtml(targetedEnemy.Location, player);
+                    clearTileInnerHtml(targetedEnemy.Loc, player);
                 }
             }
         }
           //if the attack hit the enemy base
-          if (damagedArray[i] == otherPlayerObj.base.Location) {
+          if (damagedArray[i] == otherPlayerObj.base.Loc) {
             var targetedEnemy = otherPlayerObj.base;
             var baseHealth = parseInt(otherPlayerObj.base.HealthPoints);
             baseHealth -= 20;
@@ -1115,7 +1115,7 @@ function applySwarmDamage(player, damagedArray) {
             updateAttackedBaseHealth(otherPlayer, baseHealth);
             if (baseHealth <= 0) {
                 determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player);
-                clearTileInnerHtml(targetedEnemy.Location, player);
+                clearTileInnerHtml(targetedEnemy.Loc, player);
             }
         }
     }
@@ -1164,7 +1164,7 @@ function applyDepthChargeStun(player, stunnedArray) {
 
     for (var i=0; i<stunnedArray.length; i++) {
         for (var k=0; k<otherPlayerObj.troops.length; k++) {
-            if (stunnedArray[i] == otherPlayerObj.troops[k].Location) {
+            if (stunnedArray[i] == otherPlayerObj.troops[k].Loc) {
                 var cooldown = parseInt(otherPlayerObj.troops[k].Cooldown);
                 cooldown += 1;
                 otherPlayerObj.troops[k].Cooldown = cooldown;
@@ -1216,19 +1216,19 @@ function applyBombardierDamage(player, damagedArray) {
 
     for (var i=0; i<damagedArray.length; i++) {
         for (var k=0; k<otherPlayerObj.troops.length; k++) {
-            if (damagedArray[i] == otherPlayerObj.troops[k].Location) {
+            if (damagedArray[i] == otherPlayerObj.troops[k].Loc) {
                 var targetedEnemy = otherPlayerObj.troops[k];
-                var health = parseInt(otherPlayerObj.troops[k].HealthPoints);
-                health -= 25;
-                otherPlayerObj.troops[k].HealthPoints = health;
-                if (health <= 0) {
+                var Health = parseInt(otherPlayerObj.troops[k].HealthPoints);
+                Health -= 25;
+                otherPlayerObj.troops[k].HealthPoints = Health;
+                if (Health <= 0) {
                     determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player);
-                    clearTileInnerHtml(targetedEnemy.Location, player);
+                    clearTileInnerHtml(targetedEnemy.Loc, player);
                 }
             }
         }
         //if the attack hit the enemy base
-        if (damagedArray[i] == otherPlayerObj.base.Location) {
+        if (damagedArray[i] == otherPlayerObj.base.Loc) {
             var targetedEnemy = otherPlayerObj.base;
             var baseHealth = parseInt(otherPlayerObj.base.HealthPoints);
             baseHealth -= 25;
@@ -1236,7 +1236,7 @@ function applyBombardierDamage(player, damagedArray) {
             updateAttackedBaseHealth(otherPlayer, baseHealth);
             if (baseHealth <= 0) {
                 determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player);
-                clearTileInnerHtml(targetedEnemy.Location, player);
+                clearTileInnerHtml(targetedEnemy.Loc, player);
             }
         }
     }

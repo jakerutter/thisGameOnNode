@@ -2,9 +2,9 @@
 
 function getHomeBaseObjects(player) {
     if (player == 1){
-        var location = document.getElementById('playerBaseLocation').innerHTML;
+        var location = document.getElementById('playerBaseLoc').innerHTML;
     } else {
-        var location = document.getElementById('playerBaseLocation2').innerHTML;
+        var location = document.getElementById('playerBaseLoc2').innerHTML;
     }
 
     var HomeBase = {
