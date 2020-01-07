@@ -80,11 +80,11 @@
     <button id="btnToggleChat" onclick="toggleChat();" class="round-5 greenBackground whiteText hidden">Chat</button>
 
     <div id="outterLeftDiv" class="col-2-10 whiteText">
-        <div id="leftSideBar">
-        <h3 id="leftSideBarH3" class="hidden"> ............... Additional Game Data ...............</h3>
+        <div id="leftSideBar" class="col-1-1">
+        <h3 id="leftSideBarH3" class="hidden col-1-1"> ............ Additional Game Data ............</h3>
             <div class="col-1-2">
                 <span id="playerNameDisplay" class="bottomSpacer"></span>
-                <span id="baseLocationDisplay" class="bottomSpacer"></span>
+                <span id="baseLocDisplay" class="bottomSpacer"></span>
             </div>
             <div class="col-1-2">
                 <span id="turnIndicator" class="bottomSpacer"></span>
@@ -176,7 +176,7 @@
 
 
   <div id="settingsModal" class="modal center round-10 hidden"><h1>About this Game</h1>
-      <div><h3>Find the opposing base and destroy it.</h3></div>
+      <div><h3>Find the opposing base and destroy it -or- kill all enemy units to win.</h3></div>
           <div><h4>Cooldowns are triggered for units with unique moves, when that unique move is used.</h4></div>
           <div><h5>Each unit has a "perceived value" (PV) assigned to them. When both players choose their units, the player with the lowest
               PV gets to go first.
@@ -273,7 +273,8 @@
 <div id="numberOfPlayers" class="hidden"></div>
 <div id="playerColorSelection" class="hidden"></div>
 <div id="playerNameSelection" class="hidden"></div>
-<div id="playerBaseLocation" class="hidden"></div>
+<div id="playerBaseLoc" class="hidden"></div>
+<div id="playerBaseLoc2" class="hidden"></div>
 <div id="playerTroopSelection" class="hidden"></div>
 <div id="playerObj" class="hidden"></div>
 
