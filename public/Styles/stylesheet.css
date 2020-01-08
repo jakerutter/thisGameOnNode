@@ -414,3 +414,8 @@ button.link:hover {
 #mobileMessages { list-style-type: none; padding: 0; max-height:270px; height:270px; overflow-y: auto; }
 #mobileMessages li { padding: 5px 10px; }
 #mobileMessages { margin-bottom: 40px }
+
+#settingsModal div{
+    padding-left: 10px;
+    padding-right: 10px;
+}
