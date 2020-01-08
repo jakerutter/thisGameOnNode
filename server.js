@@ -42,197 +42,226 @@ io.sockets.on('connection', function (socket) {
   io.sockets.emit('broadcast',{ description: clientCount + ' clients connected!'});
   io.sockets.emit('usernames-taken', users);
 
-  socket.on('disconnect', function() {
-    clientCount -=1;
-    console.log(clientCount + ' number of clients connected. Less than we had before.');
-    io.emit('broadcast',{ description: clientCount + ' clients connected!'});
-    users = users.filter(function(item) {
-      return item.nickname !== socket.nickname;
-    });
-    io.emit('all-users', users);
+socket.on('disconnect', function() {
+  clientCount -=1;
+  console.log(clientCount + ' number of clients connected. Less than we had before.');
+  io.emit('broadcast',{ description: clientCount + ' clients connected!'});
+  users = users.filter(function(item) {
+    return item.nickname !== socket.nickname;
   });
+  io.emit('all-users', users);
+});
 
-    // Join private room
-    socket.on('join-private', function(data) {
-      socket.join('private');
-      console.log(data + ' joined private');
-      io.emit('all-users', users);
-      //send both players that joined private to the game html page - or change the html rendered
-      var newHtml = app.get('/', function(req, res) {
-        res.sendFile(path.join(__dirname, '../public/', 'game1.html'));
-        });
-        io.in('private').emit('new-game-html', 'woo');
+// Join private room
+socket.on('join-private', function(data) {
+  socket.join('private');
+  console.log(data + ' joined private');
+  io.emit('all-users', users);
+  //send both players that joined private to the game html page - or change the html rendered
+  var newHtml = app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, '../public/', 'game1.html'));
     });
+    io.in('private').emit('new-game-html', 'woo');
+});
+
+socket.on('private-chat', function(data) {
+  socket.broadcast.to('private').emit('show-message', data.message);
+});
+
+// Show all users when first logged on
+socket.on('get-users', function(data) {
+  io.emit('all-users', users);
+});
+
+// When new socket joins
+socket.on('join', function(data) {
+  console.log('this is data.nickname value inside of join on server side ' + data.name);
+  socket.nickname = data.name;
+  // users[socket.nickname] = socket; 
+  userObj = {
+    nickname: data.name,
+    socketid: socket.id
+  }
+  users.push(userObj);
+  console.log('a user joined!! -----> current users:');
+  console.log(users);
+  io.emit('usernames-taken', users);
+  io.emit('all-users', users);
+});
+
+// Send a message
+socket.on('send-message', function(data, sender) {
+  console.log(data);
+  io.emit('message-received', data, sender);
+});
+
+// Send a message
+socket.on('mobile-send-message', function(data, Color) {
+  console.log(data + " ...and color is "+ Color);
+  io.emit('mobile-message-received', data, Color);
+});
   
-    socket.on('private-chat', function(data) {
-      socket.broadcast.to('private').emit('show-message', data.message);
+// Send a 'like' to the user of your choice
+socket.on('send-like', function(data) {
+  console.log(data);
+  console.log(data.like);
+  console.log(data.from);
+  socket.broadcast.to(data.like).emit('user-liked', data);
+});
+
+socket.on('extend-challenge', function(name, challenged) {
+  console.log(name + ' has challenged ' + challenged + ' to a game. Begin game protocols.');
+  //send challenge to the player who has been challenged
+  io.emit('check-challenge-response', name, challenged);
+});
+
+socket.on('challenge-accepted', function(name, challenger) {
+  //This will create the default user objects and populate the gameObj
+  createDefaultGameObject(name,challenger, gameObj);
+  privateUsers.push(name);
+  privateUsers.push(challenger);
+  console.log(name + ' ACCEPTED challenge from ' + challenger);
+  io.emit('challenger-join-private', challenger, name);
+  io.emit('update-users-challenge-accepted', name, challenger);
+  //remove both players from users list as i dont want them visible in the main chat room.
+  users = users.filter(function(item) {
+    return item.nickname !== name;
     });
+  users = users.filter(function(item) {
+    return item.nickname !== challenger;
+    });
+});
+
+socket.on('challenge-refused', function(name, challenger) {
+  console.log(name + ' REFUSED challenge from ' + challenger);
+  io.emit('update-users-challenge-refused', name, challenger);
+});
+
+socket.on('first-color-selected', function(name, chosenColor) {
+  console.log('first player ' + name + ' has chosen '+ chosenColor +' as their color.');
+  io.emit('first-color-has-been-selected', name, chosenColor, privateUsers);
+  addColorToUserObj(name, chosenColor, gameObj);
+});
+
+socket.on('second-color-selected', function(name, chosenColor) {
+  console.log('second player ' + name + ' has chosen '+ chosenColor +' as their color.');
+  io.emit('second-color-has-been-selected', name, chosenColor, privateUsers);
+  addColorToUserObj(name, chosenColor, gameObj);
+});
   
-    // Show all users when first logged on
-    socket.on('get-users', function(data) {
-      io.emit('all-users', users);
-    });
+socket.on('first-base-selected', function(loc, name, bx, by) {
+  console.log(name + ' has selected this Location for their base '+ loc);
+  console.log('1st NOT COMPARED / VERIFIED');
+  addBaseLocationToUserObj(name, loc, bx, by, gameObj);
   
-    // When new socket joins
-    socket.on('join', function(data) {
-      console.log('this is data.nickname value inside of join on server side ' + data.name);
-      socket.nickname = data.name;
-      // users[socket.nickname] = socket; 
-      userObj = {
-        nickname: data.name,
-        socketid: socket.id
-      }
-      users.push(userObj);
-      console.log('a user joined!! -----> current users:');
-      console.log(users);
-      io.emit('usernames-taken', users);
-      io.emit('all-users', users);
-    });
+  var tiles = updateVisibilityForBase(loc);
+  gameObj[name].visibleTiles = tiles;
+  // console.log(tiles);
+  io.emit('first-base-has-been-selected', name, privateUsers, tiles);
+});
+
+socket.on('second-base-selected', function(loc, name, bx, by) {
+  console.log(name + ' has selected this Location for their base '+ loc);
+  console.log('2nd NOT COMPARED / VERIFIED');
   
-    // Send a message
-    socket.on('send-message', function(data, sender) {
-      console.log(data);
-      io.emit('message-received', data, sender);
-    });
-  
-    // Send a message
-    socket.on('mobile-send-message', function(data, Color) {
-      console.log(data + " ...and color is "+ Color);
-      io.emit('mobile-message-received', data, Color);
-    });
-      
-    // Send a 'like' to the user of your choice
-    socket.on('send-like', function(data) {
-      console.log(data);
-      console.log(data.like);
-      console.log(data.from);
-      socket.broadcast.to(data.like).emit('user-liked', data);
-    });
-  
-    socket.on('extend-challenge', function(name, challenged) {
-      console.log(name + ' has challenged ' + challenged + ' to a game. Begin game protocols.');
-      //send challenge to the player who has been challenged
-      io.emit('check-challenge-response', name, challenged);
-    });
-  
-    socket.on('challenge-accepted', function(name, challenger) {
-      //This will create the default user objects and populate the gameObj
-      createDefaultGameObject(name,challenger, gameObj);
-      privateUsers.push(name);
-      privateUsers.push(challenger);
-      console.log(name + ' ACCEPTED challenge from ' + challenger);
-      io.emit('challenger-join-private', challenger, name);
-      io.emit('update-users-challenge-accepted', name, challenger);
-      //remove both players from users list as i dont want them visible in the main chat room.
-      users = users.filter(function(item) {
-        return item.nickname !== name;
-        });
-      users = users.filter(function(item) {
-        return item.nickname !== challenger;
-        });
-    });
+  addBaseLocationToUserObj(name, loc, bx, by, gameObj);
+  var basesAccepted = compareBaseLocations(gameObj);
 
-    socket.on('challenge-refused', function(name, challenger) {
-      console.log(name + ' REFUSED challenge from ' + challenger);
-      io.emit('update-users-challenge-refused', name, challenger);
-    });
+  if (basesAccepted) {
+    //passed validation
+    console.log('2 bases chosen. PASS');
+    var tiles = updateVisibilityForBase(loc);
+    gameObj[name].visibleTiles = tiles;
+    io.emit('second-base-has-been-selected-pass', name, privateUsers, tiles);
 
-    socket.on('first-color-selected', function(name, chosenColor) {
-      console.log('first player ' + name + ' has chosen '+ chosenColor +' as their color.');
-      io.emit('first-color-has-been-selected', name, chosenColor, privateUsers);
-      addColorToUserObj(name, chosenColor, gameObj);
-    });
+  } else {
+    //failed validation - clear visibleTiles and reset
+    let opponentArray = privateUsers.filter(function(x) { return x !== username});
+    let opponent = opponentArray[0];
 
-    socket.on('second-color-selected', function(name, chosenColor) {
-      console.log('second player ' + name + ' has chosen '+ chosenColor +' as their color.');
-      io.emit('second-color-has-been-selected', name, chosenColor, privateUsers);
-      addColorToUserObj(name, chosenColor, gameObj);
-    });
-  
-    socket.on('first-base-selected', function(loc, name, bx, by) {
-      console.log(name + ' has selected this Location for their base '+ loc);
-      console.log('1st NOT COMPARED / VERIFIED');
-      addBaseLocationToUserObj(name, loc, bx, by, gameObj);
-      var tiles = updateVisibilityForBase(loc);
-      // console.log(tiles);
-      io.emit('first-base-has-been-selected', name, privateUsers, tiles);
-    });
+    gameObj[opponent].visibleTiles = "";
+    gameObj[name].visibleTiles = "";
 
-    socket.on('second-base-selected', function(loc, name, bx, by) {
-      console.log(name + ' has selected this Location for their base '+ loc);
-      console.log('2nd NOT COMPARED / VERIFIED');
-      
-      addBaseLocationToUserObj(name, loc, bx, by, gameObj);
-      var basesAccepted = compareBaseLocations(gameObj);
-
-      if (basesAccepted) {
-        //passed validation
-        console.log('2 bases chosen. PASS');
-        var tiles = updateVisibilityForBase(loc);
-        io.emit('second-base-has-been-selected-pass', name, privateUsers, tiles);
-
-      } else {
-        //failed validation
-        console.log('2 bases chosen. FAIL. RESET.');
-        //clear the values for base placement
-        gameObj['stage'] = 'TwoColorsSelected';
-        addBaseLocationToUserObj(privateUsers[0], '','', '', gameObj);
-        addBaseLocationToUserObj(privateUsers[1], '','', '', gameObj);
-        
-        io.emit('second-base-has-been-selected-fail', privateUsers);
-      }
-    });
-
-    socket.on('add-troops-to-gameObj', function(name, troopArray){
-      addTroopsToGameObject(name, troopArray, gameObj);
-    });
-
-    socket.on('update-troop-loc', function(username, unitName, node){ 
-
-      var visibleTileArray = serverUpdateTroopLocation(username, unitName, node, gameObj);
-      serverUpdateVisibleTiles(username, visibleTileArray, gameObj);
-    });
+    console.log('2 bases chosen. FAIL. RESET.');
+    //clear the values for base placement
+    gameObj['stage'] = 'TwoColorsSelected';
+    addBaseLocationToUserObj(privateUsers[0], '','', '', gameObj);
+    addBaseLocationToUserObj(privateUsers[1], '','', '', gameObj);
     
-    //use this function to call a client side function for the other player
-    socket.on('cross-server-control', function(name, functionToRun, arg1, arg2){
-      console.log('in server.js, supposed to call '+ functionToRun + ' for user: ' +name);
-      // controlOtherClientThroughServer(name, functionToRun, userObj);
-      var socketid = userObj[socketid];
-      socket.broadcast.to(socketid).emit('run-function', username, functionToRun, arg1, arg2);
-    });
+    io.emit('second-base-has-been-selected-fail', privateUsers);
+  }
+});
 
-    socket.on('signal-turn-over', function(username){
-      console.log(username +'\'s turn is coming to an end.');
-      let currentPlayerArray = privateUsers.filter(function(x) { return x !== username});
-      let currentPlayer = currentPlayerArray[0];
-      console.log('it should now be ' + currentPlayer +'\'s turn');
-      io.emit('set-current-player', currentPlayer);
-      
-    });
+socket.on('add-troops-to-gameObj', function(name, troopArray){
+  addTroopsToGameObject(name, troopArray, gameObj);
+});
 
-    socket.on('send-attack-to-server', function(username, unitName, id){
-      console.log(username + ' has attacked location ' + id + ' with ' + unitName);
-      let opponentArray = privateUsers.filter(function(x) { return x !== username});
-      let opponent = opponentArray[0];
+socket.on('update-troop-loc', function(username, unitName, node){ 
 
-      let unitPresent = isUnitAtLocation(opponent, id);
-      console.log('unit is found to attack?' + unitPresent);
-      //unit not at Location. pass turn to other player
-      if(unitPresent){
-        let troopObj = attackEnemyUnit(username, opponent, unitName, id);
-        io.emit('update-client-post-attack', opponent, troopObj);
-      }
+  var visibleTileArray = serverUpdateTroopLocation(username, unitName, node, gameObj);
+  serverUpdateVisibleTiles(username, visibleTileArray, gameObj);
+});
 
-      console.log('attack over, calling set-current-player to '+ opponent);
-      io.emit('set-current-player', opponent);
+//use this function to call a client side function for the other player
+socket.on('cross-server-control', function(name, functionToRun, arg1, arg2){
+  console.log('in server.js, supposed to call '+ functionToRun + ' for user: ' +name);
+  // controlOtherClientThroughServer(name, functionToRun, userObj);
+  var socketid = userObj[socketid];
+  socket.broadcast.to(socketid).emit('run-function', username, functionToRun, arg1, arg2);
+});
 
-    });
+socket.on('signal-turn-over', function(username){
+  console.log(username +'\'s turn is coming to an end.');
+  let currentPlayerArray = privateUsers.filter(function(x) { return x !== username});
+  let currentPlayer = currentPlayerArray[0];
+  console.log('it should now be ' + currentPlayer +'\'s turn');
+  io.emit('set-current-player', currentPlayer);
+  
+});
 
-    socket.on('remove-moved-unit', function(id, username){
-      let opponentArray = privateUsers.filter(function(x) { return x !== username});
-      let opponent = opponentArray[0];
-      io.emit('remove-unit-from-board-for-user', id, opponent);
-    });
+socket.on('send-attack-to-server', function(username, unitName, id){
+  console.log(username + ' has attacked location ' + id + ' with ' + unitName);
+  let opponentArray = privateUsers.filter(function(x) { return x !== username});
+  let opponent = opponentArray[0];
+
+  let unitPresent = isUnitAtLocation(opponent, id);
+  console.log('unit is found to attack?' + unitPresent);
+  //unit not at Location. pass turn to other player
+  if(unitPresent){
+    let troopObj = attackEnemyUnit(username, opponent, unitName, id);
+    io.emit('update-client-post-attack', opponent, troopObj);
+  }
+
+  let gameOver = checkForGameOver();
+
+  if (!gameOver){
+    console.log('attack over, calling set-current-player to '+ opponent);
+    io.emit('set-current-player', opponent);
+  } else {
+    // TODO - game is over, trigger win/lose
+  }
+});
+
+socket.on('remove-moved-unit', function(id, username){
+  let opponentArray = privateUsers.filter(function(x) { return x !== username});
+  let opponent = opponentArray[0];
+  io.emit('remove-unit-from-board-for-user', id, opponent);
+});
+
+
+socket.on('send-swarm-to-server', function(username, damagedArray){
+  let opponentArray = privateUsers.filter(function(x) { return x !== username});
+  let opponent = opponentArray[0];
+
+  let visibleArray = gameObj[username].visibleTiles;
+  visibleArray = visibleArray.concat(damagedArray);
+  visibleArray = returnArrayWithoutDuplicates(visibleArray);
+
+  serverUpdateVisibleTiles(username, visibleArray, gameObj);
+
+  let playerObj = applySwarmDamage(opponent, damagedArray);
+  io.emit('update-client-post-attack', opponent, playerObj);
+});
 
 
 
@@ -305,7 +334,6 @@ function createDefaultGameObject(name, challenger, gameObj) {
     return gameObj;
 }
 
-//TEST - testing this out with troops as an array much like expected by the client side object
 function createDefaultUserObject(user) {
   user = {'Name': user};
   user.troopsPlaced = 0;
@@ -377,7 +405,6 @@ function deleteFromGameObj(key, id) {
   return gameObj;
 }
 
-//TEST testing this with troops as an array like it was on the client side
 function addTroopsToGameObject(username, troopArray, gameObj) {
   //converting troopArray to an object of troop Objects
   for (let i=0; i<troopArray.length; i++){
@@ -391,13 +418,11 @@ function addTroopsToGameObject(username, troopArray, gameObj) {
 
 function serverUpdateTroopLocation(username, name, node, gameObj) {
   //name is the name of the troop being updated
-  //TEST testing the troop in an array
   for(let i=0; i<gameObj[username].troops.length; i++){
     if(gameObj[username].troops[i].Name == name){
       gameObj[username].troops[i].Loc = node;
     }
   }
-  //gameObj[username].troops[name].Loc = node;
 
   // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
   console.log(username + ' moved their '+ name + ' to '+ node);
@@ -454,7 +479,7 @@ function updateVisibilityForTroops(username) {
   } else {
       var visibleTileArray = visibleArray;
   }
-  //TEST - testing this with array for troops
+
   for (let i=0; i<gameObj[username].troops.length; i++) {
 
       var troopLocation = gameObj[username].troops[i].Loc;
@@ -483,15 +508,17 @@ function updateVisibilityForTroops(username) {
 }
 
 function serverUpdateVisibleTiles(username, visibleTileArray, gameObj) {
-  //console.log('inside serverUpdateVisibleTiles!! about to call makeVisibleOtherPlayersUnits');
+
   var otherPlayer = privateUsers.filter(function(x) { return x !== username});
   otherPlayer = otherPlayer[0];
+
   //server update the visible tiles for a specific player
   gameObj[username].visibleTiles = visibleTileArray;
+  io.emit('update-visible-tiles', username, visibleTileArray);
+
   makeVisibleOtherPlayersUnits(username, gameObj, privateUsers);
   makeVisibleOtherPlayersUnits(otherPlayer, gameObj, privateUsers);
-  // console.log(JSON.stringify(gameObj, null, 4));    --uncomment to see gameObj
-  // console.log(visibleTileArray);                    --uncomment to see visibleTiles
+
   return gameObj;
 }
 
@@ -502,9 +529,6 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
   otherPlayer = otherPlayer[0];
   let visibleTileArray = gameObj[username].visibleTiles;
   var makeKnown = [];
-  // console.log(otherPlayer);
-  // console.log(gameObj[otherPlayer].base.Loc);
-  // console.log(gameObj[otherPlayer]);
  
   for (var k=0; k<visibleTileArray.length; k++) {
     for (let i=0; i<gameObj[otherPlayer].troops.length; i++) {
@@ -537,7 +561,7 @@ function makeVisibleOtherPlayersUnits(username, gameObj, privateUsers) {
       makeKnown.push(visibleItem);
     } 
   }
-    // console.log('inside makeVisibleOtherPlayersUnits and makeKnkown length is...'+ makeKnown.length);
+
     //send the data to the client to render
     if (makeKnown.length > 0) {
       io.emit('render-enemy-units', username, makeKnown);
@@ -558,8 +582,7 @@ function calculateStartingPlayer(gameObj, privateUsers) {
   //in case of tie, random number will decide.
     var PV = Number(gameObj[username].PV);
     for(var value in gameObj[username].troops) {
-      // console.log(value + ' is value in calculateStartingPlayer');  --additional logging for PV
-      // console.log(gameObj[username].troops[value].PerceivedValue + ' is PV for ' + value);
+
       PV = PV + Number(gameObj[username].troops[value].PerceivedValue);
     }
     //assign new value
@@ -581,7 +604,6 @@ function calculateStartingPlayer(gameObj, privateUsers) {
     }
       console.log('logging inside calculateStartingPlayer.... starting player is ' + startingPlayer);
       setStartingPlayer(startingPlayer, privateUsers);
-    // console.log(JSON.stringify(gameObj, null, 4));  --uncomment to see gameObj. has long list of visible tiles here on.
 
   return gameObj;
 }
@@ -629,7 +651,6 @@ function convertIdToCoordinates(id) {
 }
 
 function returnArrayWithoutDuplicates(a) {
-  //console.log(a);
   return Array.from(new Set(a));
 }
 
@@ -653,14 +674,14 @@ function isUnitAtLocation(username, id){
 function attackEnemyUnit(username, opponent, unitName, id){
   var troopHealthPostAttack;
   let troopObj = gameObj[opponent].troops;
-  let unit = gameObj[username].troops.filter(function (item) {
+  let attackingUnit = gameObj[username].troops.filter(function (item) {
     return item.Name == unitName;
   });
-  unit = unit[0];
+  attackingUnit = attackingUnit[0];
 
-  for (let i=0; i<troopObj.length; i++) {
+  for (let i=troopObj.length-1; i>=0; i--) {
     if (troopObj[i].Loc == id) {
-      troopObj[i].HealthPoints -= unit.AttackDamage;
+      troopObj[i].HealthPoints -= attackingUnit.AttackDamage;
       troopHealthPostAttack = troopObj[i].HealthPoints;
       
       // delete killed unit
@@ -670,44 +691,101 @@ function attackEnemyUnit(username, opponent, unitName, id){
         delete troopObj[i];
       }
 
-      console.log(troopObj[i].HealthPoints + ' is hp and ' + unit.AttackDamage + ' is attack dmg');
+      console.log(troopObj[i].HealthPoints + ' is hp and ' + attackingUnit.AttackDamage + ' is attack dmg');
     }
   }
     // subtract Health frome base if base is hit
   if(gameObj[opponent].base.Loc == id){
     gameObj[opponent].base.HealthPoints -= gameObj[username].troops[unitName].AttackDamage;
+    updateBaseTooltip(opponent);
   }
   // TODO if base is killed end game
 
   if (troopHealthPostAttack > 0){
-      var MyUnitImage = createFriendlyToolTip(opponent, id);
-      var EnemyUnitImage = createEnemyToolTip(opponent, id);
+      var MyUnitImage = updateFriendlyUnitImgAndTooltip(opponent, id);
+      var EnemyUnitImage = updateEnemyUnitImgAndTooltip(opponent, id);
       io.emit('update-tooltips-post-attack', username, MyUnitImage, EnemyUnitImage, id);
   }  
   return gameObj[opponent];
 }
 
-function createFriendlyToolTip(opponent, id){
+function updateBaseTooltip(opponent){
+  let baseHealth = gameObj[opponent].base.HealthPoints;
+  let loc = gameObj[opponent].base.Loc;
+  io.emit('update-base-title', opponent, baseHealth, loc);
+}
+
+function updateFriendlyUnitImgAndTooltip(opponent, id){
   var unitImage;
 
-  for (let i=0; i<gameObj[opponent].troops.length; i++) {
-    if (gameObj[opponent].troops[i].Loc == id) {
-      let title = gameObj[opponent].troops[i].Name + ", "+gameObj[opponent].troops[i].HealthPoints+" / "+gameObj[opponent].troops[i].MaxHealth+" Health Points";
-      unitImage = "<img style='height: 100%; width: 100%;' id='player1"+gameObj[opponent].troops[i].Name+"' src='/Assets/"+gameObj[opponent].troops[i].Name+gameObj[opponent].Color+".png' title='"+title+"'></img>";
+  gameObj[opponent].troops.forEach(function(item) {
+    if (item.Loc == id) {
+      let title = item.Name + ", "+item.HealthPoints+" / "+item.MaxHealth+" Health Points";
+      unitImage = "<img style='height: 100%; width: 100%;' id='player1"+item.Name+"' src='/Assets/"+item.Name+gameObj[opponent].Color+".png' title='"+title+"'></img>";
     }
-  }
+  })
   return unitImage;
 }
 
-function createEnemyToolTip(opponent, id){
+function updateEnemyUnitImgAndTooltip(opponent, id){
   var unitImage;
 
-  for (let i=0; i<gameObj[opponent].troops.length; i++) {
-    if (gameObj[opponent].troops[i].Loc == id) {
-      let title = "Enemy "+gameObj[opponent].troops[i].Name + ", "+gameObj[opponent].troops[i].HealthPoints+" / "+gameObj[opponent].troops[i].MaxHealth+" Health Points";
-      unitImage = "<img style='height: 100%; width: 100%;' id='player1"+gameObj[opponent].troops[i].Name+"' src='/Assets/"+gameObj[opponent].troops[i].Name+gameObj[opponent].Color+".png' title='"+title+"'></img>";
+  gameObj[opponent].troops.forEach(function(item) {
+    if (item.Loc == id) {
+      let title = "Enemy "+item.Name + ", "+item.HealthPoints+" / "+item.MaxHealth+" Health Points";
+      unitImage = "<img style='height: 100%; width: 100%;' id='player1"+item.Name+"' src='/Assets/"+item.Name+gameObj[opponent].Color+".png' title='"+title+"'></img>";
     }
-  }
+  })
   return unitImage;
+}
+
+// TODO complete this function
+// - check gameObj to see if either base is dead or either player has 0 units left
+function  checkForGameOver(){
+  return false;
+}
+
+// UNIQUE MOVES
+function applySwarmDamage(userToDamage, damagedArray) {
+  var playerObj = gameObj[userToDamage];
+
+  for (var i=0; i<damagedArray.length; i++) {
+
+      playerObj.troops.forEach(function(item, index) {
+
+        //console.log(item.Loc + ' is the Loc of ' + item.Name);
+        if (damagedArray[i] == item.Loc) {
+            var health = parseInt(item.HealthPoints);
+            health -= 20;
+            playerObj.troops[index].HealthPoints = health;
+
+            if (health <= 0) {
+              // unit is dead, remove it from game
+              console.log('removing '+ item.Name + ' from gameObj. It\s been killed.');
+              io.emit('remove-unit-from-board', item.Loc);
+              delete playerObj.troops[index];
+            } else {
+              let id = damagedArray[i];
+              var MyUnitImage = updateFriendlyUnitImgAndTooltip(userToDamage, id);
+              var EnemyUnitImage = updateEnemyUnitImgAndTooltip(userToDamage, id);
+              io.emit('update-tooltips-post-attack', userToDamage, MyUnitImage, EnemyUnitImage, id);
+            }
+        }
+
+        //if the attack hit the enemy base
+        if (damagedArray[i] == playerObj.base.Loc) {
+          var baseHealth = parseInt(playerObj.base.HealthPoints);
+          baseHealth -= 20;
+          playerObj.base.HealthPoints = baseHealth;
+          updateBaseTooltip(userToDamage);
+
+          if (baseHealth <= 0) {
+              //TODO trigger game over!
+          }
+        }
+    })
+  }
+  gameObj[userToDamage] = playerObj;
+  return playerObj;
 }
 
