@@ -43,7 +43,7 @@ function populateTroopDetailModalInGame(name){
     //hide the return to troop selection modal, show the return to game button
     document.getElementById("inGameTroopDetailButton").classList.remove("hidden");
     document.getElementById("preGameTroopDetailButton").classList.add("hidden");
-   
+
     var color = document.getElementById('playerColorSelection').innerHTML;
 
     name = name.toLowerCase();
@@ -85,11 +85,11 @@ function populateScout(name, color, time) {
 
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ scoutStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit: " + scoutStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + scoutStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + scoutStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + scoutStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + scoutStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + scoutStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + scoutStats.AttackDamage + ".</li>" +
@@ -107,14 +107,14 @@ function populateDepthCharge(name, color, time) {
 
     document.getElementById('troopNameHeader').innerHTML = "Depth Charge";
     var depthChargeStats = createDepthCharge();
-    
+
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px';   
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ depthChargeStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + depthChargeStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + depthChargeStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + depthChargeStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + depthChargeStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + depthChargeStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + depthChargeStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + depthChargeStats.AttackDamage + ".</li>" +
@@ -126,20 +126,20 @@ function populateDepthCharge(name, color, time) {
     $("#troopDetailModal").modal();
 }
 
-function populateDestroyer(name, color, time) { 
+function populateDestroyer(name, color, time) {
     var picName = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(picName, color);
 
     document.getElementById('troopNameHeader').innerHTML = "Destroyer";
     var destroyerStats = createDestroyer();
-       
+
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ destroyerStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + destroyerStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + destroyerStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + destroyerStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + destroyerStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + destroyerStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + destroyerStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + destroyerStats.AttackDamage + ".</li>" +
@@ -151,20 +151,20 @@ function populateDestroyer(name, color, time) {
     $("#troopDetailModal").modal();
 }
 
-function populateSwarm(name, color, time) { 
+function populateSwarm(name, color, time) {
     var picName = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(picName, color);
 
     document.getElementById('troopNameHeader').innerHTML = "Swarm";
     var swarmStats = createSwarm();
-        
+
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ swarmStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + swarmStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + swarmStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + swarmStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + swarmStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + swarmStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + swarmStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + swarmStats.AttackDamage + ".</li>"+
@@ -174,22 +174,22 @@ function populateSwarm(name, color, time) {
     document.getElementById('troopDetailModal').classList.add('table');
     document.getElementById('troopDetailModal').classList.remove('hidden');
     $("#troopDetailModal").modal();
-} 
+}
 
-function populateScan(name, color, time) { 
+function populateScan(name, color, time) {
     var picName = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(picName, color);
 
     document.getElementById('troopNameHeader').innerHTML = "Scan";
     var scanStats = createScan();
-    
+
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ scanStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + scanStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + scanStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + scanStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + scanStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + scanStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + scanStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + scanStats.AttackDamage + ".</li>" +
@@ -199,9 +199,9 @@ function populateScan(name, color, time) {
     document.getElementById('troopDetailModal').classList.add('table');
     document.getElementById('troopDetailModal').classList.remove('hidden');
     $("#troopDetailModal").modal();
-} 
+}
 
-function populateRuskie(name, color, time) { 
+function populateRuskie(name, color, time) {
     var picName = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(picName, color);
 
@@ -210,11 +210,11 @@ function populateRuskie(name, color, time) {
 
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ ruskieStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + ruskieStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + ruskieStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + ruskieStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + ruskieStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + ruskieStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + ruskieStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + ruskieStats.AttackDamage + ".</li>" +
@@ -224,22 +224,22 @@ function populateRuskie(name, color, time) {
     document.getElementById('troopDetailModal').classList.add('table');
     document.getElementById('troopDetailModal').classList.remove('hidden');
     $("#troopDetailModal").modal();
-} 
+}
 
-function populateGremlin(name, color, time) { 
+function populateGremlin(name, color, time) {
     var picName = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(picName, color);
 
     document.getElementById('troopNameHeader').innerHTML = "Gremlin";
     var gremlinStats = createGremlin();
-    
+
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ gremlinStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + gremlinStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + gremlinStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + gremlinStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + gremlinStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + gremlinStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + gremlinStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + gremlinStats.AttackDamage + ".</li>" +
@@ -249,25 +249,25 @@ function populateGremlin(name, color, time) {
     document.getElementById('troopDetailModal').classList.add('table');
     document.getElementById('troopDetailModal').classList.remove('hidden');
     $("#troopDetailModal").modal();
-} 
+}
 
 function getUnitPictureSrc(name, color){
     return "Assets/"+name+color+".png";
 }
-function populatePirate(name, color, time) { 
+function populatePirate(name, color, time) {
     var name = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(name.id, color);
 
     document.getElementById('troopNameHeader').innerHTML = "Pirate";
     var pirateStats = createPirate();
-        
+
     document.getElementById('troopPic').src = pictureSrc;
     document.getElementById('troopPic').style.height = '60px';
-    document.getElementById('troopPic').style.width = '40px'; 
+    document.getElementById('troopPic').style.width = '40px';
     document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ pirateStats.PerceivedValue +"</li>" +
     "<li>Visibility (tiles arware of around unit): " + pirateStats.Visibility + ".</li>" +
     "<li>Movement Distance (tiles moved per turn): " + pirateStats.MovementDistance + ".</li>" +
-    "<li>Health Points: " + pirateStats.HealthPoints + ".</li>" + 
+    "<li>Health Points: " + pirateStats.HealthPoints + ".</li>" +
     "<li>Area of Attack (number of tiles attack effects): " + pirateStats.AreaOfAttack + ".</li>" +
     "<li>Attack Range: " + pirateStats.AttackRange + ".</li>" +
     "<li>Attack Damage: " + pirateStats.AttackDamage + ".</li>" +
@@ -277,22 +277,22 @@ function populatePirate(name, color, time) {
     document.getElementById('troopDetailModal').classList.add('table');
     document.getElementById('troopDetailModal').classList.remove('hidden');
     $("#troopDetailModal").modal();
-} 
+}
 
-function populateBombardier(name, color, time) { 
+function populateBombardier(name, color, time) {
     var picName = time === "inGame" ? name : name.id;
     var pictureSrc = getUnitPictureSrc(picName, color);
 
     document.getElementById('troopNameHeader').innerHTML = "Bombardier";
     var bombardierStats = createBombardier();
-    
+
         document.getElementById('troopPic').src = pictureSrc;
         document.getElementById('troopPic').style.height = '60px';
-        document.getElementById('troopPic').style.width = '40px'; 
+        document.getElementById('troopPic').style.width = '40px';
         document.getElementById("troopStatList").innerHTML = "<li>Perceived Value is "+ bombardierStats.PerceivedValue +"</li>" +
         "<li>Visibility (tiles arware of around unit): " + bombardierStats.Visibility + ".</li>" +
         "<li>Movement Distance (tiles moved per turn): " + bombardierStats.MovementDistance + ".</li>" +
-        "<li>Health Points: " + bombardierStats.HealthPoints + ".</li>" + 
+        "<li>Health Points: " + bombardierStats.HealthPoints + ".</li>" +
         "<li>Area of Attack (number of tiles attack effects): " + bombardierStats.AreaOfAttack + ".</li>" +
         "<li>Attack Range: " + bombardierStats.AttackRange + ".</li>" +
         "<li>Attack Damage: " + bombardierStats.AttackDamage + ".</li>" +
@@ -302,14 +302,14 @@ function populateBombardier(name, color, time) {
         document.getElementById('troopDetailModal').classList.add('table');
         document.getElementById('troopDetailModal').classList.remove('hidden');
         $("#troopDetailModal").modal();
-} 
+}
 
 //These determine which troops are selected and populates returns array of troopObj (called troopArray) for gameObject
 function getTroopObjects(playerTroopSelection) {
     var troopArray = [];
     playerTroopSelection = playerTroopSelection.toString();
     var troopList = playerTroopSelection.split(",");
-    
+
     for(let i=0; i<troopList.length; i++){
         var troopObj = createTroopObject(troopList[i]);
         troopArray.push(troopObj);
@@ -361,7 +361,7 @@ function createScout() {
         Name: "Scout",
         Loc: "tbd",
         Visibility:  5,
-        MovementDistance:  5,	
+        MovementDistance:  5,
         HealthPoints: 35,
         MaxHealth: 35,
         Moves: "No Special Moves",
@@ -381,7 +381,7 @@ function createDepthCharge() {
         Name: "DepthCharge",
         Loc: "tbd",
         Visibility:  1,
-        MovementDistance:  1,	
+        MovementDistance:  1,
         HealthPoints: 15,
         MaxHealth: 15,
         Moves: "Stun: searches a 3x3 area and returns info about any units within. Also stuns those units for 1 round.",
@@ -397,12 +397,12 @@ function createDepthCharge() {
     return DepthCharge;
 }
 
-function createDestroyer() { 
+function createDestroyer() {
     var Destroyer = {
         Name: "Destroyer",
         Loc: "tbd",
         Visibility:  2,
-        MovementDistance:  2,	
+        MovementDistance:  2,
         HealthPoints: 100,
         MaxHealth: 100,
         Moves: "No Special Moves",
@@ -417,12 +417,12 @@ function createDestroyer() {
     return Destroyer;
 }
 
-function createSwarm() { 
+function createSwarm() {
     var Swarm = {
         Name: "Swarm",
         Loc: "tbd",
         Visibility:  2,
-        MovementDistance:  2,	
+        MovementDistance:  2,
         HealthPoints: 128,
         MaxHealth: 128,
         Moves: "Swarm: splits itself (and its Health) each move in order to fan out and search. Does 20 damage to any unit hit and reveals the tiles covered.",
@@ -438,12 +438,12 @@ function createSwarm() {
     return Swarm;
 }
 
-function createScan() { 
+function createScan() {
     var Scan = {
         Name: "Scan",
         Loc: "tbd",
         Visibility:  1,
-        MovementDistance:  1,	
+        MovementDistance:  1,
         HealthPoints: 15,
         MaxHealth: 15,
         Moves: "Scan: reveals a 5x5 area up to 15 tiles away from your base.",
@@ -459,12 +459,12 @@ function createScan() {
     return Scan;
 }
 
-function createRuskie() { 
+function createRuskie() {
     var Ruskie = {
         Name: "Ruskie",
         Loc: "tbd",
         Visibility:  4,
-        MovementDistance:  3,	
+        MovementDistance:  3,
         HealthPoints: 70,
         MaxHealth: 70,
         Moves: "No Special Moves.",
@@ -479,12 +479,12 @@ function createRuskie() {
     return Ruskie;
 }
 
-function createGremlin() { 
+function createGremlin() {
     var Gremlin = {
         Name: "Gremlin",
         Loc: "tbd",
         Visibility:  3,
-        MovementDistance:  3,	
+        MovementDistance:  3,
         HealthPoints: 90,
         MaxHealth: 90,
         Moves: "No Special Moves",
@@ -499,12 +499,12 @@ function createGremlin() {
     return Gremlin;
 }
 
-function createPirate() { 
+function createPirate() {
     var Pirate = {
         Name: "Pirate",
         Loc: "tbd",
         Visibility:  4,
-        MovementDistance:  4,	
+        MovementDistance:  4,
         HealthPoints: 60,
         MaxHealth: 60,
         Moves: "Pilfer: send this unit to search an area. May return all sorts of useful goods!",
@@ -520,12 +520,12 @@ function createPirate() {
     return Pirate;
 }
 
-function createBombardier() { 
+function createBombardier() {
     var Bombardier = {
         Name: "Bombardier",
         Loc: "tbd",
         Visibility:  4,
-        MovementDistance:  2,	
+        MovementDistance:  2,
         HealthPoints: 60,
         MaxHealth: 60,
         Moves: "Bomb: range attack up to 5 tiles away, attacks a 3x3 area.",
@@ -557,7 +557,7 @@ function checkCoolDown() {
 
 function displayUniqueMoveTiles(activeUnit, player) {
     var name = activeUnit.Name;
-    
+
     if (name == "DepthCharge") {
         showDepthChargeUnique(activeUnit, player);
     } else if (name == "Swarm") {
@@ -647,7 +647,7 @@ function showScanUnique(activeUnit, player) {
         $(thisDiv).on( "mouseover", function(event) {
             addColorScanUniqueTiles(activeUnit, player, boundingArray, xCoords, yCoords, coordArray);
         });
-        
+
     }
 }
 
@@ -813,22 +813,22 @@ function prepareUniqueForSwarm(activeUnit, player) {
         var startCoords = coords.split(",");
         var xValue = Number(startCoords[0]);
         var yValue = Number(startCoords[1]);
-    
+
     //for each of the cardinal tiles around swarm push it to activeArray
     //then add the styling that mark it eligible for unique move
     if ((yValue==activeUnitY) && (xValue==(activeUnitX+1))) {
         var tile = convertCoordsToId(xValue, yValue);
         activeArray.push(tile);
         document.getElementById(tile).classList.add("availableToMove");
-    } else if ((yValue==activeUnitY) && (xValue==(activeUnitX-1))) {     
+    } else if ((yValue==activeUnitY) && (xValue==(activeUnitX-1))) {
         var tile = convertCoordsToId(xValue, yValue);
         activeArray.push(tile);
         document.getElementById(tile).classList.add("availableToMove");
-    } else if ((xValue==activeUnitX) && (yValue==(activeUnitY-1))) {   
+    } else if ((xValue==activeUnitX) && (yValue==(activeUnitY-1))) {
         var tile = convertCoordsToId(xValue, yValue);
         activeArray.push(tile);
         document.getElementById(tile).classList.add("availableToMove");
-    } else if ((xValue==activeUnitX) && (yValue==(activeUnitY+1))) {    
+    } else if ((xValue==activeUnitX) && (yValue==(activeUnitY+1))) {
         var tile = convertCoordsToId(xValue, yValue);
         activeArray.push(tile);
         document.getElementById(tile).classList.add("availableToMove");
@@ -851,7 +851,7 @@ function prepareUniqueForSwarm(activeUnit, player) {
 }
 
 function addColorSwarmUniqueTiles(activeUnit, player) {
-    
+
     var playerObj = getStorage("playerObj");
     var eventValuesForXY = document.getElementById(event.currentTarget.id).dataset.coords.split(",");
     var eventXValue = parseInt(eventValuesForXY[0]);
@@ -894,7 +894,7 @@ function determinePositionRelativeToSwarmUnit(activeUnit, eventXValue, eventYVal
 }
 
 function returnTilesForSwarmUnique(position, activeUnit, player) {
-    clearPlayerColorFromMap(player);
+    clearPlayerColorFromMap();
     var playerObj = getStorage("playerObj");
     var color = playerObj.player.Color;
     //I like the idea of showing this unique move in steps as they move away from swarm but I'll add that as a feature request
@@ -904,7 +904,7 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
     var validUniqueTileArray = [];
     var Loc = parseInt(activeUnit.Loc);
     var inRange = [];
-  
+
     for (var i=0; i<400; i++) {
        var tile = convertIdToCoordinates(i);
        inRange.push(tile);
@@ -912,14 +912,14 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
     if (position == "right") {
         //displays swarm to the right of the unit
         for (var k=0; k<inRange.length; k++) {
-            for (var x=(activeUnitX+1); x<(activeUnitX+8); x++) { 
-                
+            for (var x=(activeUnitX+1); x<(activeUnitX+8); x++) {
+
                 var changeX = (x - activeUnitX);
                 var changeY = (changeX > 0) ? (changeX+1) : changeX;
                 for (var y=(activeUnitY-changeX); y<(activeUnitY+changeY); y++) {
                     let item = x+","+y;
                     if (inRange[k] == (item)) {
-                        
+
                         validUniqueTileArray.push(item);
                     }
                 }
@@ -928,14 +928,14 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
     } else if (position == "left") {
              //displays swarm to the left of the unit
             for (var k=0; k<inRange.length; k++) {
-                for (var x=(activeUnitX-7); x<(activeUnitX); x++) { 
-                    
+                for (var x=(activeUnitX-7); x<(activeUnitX); x++) {
+
                     var changeX = (activeUnitX - x);
                     var changeY = (changeX > 0) ? (changeX+1) : changeX;
                     for (var y=(activeUnitY-changeX); y<(activeUnitY+changeY); y++) {
                         let item = x+","+y;
                         if (inRange[k] == (item)) {
-                            
+
                             validUniqueTileArray.push(item);
                         }
                     }
@@ -948,10 +948,10 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
 
                     var changeY = (activeUnitY - y);
                     var changeX = (changeY > 0) ? (changeY+1) : changeY;
-                    for (var x=(activeUnitX-changeY); x<(activeUnitX+changeX); x++) { 
+                    for (var x=(activeUnitX-changeY); x<(activeUnitX+changeX); x++) {
                         let item = x+","+y;
                         if (inRange[k] == (item)) {
-                            
+
                             validUniqueTileArray.push(item);
                         }
                     }
@@ -964,10 +964,10 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
 
                 var changeY = (y - activeUnitY);
                 var changeX = (changeY > 0) ? (changeY+1) : changeY;
-                for (var x=(activeUnitX-changeY); x<(activeUnitX+changeX); x++) { 
+                for (var x=(activeUnitX-changeY); x<(activeUnitX+changeX); x++) {
                     let item = x+","+y;
                     if (inRange[k] == (item)) {
-                        
+
                         validUniqueTileArray.push(item);
                     }
                 }
@@ -985,17 +985,17 @@ function returnTilesForSwarmUnique(position, activeUnit, player) {
         }
         setStorage("validUniqueTileArray", validUniqueTileArray);
 }
-           
+
 function clearPlayerColorFromMap() {
     var playerObj = getStorage("playerObj");
-    var color = playerObj.color;
+    var color = playerObj.player.Color;
       for (var i=0; i<400; i++) {
          var tile = document.getElementById(i);
          if (tile.classList.contains("availableForUnique"+color)) {
              tile.classList.remove("availableForUnique"+color);
          }
 
-      }      
+      }
 }
 
 function clearUniqueEventHandlers() {
@@ -1006,23 +1006,23 @@ function clearUniqueEventHandlers() {
 }
 
 //do unique moves
-function routeUniqueMoveForActiveUnit(player, id) {
+function routeUniqueMoveForActiveUnit(id) {
     var activeUnit = getStorage("activeTroop");
     var name = activeUnit.Name;
     if (name == "DepthCharge") {
-        DepthChargeUniqueMove(player, id);
+        DepthChargeUniqueMove(id);
     } else if (name == "Swarm") {
-        SwarmUniqueMove(player, id);
+        SwarmUniqueMove(id);
     } else if (name == "Scan") {
-        ScanUniqueMove(player, id);
+        ScanUniqueMove(id);
     } else if (name == "Pirate") {
-        PirateUniqueMove(player, id);
+        PirateUniqueMove(id);
     } else if (name == "Bombardier") {
-        BombardierUniqueMove(player, id);
+        BombardierUniqueMove(id);
     }
 }
 
-function ScanUniqueMove(player, id) {
+function ScanUniqueMove(id) {
     var activeUnit = getStorage("activeTroop");
     var playerObj = getStorage("playerObj");
     var color = playerObj.player.Color;
@@ -1046,81 +1046,40 @@ function ScanUniqueMove(player, id) {
         }
     }
     setStorage("playerObj", playerObj);
-    clearAvailableTilesForAction(player);
-    clearPlayerColorFromMap(player);
-    clearUniqueEventHandlers(player, activeUnit);
-    updateVisibility(player);
-    processTurn(player);
+    clearAvailableTilesForAction();
+    clearPlayerColorFromMap();
+    clearUniqueEventHandlers();
+
+    processTurn();
 }
 
-function SwarmUniqueMove(player, id) {
-    var activeUnit = getStorage("activeTroop");
+function SwarmUniqueMove(id) {
+    var username = getStorage("username");
     var playerObj = getStorage("playerObj");
     var color = playerObj.player.Color;
-    var visibleArray = getStorage("visibleTiles");
     var damagedArray = [];
     //first going to try simply checking for the unique styling class to know which tiles to include
     for (var i=0; i<400; i++) {
         if ((document.getElementById(i)).classList.contains("availableForUnique"+color)) {
-            visibleArray.push(i);
             damagedArray.push(i);
         }
     }
-    returnArrayWithoutDuplicates(visibleArray);
-    //stun the units within the selected area
-    applySwarmDamage(player, damagedArray);
+
+    returnArrayWithoutDuplicates(damagedArray);
+
+    //server will damage units, update visibility, and put swarm on cooldown
+    sendSwarmToServer(username, damagedArray, id);
+
     //play swarm sound
     playSound("swarm");
-    setStorage("visibleTiles", visibleArray);
-    activeUnit.Cooldown = +1;
-    var name = activeUnit.Name;
-    //save the new info for the activeUnit into the playerObj
-    for (var i=0; i<playerObj.troops.length; i++) {
-        if (playerObj.troops[i].Name == name) {
-            playerObj.troops[i] = activeUnit;
-        }
-    }
-    setStorage("playerObj", playerObj);
-    clearAvailableTilesForAction(player);
-    clearPlayerColorFromMap(player);
-    clearUniqueEventHandlers(player, activeUnit);
-    updateVisibility(player);
-    processTurn(player);
+
+    clearAvailableTilesForAction();
+    clearPlayerColorFromMap();
+    clearUniqueEventHandlers();
+
+    processTurn();
 }
 
-function applySwarmDamage(player, damagedArray) {
-    var player = convertPlayerToNumber(player);
-    var otherPlayer = (player == 1 ? 2 : 1);
-    var otherPlayerObj = getStorage("playerObj"+otherPlayer);
-
-    for (var i=0; i<damagedArray.length; i++) {
-        for (var k=0; k<otherPlayerObj.troops.length; k++) {
-            if (damagedArray[i] == otherPlayerObj.troops[k].Loc) {
-                var targetedEnemy = otherPlayerObj.troops[k];
-                var Health = parseInt(otherPlayerObj.troops[k].HealthPoints);
-                Health -= 20;
-                otherPlayerObj.troops[k].HealthPoints = Health;
-                if (Health <= 0) {
-                    determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player);
-                    clearTileInnerHtml(targetedEnemy.Loc, player);
-                }
-            }
-        }
-          //if the attack hit the enemy base
-          if (damagedArray[i] == otherPlayerObj.base.Loc) {
-            var targetedEnemy = otherPlayerObj.base;
-            var baseHealth = parseInt(otherPlayerObj.base.HealthPoints);
-            baseHealth -= 20;
-            otherPlayerObj.base.HealthPoints = baseHealth;
-            updateAttackedBaseHealth(otherPlayer, baseHealth);
-            if (baseHealth <= 0) {
-                determineWhichUnitKilled(otherPlayerObj, targetedEnemy, player);
-                clearTileInnerHtml(targetedEnemy.Loc, player);
-            }
-        }
-    }
-    setStorage("playerObj"+otherPlayer, otherPlayerObj);
-}
 
 function DepthChargeUniqueMove(player, id) {
     var activeUnit = getStorage("activeTroop");
@@ -1150,11 +1109,11 @@ function DepthChargeUniqueMove(player, id) {
         }
     }
     setStorage("playerObj", playerObj);
-    clearAvailableTilesForAction(player);
-    clearPlayerColorFromMap(player);
-    clearUniqueEventHandlers(player, activeUnit);
-    updateVisibility(player);
-    processTurn(player);
+    clearAvailableTilesForAction();
+    clearPlayerColorFromMap();
+    clearUniqueEventHandlers();
+
+    processTurn();
 }
 
 function applyDepthChargeStun(player, stunnedArray) {
@@ -1202,11 +1161,11 @@ function BombardierUniqueMove(player, id) {
         }
     }
     setStorage("playerObj", playerObj);
-    clearAvailableTilesForAction(player);
-    clearPlayerColorFromMap(player);
-    clearUniqueEventHandlers(player, activeUnit);
-    updateVisibility(player);
-    processTurn(player);
+    clearAvailableTilesForAction();
+    clearPlayerColorFromMap();
+    clearUniqueEventHandlers();
+
+    processTurn();
 }
 
 function applyBombardierDamage(player, damagedArray) {

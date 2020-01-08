@@ -448,17 +448,12 @@ function updateTurnIndicator(name) {
         // only update currentState for current player, otherwise it should be "disabled"
          document.getElementById('currentState').innerHTML = 'gameTime';
         console.log('it should be my turn! my name is ' + username);
-        // TEST - testing not using alert modals
-        //hideModalOverlays();
-        //hideAlertModal();
-        //addClickEventsForNodes();
+
         addClickEventsTroopPics();
         document.getElementById('gameAlertsLarge').innerHTML = 'Click on the picture [right menu] of the unit you\'d like to activate.';
     } else {
-        //removeClickEventsForNodes();
+
         removeClickEventsTroopPics();
-        // TEST - testing not using alert modals
-        //showAlertModal(message);
         document.getElementById('gameAlertsLarge').innerHTML = 'Other player is taking their turn.';
     }
 }

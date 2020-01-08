@@ -135,8 +135,7 @@ function setup() {
         setChosenColorInLocalStorage(name, chosenColor, privateUsers);
         if (username === name) {
             var message = 'You have chosen '+ chosenColor+'. Wait for your opponent to select their Color.';
-            // TEST - testing not using alert modals
-            //showAlertModal(message);
+
             document.getElementById('gameAlertsLarge').innerHTML = message;
             let moColor = chosenColor + "Text";
             $('#mo').addClass(moColor);
@@ -146,9 +145,7 @@ function setup() {
     socket.on('second-color-has-been-selected', function(name, chosenColor, privateUsers) {
         console.log('second Color ' +chosenColor +' has been selected by '+ name+'. showing alert modal.');
         var username = getStorage('username');
-        setChosenColorInLocalStorage(name, chosenColor, privateUsers);
-        //TEST - testing not using alert modals
-        //hideAlertModal();  
+        setChosenColorInLocalStorage(name, chosenColor, privateUsers); 
         // set up mobile Chat stuff  
         $('#btnToggleChat').removeClass('hidden');
 
@@ -161,9 +158,7 @@ function setup() {
     socket.on('first-base-has-been-selected', function(name, privateUsers, tiles) {
         var username = getStorage('username');
         if (name === username) {
-            //TEST testing not using alert modal
-            //showAlertModal(message);
-            //removeClickEventsForNodes();
+
             document.getElementById('currentState').innerHTML = 'disabled';
 
             document.getElementById('gameAlertsLarge').innerHTML = 'Base Location submitted. Wait for other player.';
@@ -179,10 +174,7 @@ function setup() {
     socket.on('second-base-has-been-selected-fail', function(privateUsers) {
 
         document.getElementById('currentState').innerHTML = 'selectBase';
-        //clear selected base, remove alert modal, and inform them that they need to try again
-        //TEST - testing not using alert modals
-        //hideAlertModal();
-
+        //clear selected base and inform them that they need to try again
         let playerInGame = checkPrivateUsers(privateUsers);
         if (playerInGame === true) {
             document.getElementById('gameAlertsLarge').innerHTML = 'Your bases were too close. Choose again.';
@@ -200,8 +192,6 @@ function setup() {
         }
         
         console.log('2 bases chosen and locations PASS validation.');
-        // TEST - testing not using alert modals
-        //hideAlertModal();
         document.getElementById('gameAlertsLarge').innerHTML = '';
         revealOpenTroopModalButton(privateUsers);
     });
@@ -219,11 +209,11 @@ function setup() {
     socket.on('set-starting-player', function(name, privateUsers) {
         setStorage('turnIndicator', username);
         var username = getStorage('username');
+
         if (name === username) {
         console.log('I am the starting player. My name is ' + username);
-        //TEST - testing not using alert modals
-        //hideAlertModal();
         }
+
         let playerInGame = checkPrivateUsers(privateUsers);
         if (playerInGame === true) {
             updateTurnIndicator(name);
@@ -278,6 +268,20 @@ function setup() {
     socket.on('remove-unit-from-board', function(id){
         document.getElementById(id).innerHTML = "";
     });
+
+
+socket.on('update-base-title', function(opponent, baseHealth, loc){
+    let friendlyBaseTitle = "Base, " + baseHealth + " / 200 Health Points";
+    let enemyBaseTitle = "Enemy Base, " + baseHealth + " / 200 Health Points";
+    let username = getStorage("username");
+
+    if (opponent === username){
+       document.getElementById(loc).title = friendlyBaseTitle;
+    } else {
+        document.getElementById(loc).title = enemyBaseTitle;
+    }
+});
+
 
 
      //end of setup
@@ -520,4 +524,8 @@ function sendAttackToServer(username, unitName, id){
 function removeUnitImageFromOpponent(username, id){
     //remove the old image from the other player's map
     socket.emit('remove-moved-unit', id, username);
+}
+
+function sendSwarmToServer(username, damagedArray, id){
+    socket.emit('send-swarm-to-server', username, damagedArray, id);
 }

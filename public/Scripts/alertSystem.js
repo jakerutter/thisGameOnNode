@@ -1,12 +1,14 @@
 //Contains all functions needed to display and alter the alert modal
 
-function showAlertModal(message) {
-    document.getElementById("alertModal").classList.remove("hidden");
-    $("#alertModal").modal();
-    if (message == "") {
-        message = "Alert message needs established";
+function showTurnInfo(message, color) {
+
+    if (color != "" || color != undefined) {
+        document.getElementById('gameAlertsSmall').innerHTML = message;
+    } else {
+        let textColor = color + "Text";
+        document.getElementById('gameAlertsSmall').classList.add(textColor);
+        document.getElementById('gameAlertsSmall').innerHTML = message;
     }
-    document.getElementById('currentAlert').innerHTML = message;
 }
 
 function hideAlertModal() {
