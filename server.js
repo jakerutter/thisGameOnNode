@@ -265,6 +265,67 @@ socket.on('send-swarm-to-server', function(username, damagedArray){
 
 
 
+socket.on('send-scan-to-sever', function(username, scanArray, id){
+  //TODO test this
+  let opponentArray = privateUsers.filter(function(x) { return x !== username});
+  let opponent = opponentArray[0];
+
+  let visibleArray = gameObj[username].visibleTiles;
+  visibleArray = visibleArray.concat(scanArray);
+  visibleArray = returnArrayWithoutDuplicates(visibleArray);
+
+  serverUpdateVisibleTiles(username, visibleArray, gameObj);
+
+  let playerObj = gameObj[opponent];
+  io.emit('update-client-post-attack', opponent, playerObj);
+});
+
+
+socket.on('send-depthCharge-to-server', function(username, stunnedArray, id){
+   //TODO test this
+   let opponentArray = privateUsers.filter(function(x) { return x !== username});
+   let opponent = opponentArray[0];
+ 
+   let visibleArray = gameObj[username].visibleTiles;
+   visibleArray = visibleArray.concat(stunnedArray);
+   visibleArray = returnArrayWithoutDuplicates(visibleArray);
+ 
+   serverUpdateVisibleTiles(username, visibleArray, gameObj);
+ 
+   let playerObj = applyDepthChargeStun(opponent, stunnedArray);
+
+   io.emit('update-client-post-attack', opponent, playerObj);
+});
+
+
+socket.on('send-bombardier-to-server', function(username, damagedArray, id){
+  //TODO test this
+  let opponentArray = privateUsers.filter(function(x) { return x !== username});
+  let opponent = opponentArray[0];
+
+  let visibleArray = gameObj[username].visibleTiles;
+  visibleArray = visibleArray.concat(damagedArray);
+  visibleArray = returnArrayWithoutDuplicates(visibleArray);
+
+  serverUpdateVisibleTiles(username, visibleArray, gameObj);
+
+  let playerObj = applyBombardierDamage(opponent, damagedArray); 
+
+  io.emit('update-client-post-attack', opponent, playerObj);
+});
+
+
+  socket.on('send-blind-to-server', function(username, blindArray, id){
+    //TODO test this
+    let opponentArray = privateUsers.filter(function(x) { return x !== username});
+    let opponent = opponentArray[0];
+    let visibleArray = applyBlind(opponent, blindArray); 
+
+    serverUpdateVisibleTiles(opponent, visibleArray, gameObj);
+  });
+
+
+
     //end of socket.on section
   });
   
@@ -749,14 +810,14 @@ function  checkForGameOver(){
 function applySwarmDamage(userToDamage, damagedArray) {
   var playerObj = gameObj[userToDamage];
 
-  for (var i=0; i<damagedArray.length; i++) {
+  for (let i=0; i<damagedArray.length; i++) {
 
       playerObj.troops.forEach(function(item, index) {
 
         //console.log(item.Loc + ' is the Loc of ' + item.Name);
         if (damagedArray[i] == item.Loc) {
             var health = parseInt(item.HealthPoints);
-            health -= 20;
+            health -= item.UniqueDamage;
             playerObj.troops[index].HealthPoints = health;
 
             if (health <= 0) {
@@ -764,6 +825,7 @@ function applySwarmDamage(userToDamage, damagedArray) {
               console.log('removing '+ item.Name + ' from gameObj. It\s been killed.');
               io.emit('remove-unit-from-board', item.Loc);
               delete playerObj.troops[index];
+
             } else {
               let id = damagedArray[i];
               var MyUnitImage = updateFriendlyUnitImgAndTooltip(userToDamage, id);
@@ -775,7 +837,7 @@ function applySwarmDamage(userToDamage, damagedArray) {
         //if the attack hit the enemy base
         if (damagedArray[i] == playerObj.base.Loc) {
           var baseHealth = parseInt(playerObj.base.HealthPoints);
-          baseHealth -= 20;
+          baseHealth -= item.UniqueDamage;
           playerObj.base.HealthPoints = baseHealth;
           updateBaseTooltip(userToDamage);
 
@@ -789,3 +851,79 @@ function applySwarmDamage(userToDamage, damagedArray) {
   return playerObj;
 }
 
+function applyDepthChargeStun(userToDamage, stunnedArray) {
+  var playerObj = gameObj[userToDamage];
+
+  for (let i=0; i<stunnedArray.length; i++) {
+
+      playerObj.troops.forEach(function(item, index) {
+          if (stunnedArray[i] == item.Loc) {
+              var cooldown = parseInt(item.Cooldown);
+              //TODO confirm this is the desired value (2)
+              cooldown += 2;
+              item.Cooldown = cooldown;
+          }
+      })
+  }
+}
+
+function applyBombardierDamage(userToDamage, damagedArray) {
+  var playerObj = gameObj[userToDamage];
+
+  for (let i=0; i<damagedArray.length; i++) {
+
+      playerObj.troops.forEach(function(item, index) {
+          if (damagedArray[i] == item.Loc) {
+              var health = parseInt(item.HealthPoints);
+              health -= 25;
+              playerObj.troops[index].HealthPoints = health;
+
+              if (health <= 0) {
+                // unit is dead, remove it from game
+                console.log('removing '+ item.Name + ' from gameObj. It\s been killed.');
+                io.emit('remove-unit-from-board', item.Loc);
+                delete playerObj.troops[index];
+
+              } else {
+                let id = damagedArray[i];
+                var MyUnitImage = updateFriendlyUnitImgAndTooltip(userToDamage, id);
+                var EnemyUnitImage = updateEnemyUnitImgAndTooltip(userToDamage, id);
+                io.emit('update-tooltips-post-attack', userToDamage, MyUnitImage, EnemyUnitImage, id);
+              }
+          }
+      })
+
+      //if the attack hit the enemy base
+      if (damagedArray[i] == playerObj.base.Loc) {
+          var baseHealth = parseInt(playerObj.base.HealthPoints);
+          baseHealth -= 25;
+          playerObj.base.HealthPoints = baseHealth;
+
+          if (baseHealth <= 0) {
+            //TODO trigger game over
+          } else {
+            updateBaseTooltip(userToDamage);
+          }
+      }
+  }
+}
+
+function applyBlind(opponent){
+  // begin by wiping visibility
+  gameObj[opponent].visibleTiles = "";
+ 
+  let unitLocations = [];
+  let playerObj = gameObj[opponent].troops;
+
+  playerObj.forEach(function(item, index){
+    let loc = item.Loc;
+    unitLocations.push(loc);
+  });
+
+  let baseLoc = gameObj[opponent].base.Loc;
+  unitLocations.push(baseLoc);
+
+  gameObj[opponent].visibleTiles = unitLocations;
+
+  return unitLocations;
+}
