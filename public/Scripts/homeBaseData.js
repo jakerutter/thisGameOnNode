@@ -1,11 +1,7 @@
 //This page will hold the data and information regarding home bases
 
-function getHomeBaseObjects(player) {
-    if (player == 1){
-        var location = document.getElementById('playerBaseLoc').innerHTML;
-    } else {
-        var location = document.getElementById('playerBaseLoc2').innerHTML;
-    }
+function getHomeBaseObject() {
+    var location = document.getElementById('playerBaseLoc').innerHTML;
 
     var HomeBase = {
         Location: location,
@@ -13,6 +9,7 @@ function getHomeBaseObjects(player) {
         MaxHealth: 200,
         Name: "Base" 
     };
+
     return HomeBase;
 }
 

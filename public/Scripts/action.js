@@ -369,7 +369,7 @@ function createRequirementsForPlayerObject(){
     var playerTroopSelection = document.getElementById('playerTroopSelection').innerHTML;
 
     var troopArray = getTroopObjects(playerTroopSelection);
-    var homeBaseObject = getHomeBaseObjects(1);
+    var homeBaseObject = getHomeBaseObject();
 
     var playerObj = new playerObject(player,troopArray,homeBaseObject);
     document.getElementById('playerObj').innerHTML = playerObj;

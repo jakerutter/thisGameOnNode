@@ -529,3 +529,19 @@ function removeUnitImageFromOpponent(username, id){
 function sendSwarmToServer(username, damagedArray, id){
     socket.emit('send-swarm-to-server', username, damagedArray, id);
 }
+
+function sendScanToServer(username, visibleArray, id){
+    socket.emit('send-scan-to-sever', username, visibleArray, id);
+}
+
+function sendDepthChargeToServer(username, visibleArray, id){
+    socket.emit('send-depthCharge-to-server', username, visibleArray, id);
+}
+
+function sendBombardierToServer(username, damagedArray, id){
+    socket.emit('send-bombardier-to-server', username, damagedArray, id);
+}
+
+function sendBlindToServer(username, blindArray, id){
+    socket.emit('send-blind-to-server', username, blindArray, id);
+}

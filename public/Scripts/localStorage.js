@@ -217,15 +217,16 @@ function placeTroopDisplayData() {
         document.getElementById("troopDisplay").classList.remove("hidden");
 
         console.log('placeTroopDisplayData amd playerObj.troops has this many units ' + playerObj.troops.length);
+
         playerObj.troops.forEach(function(item, index) {
             var name = item.Name;
             var Color = getStorage('playerColor');
-            var coords = convertIdToCoordinates(playerObj.troops[i].Loc);
+            var coords = convertIdToCoordinates(item.Loc);
             var title = ""+ name + ", " + item.HealthPoints +" / "+item.MaxHealth + " Health Points";
-            // document.getElementById("troopDisplay").innerHTML = "";
+
             document.getElementById("troopDisplay").innerHTML +=
             "<span class='col-1-1 bottomSpacer'><h3>" + name +
-            "<img name="+name+" class='troopPic' id="+'1troopPic'+i+" src=Assets/"+name+Color+".png title="+title+"></img></h3>" +
+            "<img name="+name+" class='troopPic' id="+'1troopPic'+index+" src=Assets/"+name+Color+".png title="+title+"></img></h3>" +
             "<span class='col-1-2'><span> Health Points: "+ item.HealthPoints +" / " + item.MaxHealth+ "</span><br>"+
             "<span> Attack Damage: "+ item.AttackDamage + "</span><br>"+
             "<span> Attack Range: "+ item.AttackRange + "</span><br>"+
@@ -374,22 +375,25 @@ function showTroopSelected() {
 function showAvailableTilesForAction(id, distance) {
     var coords = document.getElementById(id).dataset.coords;
     var distance = parseInt(distance);
+
     let  goodTileArray = [];
     var startCoords = coords.split(",");
     var startx = Number(startCoords[0]);
     var starty = Number(startCoords[1]);
+
      //this gets all tiles within appropriate range and styles them as available
      for (var i=Math.max((startx-distance),0); i<Math.min((startx+distance+1),maxRow); i++) {
         for (var j=Math.max((starty-distance),0); j<Math.min((starty+distance+1),maxRow); j++) {
             var goodID = convertCoordsToId(i,j);
             goodTileArray.push(goodID);
             document.getElementById(goodID).classList.add("availableToMove");
-            }
         }
-        returnArrayWithoutDuplicates(goodTileArray);
-        //remove the styling that indicates units are available from move from tiles with units or bases
-        removeStylingFromOwnUnitLocsAndBase(id, goodTileArray);
-        setStorage("tilesForMove", goodTileArray);
+    }
+
+    returnArrayWithoutDuplicates(goodTileArray);
+    //remove the styling that indicates units are available from move from tiles with units or bases
+    removeStylingFromOwnUnitLocsAndBase(id, goodTileArray);
+    setStorage("tilesForMove", goodTileArray);
 }
 
 function removeStylingFromOwnUnitLocsAndBase(id, goodTileArray) {
@@ -657,14 +661,13 @@ function prepareGameAction(activeUnit, event) {
     else if (event.id == "option4") {
         populateTroopDetailModalInGame(activeUnit.Name);
     }
-    
+
+    showAvailableTilesForAction(Loc, distance);
+
     if (event.id == "option3") {
         displayUniqueMoveTiles(activeUnit);
-    } else {
-        showAvailableTilesForAction(Loc, distance);
-    }
-    // document.getElementById("currentState").innerHTML = "gameTime";
-    // setStorage("gameState", "gameTime");
+    } 
+
     setStorage("activeTroop", activeUnit);
     setStorage("moveType", event.id);
 }
@@ -894,7 +897,7 @@ function handleUniqueMove(id) {
 
 function checkActiveUnitForUniqueMove(activeUnit) {
     var check = false;
-    var unitsWithUniqueMoves = ["DepthCharge","Swarm","Scan","Pirate","Bombardier"];
+    var unitsWithUniqueMoves = ["DepthCharge","Swarm","Scan","Pirate","Bombardier", "Blind"];
     //check to see if active unit is one with a unique move
     for(var x=0; x<unitsWithUniqueMoves.length; x++) {
         if (unitsWithUniqueMoves[x] == activeUnit.Name) {
