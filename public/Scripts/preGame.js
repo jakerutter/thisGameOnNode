@@ -270,17 +270,29 @@ function setup() {
     });
 
 
-socket.on('update-base-title', function(opponent, baseHealth, loc){
-    let friendlyBaseTitle = "Base, " + baseHealth + " / 200 Health Points";
-    let enemyBaseTitle = "Enemy Base, " + baseHealth + " / 200 Health Points";
-    let username = getStorage("username");
+    socket.on('remove-enemy-units-post-blind', function(opponent, visibleArray){
+        let username = getStorage("username");
+        if (username == opponent){
+            for (let i=0; i<400; i++){
+                if (! visibleArray.includes(i)){
+                    document.getElementById(i).innerHTML = "";
+                }
+            }
+        }
+    });
 
-    if (opponent === username){
-       document.getElementById(loc).title = friendlyBaseTitle;
-    } else {
-        document.getElementById(loc).title = enemyBaseTitle;
-    }
-});
+
+    socket.on('update-base-title', function(opponent, baseHealth, loc){
+        let friendlyBaseTitle = "Base, " + baseHealth + " / 200 Health Points";
+        let enemyBaseTitle = "Enemy Base, " + baseHealth + " / 200 Health Points";
+        let username = getStorage("username");
+
+        if (opponent === username){
+        document.getElementById(loc).title = friendlyBaseTitle;
+        } else {
+            document.getElementById(loc).title = enemyBaseTitle;
+        }
+    });
 
 
 

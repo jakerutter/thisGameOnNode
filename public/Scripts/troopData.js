@@ -398,6 +398,8 @@ function createScout() {
         MaxHealth: 35,
         Moves: "No Special Moves",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 15,
         AttackRange: 2,
@@ -420,6 +422,8 @@ function createDepthCharge() {
         MaxHealth: 60,
         Moves: "Stun: Reveals 3x3 square. Stuns units for 2 rounds.",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 0,
         AttackDamage: 0,
         AttackRange: 0,
@@ -443,6 +447,8 @@ function createDestroyer() {
         MaxHealth: 100,
         Moves: "No Special Moves",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 40,
         AttackRange: 2,
@@ -465,6 +471,8 @@ function createSwarm() {
         MaxHealth: 128,
         Moves: "Swarm: 20 damage to any unit hit and reveals the tiles covered.",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 0,
         AttackDamage: 20,
         AttackRange: 1,
@@ -488,6 +496,8 @@ function createScan() {
         MaxHealth: 30,
         Moves: "Scan: reveals a 5x5 area up to 15 tiles away.",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 0,
         AttackDamage: 0,
         AttackRange: 0,
@@ -511,6 +521,8 @@ function createRuskie() {
         MaxHealth: 70,
         Moves: "No Special Moves.",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 25,
         AttackRange: 3,
@@ -533,6 +545,8 @@ function createGremlin() {
         MaxHealth: 90,
         Moves: "No Special Moves",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 30,
         AttackRange: 3,
@@ -555,6 +569,8 @@ function createPirate() {
         MaxHealth: 60,
         Moves: "Pilfer: send this unit to search an area. May return all sorts of useful goods!",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 20,
         AttackRange: 2,
@@ -578,6 +594,8 @@ function createBombardier() {
         MaxHealth: 60,
         Moves: "Bomb: range attack up to 5 tiles away, attacks a 3x3 area for 25 damage.",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 25,
         AttackRange: 0,
@@ -601,6 +619,8 @@ function createBlind() {
         MaxHealth: 40,
         Moves: "Blind: Remove all visible tiles from your opponent.",
         Cooldown: 0,
+        StunDuration: 0,
+        IsBlind: false,
         AreaOfAttack: 1,
         AttackDamage: 10,
         AttackRange: 3,
@@ -1247,7 +1267,7 @@ function BlindUniqueMove(id){
     sendBlindToServer(username, blindArray, id);
 
     //TODO - get sound for blind
-    
+
     //play bombardier sound
     //playSound("blind");
 
