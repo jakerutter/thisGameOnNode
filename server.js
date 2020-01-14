@@ -321,6 +321,8 @@ socket.on('send-bombardier-to-server', function(username, damagedArray, id){
     let opponent = opponentArray[0];
     let visibleArray = applyBlind(opponent, blindArray); 
 
+    io.emit('remove-enemy-units-post-blind', opponent, visibleArray);
+
     serverUpdateVisibleTiles(opponent, visibleArray, gameObj);
   });
 
@@ -467,30 +469,30 @@ function deleteFromGameObj(key, id) {
 }
 
 function addTroopsToGameObject(username, troopArray, gameObj) {
-  //converting troopArray to an object of troop Objects
   for (let i=0; i<troopArray.length; i++){
     gameObj[username].troops.push(troopArray[i]);
   }
-  console.log('troops added to gameObj for '+username);
-  //console.log(JSON.stringify(gameObj, null, 4));
-
   return gameObj;
 }
 
 function serverUpdateTroopLocation(username, name, node, gameObj) {
-  //name is the name of the troop being updated
+  // name is the name of the troop being updated
   for(let i=0; i<gameObj[username].troops.length; i++){
     if(gameObj[username].troops[i].Name == name){
+      
       gameObj[username].troops[i].Loc = node;
+
+      // clear IsBlind for the moved unit
+      gameObj[username].troops[i].IsBlind = false;
     }
   }
 
-  // console.log(JSON.stringify(gameObj, null, 4));     --uncomment to see gameObj
   console.log(username + ' moved their '+ name + ' to '+ node);
   var visibleTileArray = updateVisibilityForTroops(username);
   io.emit('update-visible-tiles', username, visibleTileArray);
   
-  //check the current game state (stage) and update accordingly when all units for a player are placed
+  // check the current game state (stage)
+  // update accordingly when all units for a player are placed
   let stage = gameObj['stage'];
   let numberOfTroopsPlaced = gameObj[username].troopsPlaced + 1;
   gameObj[username].troopsPlaced = numberOfTroopsPlaced;
@@ -533,8 +535,9 @@ function updateVisibilityForBase(Location) {
 //Update the visible tiles for the troop placed or moved
 function updateVisibilityForTroops(username) {
   var visibleArray = gameObj[username].visibleTiles;
-  var otherPlayer = privateUsers.filter(function(x) { return x !== username});
-  otherPlayer = otherPlayer[0];
+  // var otherPlayer = privateUsers.filter(function(x) { return x !== username});
+  // otherPlayer = otherPlayer[0];
+
   if (visibleArray == "") {
       var visibleTileArray = [];
   } else {
@@ -545,18 +548,18 @@ function updateVisibilityForTroops(username) {
 
       var troopLocation = gameObj[username].troops[i].Loc;
 
-      if (troopLocation != "tbd") {
-        //console.log('inside updateVisibilityForTroops inside troopLocation != "tbd"');
+      // TODO - test the IsBlind
+      if (troopLocation != "tbd" && gameObj[username].troops[i].IsBlind != true) {
+
         var visibility = gameObj[username].troops[i].Visibility;
-        //console.log('visibility is ');
-        //console.log(visibility);
         var tCoordsArray = convertIdToCoordinates(troopLocation);
         var tx = Number(tCoordsArray[0]);
         var ty = Number(tCoordsArray[1]);
+
         for (var m=Math.max((tx-visibility),0); m<Math.min((tx+visibility+1),20); m++) {
             for (var n=Math.max((ty-visibility),0); n<Math.min((ty+visibility+1),20); n++) {
+
                 var id = convertCoordsToId(m,n);
-                
                 visibleTileArray.push(id);
         }   
       }
@@ -917,6 +920,7 @@ function applyBlind(opponent){
 
   playerObj.forEach(function(item, index){
     let loc = item.Loc;
+    gameObj[opponent].troops[index].IsBlind = true;
     unitLocations.push(loc);
   });
 
