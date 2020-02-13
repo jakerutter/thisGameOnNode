@@ -176,7 +176,7 @@ socket.on('second-base-selected', function(loc, name, bx, by) {
 
   } else {
     //failed validation - clear visibleTiles and reset
-    let opponentArray = privateUsers.filter(function(x) { return x !== username});
+    let opponentArray = privateUsers.filter(function(x) { return x !== name});
     let opponent = opponentArray[0];
 
     gameObj[opponent].visibleTiles = "";
