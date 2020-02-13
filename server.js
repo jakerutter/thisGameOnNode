@@ -77,7 +77,7 @@ socket.on('get-users', function(data) {
 socket.on('join', function(data) {
   console.log('this is data.nickname value inside of join on server side ' + data.name);
   socket.nickname = data.name;
-  // users[socket.nickname] = socket; 
+
   userObj = {
     nickname: data.name,
     socketid: socket.id
@@ -232,13 +232,15 @@ socket.on('send-attack-to-server', function(username, unitName, id){
     io.emit('update-client-post-attack', opponent, troopObj);
   }
 
-  let gameOver = checkForGameOver();
+  let gameOver = checkForGameOver(username, opponent);
 
   if (!gameOver){
     console.log('attack over, calling set-current-player to '+ opponent);
     io.emit('set-current-player', opponent);
   } else {
-    // TODO - game is over, trigger win/lose
+    var winner = gameObj["winner"];
+    console.log('winner declared. the winner is ' + winner);
+    io.emit('update-client-game-over', winner);
   }
 });
 
@@ -750,12 +752,10 @@ function attackEnemyUnit(username, opponent, unitName, id){
       
       // delete killed unit
       if (troopHealthPostAttack <= 0) {
-        console.log('removing '+ troopObj[i].Name + ' from gameObj. It\s been killed.');
+        console.log('removing '+ troopObj[i].Name + ' from gameObj. Its been killed.');
         io.emit('remove-unit-from-board', id);
-        delete troopObj[i];
+        troopObj.splice(i, 1);
       }
-
-      console.log(troopObj[i].HealthPoints + ' is hp and ' + attackingUnit.AttackDamage + ' is attack dmg');
     }
   }
     // subtract Health frome base if base is hit
@@ -763,7 +763,6 @@ function attackEnemyUnit(username, opponent, unitName, id){
     gameObj[opponent].base.HealthPoints -= gameObj[username].troops[unitName].AttackDamage;
     updateBaseTooltip(opponent);
   }
-  // TODO if base is killed end game
 
   if (troopHealthPostAttack > 0){
       var MyUnitImage = updateFriendlyUnitImgAndTooltip(opponent, id);
@@ -803,10 +802,56 @@ function updateEnemyUnitImgAndTooltip(opponent, id){
   return unitImage;
 }
 
-// TODO complete this function
-// - check gameObj to see if either base is dead or either player has 0 units left
-function  checkForGameOver(){
-  return false;
+
+// - will tack winner : name onto gameObj if a winner is declared
+function  checkForGameOver(username, opponent){
+  var gameOver = false;
+  var winner = "";
+  // check troop array - if either are empty, other player wins
+  if(gameObj[username].troops.length <= 0){
+    winner = opponent;
+    gameOver = true;
+  }
+  if(gameObj[opponent].troops.length <= 0){
+    winner = username;
+    gameOver = true;
+  }
+  
+  // troop array wasn't empty, double check troop health to ensure at least 1 greater than 0
+  var remainingTroops = [];
+  remainingTroops = gameObj[username].troops.filter(function(item) {
+    return item.HealthPoints > 0;
+  });
+
+  if(remainingTroops.length <= 0){
+    winner = opponent;
+    gameOver = true;
+  }
+
+  var remainingTroops = [];
+  remainingTroops = gameObj[opponent].troops.filter(function(item) {
+    return item.HealthPoints > 0;
+  });
+
+  if(remainingTroops.length <= 0){
+    winner = username;
+    gameOver = true;
+  }
+
+  // check base health
+  if(gameObj[username].base.HealthPoints <= 0){
+    winner = opponent;
+    gameOver = true;
+  }
+
+  if(gameObj[opponent].base.HealthPoints <= 0){
+    winner = username;
+    gameOver = true;
+  }
+
+  gameObj['winner'] = winner;
+  return gameOver;
+  
 }
 
 // UNIQUE MOVES
@@ -825,9 +870,11 @@ function applySwarmDamage(userToDamage, damagedArray) {
 
             if (health <= 0) {
               // unit is dead, remove it from game
-              console.log('removing '+ item.Name + ' from gameObj. It\s been killed.');
+              console.log('removing '+ item.Name + ' from gameObj. Its been killed.');
               io.emit('remove-unit-from-board', item.Loc);
-              delete playerObj.troops[index];
+              playerObj.troops.splice(index, 1);
+              // using splice in stead of delete to avoid a null record in the array
+              // delete playerObj.troops[index];
 
             } else {
               let id = damagedArray[i];
@@ -844,9 +891,6 @@ function applySwarmDamage(userToDamage, damagedArray) {
           playerObj.base.HealthPoints = baseHealth;
           updateBaseTooltip(userToDamage);
 
-          if (baseHealth <= 0) {
-              //TODO trigger game over!
-          }
         }
     })
   }
@@ -885,7 +929,9 @@ function applyBombardierDamage(userToDamage, damagedArray) {
                 // unit is dead, remove it from game
                 console.log('removing '+ item.Name + ' from gameObj. It\s been killed.');
                 io.emit('remove-unit-from-board', item.Loc);
-                delete playerObj.troops[index];
+                playerObj.troops.splice(index, 1);
+                // using splice in stead of delete to avoid a null record in the array
+                // delete playerObj.troops[index];
 
               } else {
                 let id = damagedArray[i];
