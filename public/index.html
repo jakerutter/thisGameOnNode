@@ -39,15 +39,15 @@
             </form><br>
             <div id="challengeForm" class="hidden">
               <h3 id="challengeHeader"></h3>
-              <button class="round-5" onclick="respondToChallenge('accept')">Accept Challenge</button>
-              <button class="round-5" onclick="respondToChallenge('refuse')">Deny Request</button>
+              <button class="btn-outline-primary round-5" onclick="respondToChallenge('accept')">Accept Challenge</button>
+              <button class="btn btn-primary round-5" onclick="respondToChallenge('refuse')">Deny Request</button>
             </div><br>
             
              
               <span class="simplemodal-close"></span>
               <span id="nameFail" class="redText"></span><br>
              
-              <button id="confirmSettings" onclick="savePlayerName();" class="round-5">Continue</button>
+              <button id="confirmSettings" onclick="savePlayerName();" class="btn btn-primary round-5">Continue</button>
               
         </div>
     
@@ -110,7 +110,7 @@
         <div class="maze-wrapper" id="mazeWrapper"></div>
         <div><h3 id="gameAlertsSmall" class="gameAlerts"></h3></div>
         <div><h2 id="gameAlertsLarge" class="gameAlerts"></h2>
-            <button id="openTroopModalButton" class="hidden round-5" onclick="troopModal()">Select Troops</button>
+            <button id="openTroopModalButton" class="btn btn-primary hidden round-5" onclick="troopModal()">Select Troops</button>
         </div>
 
         <div id="mobileChat" class="hidden center">
@@ -147,7 +147,7 @@
           </form><br><br>
           <div><h4 id="playersAlert">There will be 1 browser open per player.</h4></div>
           <span class="simplemodal-close"></span>
-          <button onclick="numberOfPlayersPlaying(playerCount)" class="round-5">Continue</button>
+          <button onclick="numberOfPlayersPlaying(playerCount)" class="round-5 btn btn-primary">Continue</button>
       </div>
 
   <div id="welcomeModal" class="modal center round-10 hidden"><h1>Welcome to This Game</h1>
@@ -169,20 +169,20 @@
       </form>
           <div><h4 id="welcomeAlert">The goal is to find and eliminate the other players.</h4></div>
           <span class="simplemodal-close"></span>
-          <button id="btnSettingsModal" class="round-5" onclick="settingsModal()" >Settings and Info</button>
-          <button id="confirmColorSettings" class="round-5" onclick="hideWelcomeModal()" >Continue to Game</button>
+          <button id="btnSettingsModal" class="round-5 btn btn-primary" onclick="settingsModal()" >Settings and Info</button>
+          <button id="confirmColorSettings" class="round-5 btn btn-primary" onclick="hideWelcomeModal()" >Continue to Game</button>
     
   </div>
 
 
-  <div id="settingsModal" class="modal center round-10 hidden"><h1>About this Game</h1>
+  <div id="settingsModal" class="modal center round-10 hidden"><h1>How to Win</h1>
       <div><h3>Find the opposing base and destroy it -or- kill all enemy units to win.</h3></div>
           <div><h4>Cooldowns are triggered for units with unique moves, when that unique move is used.</h4></div>
           <div><h5>Each unit has a "perceived value" (PV) assigned to them. When both players choose their units, the player with the lowest
               PV gets to go first.
           </h5></div>
           <span class="simplemodal-close">A Rutter Production. 2018.</span>
-          <button id="btnHideSettingsModal" class="round-5" onclick="hideSettingsModal()">Continue</button>
+          <button id="btnHideSettingsModal" class="round-5 btn btn-primary" onclick="hideSettingsModal()">Continue</button>
    
   </div>
  
@@ -227,10 +227,14 @@
                   <span title="medium unit that has a bomb attack with enhanced range and area of attack. 4PV">
                       <button class="link" onclick="populateTroopDetailModal(bombardier)">Bombardier</button></span><br>
 
+              <input id="blind" type="checkbox" name="troops" value="blind" class="checkboxes" >
+                <span title="this unit can completely remove visibility from opponent. 4PV">
+                    <button class="link" onclick="populateTroopDetailModal(blind)">Blind</button></span><br>
+
           </form>
             <div id="troopModalAlert">...................</div>
           <div><h4>Click on a troop's name to see details.</h4></div>
-          <button id="confirmMenu" class="round-5" onclick="checkTroopSelection()">Advance</button>
+          <button id="confirmMenu" class="round-5 btn btn-primary" onclick="checkTroopSelection()">Advance</button>
           </div> <br>
   </div>
 
@@ -241,8 +245,8 @@
         
           <div><h4 id="troopMoveList" class="blueText"></h4></div>
           <span class="simplemodal-close"></span>
-          <button id="inGameTroopDetailButton" class="hidden round-5" onclick="hideinGameTroopDetailModal()">Back to Game</button>
-          <button id="preGameTroopDetailButton" class="round-5" onclick="hideTroopDetailModal()">Back to Selection</button><br><br>
+          <button id="inGameTroopDetailButton" class="hidden round-5 btn btn-primary" onclick="hideinGameTroopDetailModal()">Back to Game</button>
+          <button id="preGameTroopDetailButton" class="round-5 btn btn-primary" onclick="hideTroopDetailModal()">Back to Selection</button><br><br>
   </div>
 
   <div id="alertModal" class="modal bottom-left round-10 hidden front"><h1>Game Alert</h1>
@@ -254,7 +258,9 @@
   </div>
 
 
-  <div id="finishedModal" class="largeModal center round-10 hidden"><h1>Game Over</h1>
+  <div id="finishedModal" class="largeModal center round-10 hidden">
+      
+    <h1>Game Over</h1>
       <div><h3 id="finishedAlert"></h3></div>
       <div id="finishedVideo">
           <video id="victoryVideo" width="480" height="320" loop="loop" autoplay="autoplay" class="hidden">
@@ -264,8 +270,8 @@
               <source src="/Assets/defeat.mp4" type="video/mp4">
             </video>
       </div>
-      <div id="finishedAlertSmall"></div>
-      
+      <h4 id="finishedAlertSmall" style="padding-top: 15px;"></div>
+      <button class="round-5 hidden btn btn-primary" id="btnGameCenter">Return to GameCenter</button>
   </div>
 
 
