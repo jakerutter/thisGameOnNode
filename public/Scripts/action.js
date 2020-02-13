@@ -502,25 +502,6 @@ function informPlayerAllUnitsOnCooldownCausedTurnToPass(activeInfo) {
         document.getElementById('gameAlertsSmall').innerHTML = activeInfo;
 }
 
-function signalGameLoss(player) {
-    var players = getStorage('usernames');
-    var otherPlayer = players.filter(function(x) { return x !== player});
-    otherPlayer = otherPlayer[0];
-    hideModalOverlays();
-    if (!document.getElementById('alertModal').classList.contains('hidden')){
-        document.getElementById('alertModal').classList.add('hidden');
-    }
-    //should trigger a consolation modal with embedded video and maybe some gamestats
-    document.getElementById('gameAlertsSmall').innerHTML = '';
-    document.getElementById('gameAlertsLarge').innerHTML = 'You are defeated!';
-    //document.getElementById("defeatVideo").classList.remove("hidden");
-    //playSound("defeat");
-    document.getElementById('finishedModal').classList.remove('hidden');
-    $('#finishedModal').modal();
-    document.getElementById('finishedAlert').innerHTML = 'You are defeated.';
-    document.getElementById('finishedAlertSmall').innerHTML = 'I suggest you read the Art of War then try again.';
-    document.getElementById('defeatVideo').classList.remove('hidden');
-}
 
 function convertPlayerToNumber(player) {
     let name = getStorage('username');

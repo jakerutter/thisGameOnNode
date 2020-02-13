@@ -27,7 +27,7 @@ function setup() {
 
   socket.on('all-users', function(users){
       createPlayerButtons(users);
-    });
+  });
 
   //send and display chat messages
   socket.on('message-received', function(msg, sender){
@@ -295,6 +295,17 @@ function setup() {
     });
 
 
+    socket.on('update-client-game-over', function(winner){
+        let username = getStorage('username');
+        if(winner == username){
+            signalGameVictory();
+            //alert('winner winner chicken dinner');
+        } else {
+            signalGameDefeat();
+            //alert('zoink. you have been defeated.');
+        }
+    });
+
 
      //end of setup
 }
@@ -442,12 +453,20 @@ function createPlayerButtons(users) {
             let button = document.createElement('button');
             button.id = users[n].nickname;
             button.innerHTML = users[n].nickname;
-
+            
             // 2. Append buttons where I want them
             userBanner.appendChild(button);
 
-            // 3. Add event handler for all buttons that do not have your name on them
+            // 3. Add styling and event handler for all buttons that do not have your name on them
             if (button.innerHTML !== username) {
+                
+                button.title = "challenge " + button.innerHTML.toString();
+                button.classList.add("grow");
+                button.classList.add("round-5");
+                button.classList.add("btn");
+                button.classList.add("btn-outline-primary");
+                button.classList.add("margin-r-10");
+
                 button.addEventListener('click', function() {
                 var challenged = button.innerHTML;
                 
@@ -456,14 +475,16 @@ function createPlayerButtons(users) {
 
                 if (confirm('Are you sure you want to challenge ' + challenged + '?')) {
                     socket.emit('extend-challenge', username, challenged);
-
                 } else {
-
                     let noChallengeMsg = username + ' decided not to challenge ' + challenged +' at this time.';
                     socket.emit('send-message', noChallengeMsg, username);
-                    
                 }
                 });
+            } else{
+                // for this player's button in the banner
+                button.classList.add("round-5");
+                button.classList.add("margin-r-10");
+                button.disabled = true;
             }
         }
             //saving this in Local storage. will use this array to update buttons visible

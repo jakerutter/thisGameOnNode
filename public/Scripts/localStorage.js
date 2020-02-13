@@ -210,6 +210,7 @@ function placeTroopDisplayData() {
     var playerObj = getStorage("playerObj");
 
     if (playerObj == "") {
+        alert('playerObj is empty in placeTroopDisplayData and troopDisplay will be erased.');
         document.getElementById("troopDisplay").innerHTML = "";
     } else {
 
@@ -246,6 +247,7 @@ function updateTroopDisplayData() {
 
     if (playerObj == "" || playerObj == undefined) {
         document.getElementById("troopDisplay").innerHTML = "";
+        alert('playerObj is empty in updateTroopDisplayData and troopDisplay will be erased.');
     } else {
         document.getElementById("troopDisplay").classList.remove("hidden");
         playerObj.troops.forEach(function(item, index) {
@@ -805,15 +807,7 @@ function processTurn() {
     let baseHealth = getBaseHealth();
 
     placeBaseDisplayData(1, baseHealth);
-    updateTroopDisplayData();
-    
-
-    // TODO - implement below function? (not sure its needed, the server can end game if all units are killed)
-    //var enemyUnitsAllKilled = areEnemyUnitsAllKilled();
-    let enemyUnitsAllKilled = false;
-    if (enemyUnitsAllKilled === true) {
-        signalGameOver(player);
-    }
+    placeTroopDisplayData();
 
     let otherPlayerAllUnitsOnCooldown = false;
     //TODO implement below function
@@ -933,26 +927,12 @@ function resetCoolDowns() {
     setStorage("playerObj", playerObj);
 }
 
-// function areEnemyUnitsAllKilled(otherPlayer) {
-//     var otherPlayerObj = getStorage("playerObj"+otherPlayer);
-//     if (otherPlayerObj.troops[0] == "") {
-//         return true;
-//     }
-//     if (otherPlayerObj.troops[0] == null) {
-//         return true;
-//     }
-//     if (otherPlayerObj.troops[0] == 'undefined'){
-//         return true;
-//     }
-//     //else there are units in the otherPlayerObj
-//     return false;
-// }
 
 function clearTileInnerHtml(Loc) {
     document.getElementById(Loc).innerHTML = "";
 }
 
-function signalGameOver(player) {
+function signalGameVictory() {
     //should trigger a conrats modal with embedded video and maybe some gamestats
     document.getElementById("gameAlertsSmall").innerHTML = "";
     document.getElementById("gameAlertsLarge").innerHTML = "You have known victory!";
@@ -966,12 +946,26 @@ function signalGameOver(player) {
     document.getElementById("finishedAlert").innerHTML = "You are VICTORIOUS!";
     document.getElementById("finishedAlertSmall").innerHTML = "I send you a kaffis of mustard seed, that you may taste and acknowledge the bitterness of my victory. - Alexander da Great";
     document.getElementById("victoryVideo").classList.remove("hidden");
-    //TODO --alert the loser of their defeat (replacing following lines)
-    if (player == 1) {
-        window2.signalGameLoss(player);
-    } else if (player == 2) {
-        window1.signalGameLoss(player);
-    } 
+    document.getElementById("btnGameCenter").classList.remove('hidden');
+}
+
+function signalGameDefeat() {
+    //should trigger a consolation modal with embedded video and maybe some gamestats
+    document.getElementById('gameAlertsSmall').innerHTML = '';
+    document.getElementById('gameAlertsLarge').innerHTML = 'You are defeated!';
+
+    hideModalOverlays();
+    if (!document.getElementById('alertModal').classList.contains('hidden')){
+        document.getElementById('alertModal').classList.add('hidden');
+    }
+
+    //playSound("defeat"); //<--- do not have a sound file for this yet
+    document.getElementById('finishedModal').classList.remove('hidden');
+    $('#finishedModal').modal();
+    document.getElementById('finishedAlert').innerHTML = 'You are defeated.';
+    document.getElementById('finishedAlertSmall').innerHTML = 'I suggest you read the Art of War then try again.';
+    document.getElementById('defeatVideo').classList.remove('hidden');
+    document.getElementById("btnGameCenter").classList.remove('hidden');
 }
 
 function checkPrivateUsers(privateUsers) {
