@@ -226,7 +226,7 @@ socket.on('send-attack-to-server', function(username, unitName, id){
 
   let unitPresent = isUnitAtLocation(opponent, id);
   console.log('unit is found to attack?' + unitPresent);
-  //unit not at Location. pass turn to other player
+  
   if(unitPresent){
     let troopObj = attackEnemyUnit(username, opponent, unitName, id);
     io.emit('update-client-post-attack', opponent, troopObj);
@@ -511,7 +511,7 @@ function serverUpdateTroopLocation(username, name, node, gameObj) {
       serverTriggerGameStart(gameObj);
     } 
     else {
-      alert('there is an error in serverUpdateTroopLocation. please troubleshoot');
+      console.log('there is an error in serverUpdateTroopLocation. please troubleshoot');
     }
   }
     
