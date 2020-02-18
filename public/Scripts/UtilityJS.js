@@ -70,6 +70,6 @@ function getValueFromArray(array){
 
 //remove dupes from an array
 function returnArrayWithoutDuplicates(a) {
-    console.log(a);
+    //console.log(a);
     return Array.from(new Set(a));
   }

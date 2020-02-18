@@ -1,5 +1,4 @@
 //This page will hold the data and information regarding the various troop units
-
 function populateTroopDetailModal(name){
     var time = "troopModal";
     //hide inGame button show preGame button
@@ -734,7 +733,7 @@ function showScanUnique(activeUnit) {
         yCoords.push(yValue);
         coordArray.push(coords);
         var thisDiv = document.getElementById(boundingArray[w]);
-       //using jquery's .on() to add eventlisteners so that I can later us .off() to turn them off
+       //using jquery's .on() to add eventlisteners so that I can later use .off() to turn them off
         $(thisDiv).on("mouseover", function(event) {
             addColorScanUniqueTiles(activeUnit, boundingArray, xCoords, yCoords, coordArray);
         });
@@ -787,7 +786,7 @@ function showBombardierUnique(activeUnit) {
         yCoords.push(yValue);
         coordArray.push(coords);
         var thisDiv = document.getElementById(boundingArray[w]);
-       //using jquery's .on() to add eventlisteners so that I can later us .off() to turn them off
+       //using jquery's .on() to add eventlisteners so that I can later use .off() to turn them off
         $(thisDiv).on( "mouseover", function(event) {
             addColorBombardierUniqueTiles(activeUnit, boundingArray, xCoords, yCoords, coordArray);
         });
@@ -840,7 +839,7 @@ function showPirateUnique(activeUnit) {
         yCoords.push(yValue);
         coordArray.push(coords);
         var thisDiv = document.getElementById(boundingArray[w]);
-       //using jquery's .on() to add eventlisteners so that I can later us .off() to turn them off
+       //using jquery's .on() to add eventlisteners so that I can later use .off() to turn them off
         $(thisDiv).on( "mouseover", function(event) {
             addColorPirateUniqueTiles(activeUnit, boundingArray, xCoords, yCoords, coordArray);
         });
@@ -919,7 +918,7 @@ function showSwarmUnique(activeUnit) {
      //add mouseover function that applies the color for the unique move affected area
      for(var i=0; i<activeArray.length; i++) {
         var thisDiv = document.getElementById(activeArray[i]);
-       //using jquery's .on() to add eventlisteners so that I can later us .off() to turn them off
+       //using jquery's .on() to add eventlisteners so that I can later use .off() to turn them off
         $(thisDiv).on( "mouseover", function(event) {
             addColorSwarmUniqueTiles(activeUnit);
         });

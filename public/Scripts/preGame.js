@@ -13,7 +13,6 @@ function setup() {
   // anonymous callback function
   socket.on('join', function(name) {
     console.log('New player named ' + name + ' has joined the game.');
-    // socket.name = name; 
     socket.emit('get-users');
     });
 
@@ -207,7 +206,7 @@ function setup() {
     });
 
     socket.on('set-starting-player', function(name, privateUsers) {
-        setStorage('turnIndicator', username);
+        setStorage('turnIndicator', name);
         var username = getStorage('username');
 
         if (name === username) {
@@ -404,11 +403,9 @@ function claimSelectedColor(chosenColor, name) {
     if (name == undefined){
         var name = getStorage('username');
     }
-    //CYPRESS
     if (name != getStorage('username')){
         setStorage('playerColor2', chosenColor);
     }
-    //End CYPRESS
     var otherPlayerColor = getStorage('playerColor2');
     if ((otherPlayerColor == '') || (otherPlayerColor == undefined)) {
         socket.emit('first-color-selected', name, chosenColor);
@@ -496,7 +493,7 @@ function createPlayerButtons(users) {
 
 function addPlayerTroopsToGameObject(name, troopArray) {
     console.log('adding troops to game obj... ');
-    console.log(troopArray);
+    //console.log(troopArray);
     socket.emit('add-troops-to-gameObj', name, troopArray);
 }
 
@@ -517,8 +514,8 @@ function updateTroopLocation(unitName, node) {
 
 function drawEnemyUnitsToMap(username, makeKnown) {
     var name = getStorage('username');
-    console.log('drawEnemyUnitsToMap for '+ username + ' the objects to be drawn are in the following object: ');
-    console.log(JSON.stringify(makeKnown, null, 4));
+    //console.log('drawEnemyUnitsToMap for '+ username + ' the objects to be drawn are in the following object: ');
+    //console.log(JSON.stringify(makeKnown, null, 4));
     //need to clear the map and redraw this user and enemy user's units
     //account for Name, Location, Color, Health of units & base
     if (name === username) {

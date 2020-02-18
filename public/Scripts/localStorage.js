@@ -46,7 +46,7 @@ function setDefaultStorage() {
     setStorage('tempTroopArray1', '');
     setStorage('gameState', '');
     setStorage('gameState2', '');
-;}
+}
 
 function  setChosenColorInLocalStorage(name, chosenColor, privateUsers) {
     var username = getStorage('username');
@@ -298,8 +298,6 @@ function renderVisibilityForBase(tiles) {
 }
 
 function renderVisibleTilesForClient(username, tiles) {
-    //console.log('inside renderVisibleTilesForClient! ' + username);
-    //console.log(tiles);
     var thisPlayer = getStorage("playerName");
     if (username == thisPlayer){
         //grey out all tiles
@@ -526,17 +524,15 @@ function progressToFirstMoveOrPause() {
     setStorage("allCoolDowns", "false");
     var gameState = getStorage("gameState");
     var gameState2 = getStorage("gameState2");
-
+    //TODO -- investigate this if/else statement. Seems fishy. Same func called twice, only text difference.
     if ((gameState == "troopsPlaced") && (gameState2 == "troopsPlaced")) {
-
         removeClickEventsTroopPics();
-
     } else {
         //if one of the gameStates are not "troopsPlaced" show the one that is the alertModal to sync the game
         var message = "Great job! You are prepared to play. Paused for other player.";
         document.getElementById('gameAlertsLarge').innerHTML = message;
         removeClickEventsTroopPics();
-        }
+    }
 }
 
 // Add the onclick events for each node
@@ -556,10 +552,31 @@ function removeClickEventsForNodes(){
     }
 }
 
+// Unbind action buttons 1,2,3 for user when turn passes
+// Leave 4 so user can view the details for their units
+function unbindActionButtons(){
+    $("#option1").unbind("click");
+    $("#option2").unbind("click");
+    $("#option3").unbind("click");
+    $("#option4").unbind("click");
+
+    // document.addEventListener('keypress', (event) => {
+    //     const keyName = event.key;
+    //     if (keyName == 1) {
+    //         return false;
+    //     } else if (keyName == 2) {
+    //         return false;
+    //     } else if (keyName == 3) {
+    //         return false;
+    //     } else if (keyName == 4) {
+    //         return false;
+    //     }
+    // });
+}
+
 // Remove the onclick event from each troop pic
 function removeClickEventsTroopPics(){
     for(let i=0; i<3; i++){
-        //document.getElementById("1troopPic"+i).onclick = null;
         $("#1troopPic"+i).removeAttr("onclick");
     }
 }
@@ -584,6 +601,7 @@ function addClickEventsTroopPics() {
 }
 
 function setActiveUnit(event) {
+    setStorage("hasActive", true);
     clearAllTilesForAction();
     clearPlayerColorFromMap();
     clearUniqueEventHandlers(activeUnit);
@@ -600,7 +618,7 @@ function setActiveUnit(event) {
         }
     })
     
-    document.getElementById("rightSideBar").classList.remove("hidden");
+    document.getElementById("actionMenu").classList.remove("hidden");
 
     if (activeUnit != undefined){
         addClickEventsToTurnOptions(activeUnit);
@@ -608,7 +626,8 @@ function setActiveUnit(event) {
 }
 
 function addClickEventsToTurnOptions(activeUnit) {
-        //allows clicking the 1,2,3 buttons to prepare 3 types of actions
+    if(activeUnit == undefined || activeUnit == null || activeUnit == "") { return false;}
+        //allows clicking the 1,2,3,4 buttons to prepare 4 types of actions
         document.getElementById("option1").onclick = function() { 
             prepareGameAction(activeUnit, this);
          }
@@ -621,7 +640,7 @@ function addClickEventsToTurnOptions(activeUnit) {
          document.getElementById("option4").onclick = function() { 
             prepareGameAction(activeUnit, this);
          }
-         //this part allows 1,2,3 to also prepare the 3 types of actions
+         //this part allows 1,2,3,4 to also prepare the 4 types of actions
          document.addEventListener('keypress', (event) => {
             const keyName = event.key;
             if (keyName == 1) {
@@ -641,6 +660,12 @@ function addClickEventsToTurnOptions(activeUnit) {
 }
 
 function prepareGameAction(activeUnit, event) {
+    let currentPlayer = getStorage("turnIndicator");
+    let username = getStorage("username");
+    if(currentPlayer !== username){return false;}
+    let hasActive = getStorage("hasActive");
+    if(hasActive === false){return false;}
+
     clearAvailableTilesForAction();
     clearPlayerColorFromMap();
     //TODO -this next function may need improved
@@ -795,6 +820,7 @@ function handlePlayerMove(id) {
 }
 
 function processTurn() {
+    setStorage('hasActive', false);
     let username = getStorage('username');
     let playerObj = getStorage('playerObj');
 
@@ -815,8 +841,12 @@ function processTurn() {
     if (otherPlayerAllUnitsOnCooldown == false) {
         // set state to disabled so this user cannot perform any out-of-turn actions
         document.getElementById('currentState').innerHTML = "disabled";
+        //unbind onclick events
+        unbindActionButtons();
+        removeClickEventsTroopPics();
+        //hide action menu
+        document.getElementById("actionMenu").classList.add("hidden");
 
-        // updateTurnIndicator(opponent);
         signalTurnOver(username);
         setStorage("allCoolDowns", "false");
         resetCoolDowns();

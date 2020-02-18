@@ -68,14 +68,14 @@ function showWelcomeModal() {
 function hideWelcomeModal(username) {
     document.getElementById('leftSideBarH3').classList.remove('hidden');
     var chosenColor = document.getElementById('playerColorSelection').innerHTML;
-    //CYPRESS
+
     if(getStorage('playerColor') == undefined || getStorage('playerColor') == '' || getStorage('playerColor' == null)){
         claimSelectedColor(chosenColor);
     }
     if(username == '' || username == undefined || username == null){
         var playerName = getStorage('username');  
     }
-    //END CYPRESS
+
     document.getElementById('playerNameSelection').innerHTML = playerName;
     setStorage('playerName', playerName);
     setStorage('playerColor', chosenColor);
@@ -431,11 +431,11 @@ function checkPlayerUnitLocation(id) {
 
             setStorage('troopsToPlace1', troopsToPlace);
         } else { 
-            document.getElementById('gameAlertsSmall').innerHTML = 'That tile is already occupied. Choose another.';
+            document.getElementById('gameAlertsSmall').innerHTML = 'That tile is occupied. Choose another.';
         }
     } else if (troopsToPlace <= 2) {
         document.getElementById('gameAlertsSmall').classList.add('redText');
-        document.getElementById('gameAlertsSmall').innerHTML = 'You must place your units in tiles adjacent to your base.';
+        document.getElementById('gameAlertsSmall').innerHTML = 'Units must start adjacent to base.';
     }
 }
 
@@ -445,15 +445,14 @@ function updateTurnIndicator(name) {
     placeTurnIndicatorData(name);
 
     if (name === username){   
-        // only update currentState for current player, otherwise it should be "disabled"
-         document.getElementById('currentState').innerHTML = 'gameTime';
+        // only update currentState for current player, otherwise it should already be "disabled"
+        document.getElementById('currentState').innerHTML = 'gameTime';
         console.log('it should be my turn! my name is ' + username);
-
         addClickEventsTroopPics();
-        document.getElementById('gameAlertsLarge').innerHTML = 'Click on the picture [right menu] of the unit you\'d like to activate.';
+        document.getElementById('gameAlertsLarge').innerHTML = 'Click the picture [right menu] of the unit to activate.';
+        // document.getElementById('actionMenu').classList.remove('hidden');
     } else {
-
-        removeClickEventsTroopPics();
+        console.log('it is not my turn. my actions should be hidden/disabled.');
         document.getElementById('gameAlertsLarge').innerHTML = 'Other player is taking their turn.';
     }
 }
