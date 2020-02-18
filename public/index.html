@@ -1,6 +1,4 @@
 <!--run http-server at C:\dev\ThisGameOnNode and it should work on localhost:8181 -->
-
-
 <!doctype html>
 <html>
   <head>
@@ -16,7 +14,7 @@
 
     <script src="Scripts/socket-io.js"></script>
   
-    <script type="text/javascript" src="Scripts/preGame.js" ></script>
+    <script type ="text/javascript" src="Scripts/preGame.js" ></script>
     <script type ="text/javascript" src="Scripts/action.js"></script>
     <script type ="text/javascript" src="Scripts/troopData.js"></script>
     <script type ="text/javascript" src="Scripts/homeBaseData.js"></script>
@@ -52,8 +50,9 @@
         </div>
     
 
-        <div id="banner" class="userBanner hidden">All Active Players</div>
-        <div id="currentUsers" class="userBanner hidden"></div>
+        <div id="banner" class="userBanner hidden">All Active Players
+          <div id="currentUsers" class="userBanner hidden"></div>
+        </div>
 
 
 
@@ -81,7 +80,7 @@
 
     <div id="outterLeftDiv" class="col-2-10 whiteText">
         <div id="leftSideBar" class="col-1-1">
-        <h3 id="leftSideBarH3" class="hidden col-1-1"> ............ Additional Game Data ............</h3>
+        <h3 id="leftSideBarH3" class="hidden col-1-1"> ............ Game Data ............</h3>
             <div class="col-1-2">
                 <span id="playerNameDisplay" class="bottomSpacer"></span>
                 <span id="baseLocDisplay" class="bottomSpacer"></span>
@@ -91,15 +90,15 @@
                 <span id="baseHealthDisplay" class="bottomSpacer"></span>
                 <!-- <span id="baseHealthBar" class="healthBar bottomSpacer col-1-2"></span> -->
             </div>
-            <div id="rightSideBar" class="col-1-1 whiteText hidden">
+            <div id="actionMenu" class="col-1-1 whiteText hidden">
             <h3>Action Menu</h3>
-            <span class="col-1-1"><span id="1actionMove" class="col-1-8"><button id="option1" class="round-5">1</button>
+            <span class="col-1-1"><span id="actionMove" class="col-1-8"><button id="option1" class="round-5">1</button>
                 </span><span class="col-7-8 left-gutter"> To see movement range.</span></span><br><br>
-            <span class="col-1-1"><span id="1actionAttack" class="col-1-8"><button id="option2" class="round-5">2</button>
+            <span class="col-1-1"><span id="actionAttack" class="col-1-8"><button id="option2" class="round-5">2</button>
                 </span><span class="col-7-8 left-gutter"> To see attack range.</span></span><br><br>
-            <span class="col-1-1"><span id="1actionUnique" class="col-1-8"><button id="option3" class="round-5">3</button>
+            <span class="col-1-1"><span id="actionUnique" class="col-1-8"><button id="option3" class="round-5">3</button>
                 </span><span class="col-7-8 left-gutter"> To see unique move range.</span></span><br><br>
-            <span class="col-1-1"><span id="1actionDetails" class="col-1-8"><button id="option4" class="round-5">4</button>
+            <span class="col-1-1"><span id="actionDetails" class="col-1-8"><button id="option4" class="round-5">4</button>
                 </span><span class="col-7-8 left-gutter"> To see unit details.</span></span><br><br>
             </div>
         </div>
@@ -154,7 +153,7 @@
       <div><h3 id="welcomeModalTopH3">Select a color</Select></h3></div>
       <form id="welcomeForm">
       
-          <div>colors:
+          <div>
               <select id="playerColorSelect" onchange="playerColorPopulating(this);">
                   <option disabled selected value> -- select an option -- </option>
                   <option class="redText" value="red">red</option>
@@ -250,7 +249,7 @@
   </div>
 
   <div id="alertModal" class="modal bottom-left round-10 hidden front"><h1>Game Alert</h1>
-      <div><img src="/Assets/rocket.png" class="alertPic"></div>
+      <div><img src="Assets/rocket.png" class="alertPic"></div>
       <div><h3 id="currentAlert"></h3></div>
       <div id="currentAlertSmall">This alert will go away when both players are in sync. If taking too long, 
           tell your opponent to hurry up.
@@ -264,10 +263,10 @@
       <div><h3 id="finishedAlert"></h3></div>
       <div id="finishedVideo">
           <video id="victoryVideo" width="480" height="320" loop="loop" autoplay="autoplay" class="hidden">
-              <source src="/Assets/victory.mp4" type="video/mp4">
+              <source src="Assets/victory.mp4" type="video/mp4">
             </video>
             <video id="defeatVideo" width="480" height="270" loop="loop" autoplay="autoplay" class="hidden">
-              <source src="/Assets/defeat.mp4" type="video/mp4">
+              <source src="Assets/defeat.mp4" type="video/mp4">
             </video>
       </div>
       <h4 id="finishedAlertSmall" style="padding-top: 15px;"></div>
@@ -285,13 +284,13 @@
 <div id="playerObj" class="hidden"></div>
 
 <!-- <audio type="audio" id='spaceIntro' src="/Sounds/spaceIntro.mp3"></audio> -->
-<audio type="audio" id="wrongBuzz" src="/Sounds/wrongBuzz.wav"></audio>
-<audio type="audio" id="spaceShot" src="/Sounds/spaceShot.wav"></audio>
-<audio type="audio" id="moveSound" src="/Sounds/move.wav"></audio>
-<audio type="audio" id="scanSound" src="/Sounds/scan.wav"></audio>
-<audio type="audio" id="swarmSound" src="/Sounds/swarm.wav"></audio>
-<audio type="audio" id="depthChargeSound" src="/Sounds/depthCharge.wav"></audio>
-<audio type="audio" id="bombSound" src="/Sounds/bombSound.wav"></audio>
+<audio type="audio" id="wrongBuzz" src="Sounds/wrongBuzz.wav"></audio>
+<audio type="audio" id="spaceShot" src="Sounds/spaceShot.wav"></audio>
+<audio type="audio" id="moveSound" src="Sounds/move.wav"></audio>
+<audio type="audio" id="scanSound" src="Sounds/scan.wav"></audio>
+<audio type="audio" id="swarmSound" src="Sounds/swarm.wav"></audio>
+<audio type="audio" id="depthChargeSound" src="Sounds/depthCharge.wav"></audio>
+<audio type="audio" id="bombSound" src="Sounds/bombSound.wav"></audio>
 
   </body>
 </html>
