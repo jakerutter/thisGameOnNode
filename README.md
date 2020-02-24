@@ -4,8 +4,8 @@ A game I made using node.js and socket.io. The game is a space themed mix of Bat
 
 ## Current Status
 
-Working on this project once again.
-Currently working to fix errors when updating the visible and not-visible areas of the game board to each player as units are placed and moved about the map.
+Hosted in Heroku. Happy path is playable with some bugs.
+Working to remove bugs and improve functionality.
 
 ### Adding automated cypress tests
 These are for regression prevention and help speed up future development with data entry and feature testing. Next step on this front is to add stubs that mock a second user logging on and entering a game with the initial user. End goal is to test a game end to end with cypress tests.
